@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import SwaggerUi from '../components/SwaggerUi'
+import SwaggerUi from '../views/SwaggerUi'
 
 Vue.use(Router)
 
