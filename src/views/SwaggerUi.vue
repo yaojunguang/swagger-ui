@@ -2,7 +2,7 @@
   <div class="main" v-loading="loading">
 
     <el-container style="height: 100%;overflow: hidden;">
-      <el-aside width="400px" style="background-color: #2c3e50;height: 100%;overflow: auto;">
+      <el-aside id="menu-aside" v-bind:style="{backgroundColor:'#2c3e50',height:'100%',width:leftSize+'px'}">
         <el-container style="height:100%">
           <el-header>
             {{form.info.title}}
@@ -28,9 +28,11 @@
           </el-scrollbar>
         </el-container>
       </el-aside>
+      <el-aside id="resizeBar" width="6px" class="resize"/>
       <el-main class="main-cards" v-if="renderIndex">
-        <el-tabs v-if="items.length > 0" type="border-card" v-model="activeName" style="height: 100%">
-          <el-tab-pane v-for="(item,INDEXS) in items" :key="INDEXS" :name="item.path"
+        <el-tabs v-if="items.length > 0" type="border-card" v-model="activeName" style="height: 100%" closable
+                 @tab-remove="removeTab">
+          <el-tab-pane v-for="(item,INDEXS) in items" :key="INDEXS" :name="item.path+item.method"
                        :label="item.path" style="height: 100%">
             <el-scrollbar style="height: 100%;">
               <el-card class="box-card" v-bind:class="item.method">
@@ -130,39 +132,60 @@
                                     :title="'结果实体'+item.responses['200'].schema.originalRef.replaceAll('«','<').replaceAll('»','>')">
                     <el-tabs :value="item.modules[0].title">
                       <el-tab-pane v-for="(entity,mIndex) in item.modules" :label="entity.title" :name="entity.title"
-                                   :key="index">
-                        <el-row>
-                          <el-col :span="4">
-                            变量名
-                          </el-col>
-                          <el-col :span="4">
-                            类型
-                          </el-col>
-                          <el-col :span="8">
-                            描述
-                          </el-col>
-                        </el-row>
-                        <el-row v-for="(property,key,index) in entity.properties" :key="index">
-                          <el-col :span="4" class="name">
-                            {{key}}
-                          </el-col>
-                          <el-col :span="4">
-                            <template v-if="property.type === 'array' && property.items.originalRef">
-                              List<{{property.items.originalRef}}>
-                            </template>
-                            <template v-else-if="property.type === 'array'">
-                              List<{{property.items.type}}>
-                            </template>
-                            <template v-else>
-                              {{property.type}}
-                            </template>
+                                   :key="index" style="position: relative;">
+                        <div v-if="entity.language === 'normal'">
+                          <el-row>
+                            <el-col :span="4">
+                              变量名
+                            </el-col>
+                            <el-col :span="4">
+                              类型
+                            </el-col>
+                            <el-col :span="8">
+                              描述
+                            </el-col>
+                          </el-row>
+                          <el-row v-for="(property,key,index) in entity.properties" :key="index">
+                            <el-col :span="4" class="name">
+                              {{key}}
+                            </el-col>
+                            <el-col :span="4">
+                              <template v-if="property.type === 'array' && property.items.originalRef">
+                                List<{{property.items.originalRef}}>
+                              </template>
+                              <template v-else-if="property.type === 'array'">
+                                List<{{property.items.type}}>
+                              </template>
+                              <template v-else>
+                                {{property.type}}
+                              </template>
 
-                          </el-col>
-                          <el-col :span="8">
-                            {{property.description}}
-                          </el-col>
-                        </el-row>
-                        <el-button @click="clickTab(INDEXS,mIndex)">转化</el-button>
+                            </el-col>
+                            <el-col :span="8">
+                              {{property.description}}
+                            </el-col>
+                          </el-row>
+                        </div>
+                        <div v-else style="position: relative;margin-right: 12px;">
+                          <div v-highlight>
+                            <pre style="margin-top: 0">
+                            <code v-html="entity.result" style="border-radius: 6px;"
+                                  :class="entity.language === 'java'?'java':'swift'"></code>
+                              </pre>
+                          </div>
+                        </div>
+                        <el-button v-if="entity.language !== 'normal'"
+                                   style="position: absolute;right: 330px;top: 23px;" v-clipboard:copy="entity.result"
+                                   v-clipboard:success="onCopy" size="mini" icon="el-icon-document-copy">copy
+                        </el-button>
+                        <el-radio-group class="language-radio"
+                                        @change="changeLanguage(entity)" size="mini"
+                                        v-model="entity.language">
+                          <el-radio-button label="normal">常规</el-radio-button>
+                          <el-radio-button label="SwiftJson">SwiftJson</el-radio-button>
+                          <el-radio-button label="ObjectMapper">ObjectMapper</el-radio-button>
+                          <el-radio-button label="Java">Java</el-radio-button>
+                        </el-radio-group>
                       </el-tab-pane>
                     </el-tabs>
                   </el-collapse-item>
@@ -195,11 +218,30 @@
     name: 'SwaggerUi',
     data () {
       return {
+        leftSize: 400,
+        moving: false,
         activeName: '',
         renderIndex: 1,
         loading: false,
         form: null,
         items: []
+      }
+    },
+    watch: {
+      form: function () {
+        this.$nextTick(function () {
+          $('#resizeBar').mousedown(function (event) {
+            this.moving = true
+          }).mousemove(function (event) {
+            if (this.moving) {
+              this.leftSize = event.pageX
+              console.log(this.leftSize)
+              $('#menu-aside').width(this.leftSize)
+            }
+          }).mouseup(function (event) {
+            this.moving = false
+          })
+        })
       }
     },
     mounted () {
@@ -221,6 +263,7 @@
         }
       }
       that.form = docs
+
     },
     methods: {
       onCopy () {
@@ -234,10 +277,164 @@
         }
         return null
       },
-      clickTab (item, index) {
-        let module = this.items[item].modules[index]
-        alert(JSON.stringify(module))
+
+      changeLanguage (entity) {
+        if (entity.language === 'SwiftJson') {
+          entity.result = this.toSwiftJson(entity)
+        } else if (entity.language === 'ObjectMapper') {
+          entity.result = this.toObjectMapper(entity)
+        } else if (entity.language === 'Java') {
+          entity.result = this.toJava(entity)
+        }
+        this.$forceUpdate()
       },
+      toJava (module) {
+        var code =
+          '\n\nimport javax.persistence.*;\n' +
+          'import lombok.Data;\n\n' +
+          'import java.util.List;\n' +
+          '\n' +
+          '/**\n' +
+          ' * Created by @author yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
+          ' * Copyright © 2019 CHANGE. All rights reserved.\n' +
+          ' */\n' +
+          '@Data\n' +
+          'public class ' + module.title + ' {'
+
+        for (let name in module.properties) {
+          let property = module.properties[name]
+          code += '\n    /**\n' +
+            '     *' + property.description +
+            '\n     */\n'
+          if (property.type === 'array' && property.items.originalRef !== undefined) {
+            code += '    private List<' + property.items.originalRef + '> ' + name + ';'
+          } else if (property.type === 'array') {
+            code += '    private List<' + this.toJavaType(property.type) + '> ' + name + ';'
+          } else {
+            code += '    private ' + this.toJavaType(property.type) + ' ' + name + ';'
+          }
+        }
+        code += '\n}'
+        return code
+      },
+      toSwiftJson (module) {
+        var code = '//\n' +
+          '//  ' + module.title + '.swift\n' +
+          '//  Change\n' +
+          '//\n' +
+          '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
+          '//  Copyright © 2019 CHANGE. All rights reserved.\n' +
+          '//\n' +
+          '\n' +
+          'import UIKit\n' +
+          'import SwiftyJSON \n' +
+          '\n' +
+          'class ' + module.title + ' {'
+
+        var init = '\n\n    init(json: JSON) {'
+        for (let name in module.properties) {
+          let property = module.properties[name]
+          code += '\n    //' + property.description + '\n'
+          if (property.type === 'array' && property.items.originalRef !== undefined) {
+            code += '    var ' + name + ': [' + property.items.originalRef + ']!'
+            init += '\n       ' + name + ' = json["' + name + '"].arrayValue.map({ (json) -> ' + property.items.originalRef + ' in\n' +
+              '            return ' + property.items.originalRef + '(json: json)\n' +
+              '       })'
+          } else if (property.type === 'array') {
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false) + ']!'
+            init += '\n       ' + name + ' = json["' + name + '"].arrayObject as! [' + this.toSwiftType(property.items.type, false) + ']'
+            //
+          } else {
+            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true)
+            init += '\n       ' + name + ' = json["' + name + '"]' + this.toSwiftJsonValue(property.type)
+          }
+        }
+        init += '\n    }'
+        code += init
+        code += '\n}'
+
+        return code
+      },
+      toObjectMapper (module) {
+        var code = '//\n' +
+          '//  ' + module.title + '.swift\n' +
+          '//  Change\n' +
+          '//\n' +
+          '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
+          '//  Copyright © 2019 CHANGE. All rights reserved.\n' +
+          '//\n' +
+          '\n' +
+          'import UIKit\n' +
+          'import SwiftyJSON \n' +
+          '\n' +
+          'class ' + module.title + ' {'
+
+        var init = '\n    func mapping(map: Map) {'
+        for (let name in module.properties) {
+          let property = module.properties[name]
+          code += '\n    //' + property.description + '\n'
+          if (property.type === 'array' && property.items.originalRef !== undefined) {
+            code += '    var ' + name + ': [' + property.items.originalRef + ']!'
+            init += '\n        ' + name + ' <- map["' + name + '"]'
+          } else if (property.type === 'array') {
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false) + ']!'
+            init += '\n        ' + name + ' <- map["' + name + '"]'
+          } else {
+            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true)
+            init += '\n        ' + name + ' <- map["' + name + '"]'
+          }
+        }
+        init += '\n    }'
+        code += '\n\n    required init?(map: Map){\n' +
+          '    }\n'
+        code += init
+        code += '\n}'
+
+        return code
+      },
+      toSwiftJsonValue (type) {
+        switch (type) {
+          case 'integer':
+            return '.intValue'
+          case 'number':
+            return '.doubleValue'
+          case 'string':
+            return '.stringValue'
+          case 'boolean':
+            return '.boolValue'
+          default:
+            return ''
+        }
+      },
+      toJavaType (type) {
+        switch (type) {
+          case 'integer':
+            return 'Integer'
+          case 'number':
+            return 'Double'
+          case 'string':
+            return 'String'
+          case 'boolean':
+            return 'Boolean'
+          default:
+            return 'Object'
+        }
+      },
+      toSwiftType (type, init) {
+        switch (type) {
+          case 'integer':
+            return 'Int' + (init ? ' = 0' : '')
+          case 'number':
+            return 'Double' + (init ? ' = 0.0' : '')
+          case 'string':
+            return 'String' + (init ? ' = ""' : '')
+          case 'boolean':
+            return 'Bool' + (init ? ' = false' : '')
+          default:
+            return 'JSON!'
+        }
+      },
+
       tryIt (index, op) {
         this.items[index].try = op
         this.renderIndex += 1
@@ -246,13 +443,25 @@
       deleteItem (index) {
         this.items.splice(index, 1)
       },
+      removeTab (targetName) {
+        for (var index = 0; index !== this.items.length; ++index) {
+          if (this.items[index].path + this.items[index].method === targetName) {
+            this.items.splice(index, 1)
+            if (targetName === this.activeName && this.items.length > 0) {
+              this.activeName = this.items[0].path + this.items[0].method
+            }
+            return
+          }
+        }
+        this.$forceUpdate()
+      },
       handleOpenItem (key, keyPath) {
         let keys = key.split('-')
         var func = this.form.tags[keys[0]].items[keys[1]]
 
         for (var name in this.items) {
-          if (this.items[name].path === func.path) {
-            this.activeName = func.path
+          if (this.items[name].path === func.path && this.items[name].method === func.method) {
+            this.activeName = func.path + func.method
             return
           }
         }
@@ -281,7 +490,7 @@
         this.parseModule(this.form.definitions[ref], modules)
         func.modules = modules
         this.items.push(this.form.tags[keys[0]].items[keys[1]])
-        this.activeName = func.path
+        this.activeName = func.path + func.method
       },
       parseModule (module, modules) {
         var index = module.title.indexOf('«')
@@ -289,6 +498,7 @@
           module.title = module.title.substring(0, index)
         }
         if (modules.filter(item => item.title === module.title).length === 0) {
+          module.language = 'normal'
           modules.push(module)
         }
         for (var prop in module.properties) {
@@ -305,6 +515,26 @@
             }
           }
         }
+      },
+      formatDate (date) {
+        var fmt = 'yyyy-MM-dd hh:mm:ss'
+        if (/(y+)/.test(fmt)) {
+          fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+        }
+        let o = {
+          'M+': date.getMonth() + 1,
+          'd+': date.getDate(),
+          'h+': date.getHours(),
+          'm+': date.getMinutes(),
+          's+': date.getSeconds()
+        }
+        for (let k in o) {
+          if (new RegExp(`(${k})`).test(fmt)) {
+            let str = o[k] + ''
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : ('00' + str).substr(str.length))
+          }
+        }
+        return fmt
       }
     }
   }
@@ -357,6 +587,17 @@
     position: absolute;
     left: 16px;
     top: 7px;
+  }
+
+  .resize {
+    background-color: white;
+    height: 100%;
+    overflow: auto;
+    cursor: w-resize;
+  }
+
+  .resize:hover {
+    background-color: #f0f0f0;
   }
 
   .get .method {
@@ -467,6 +708,12 @@
   }
 
 
+  .language-radio {
+    position: absolute;
+    right: 12px;
+    top: 23px;
+  }
+
 </style>
 
 <style>
@@ -497,6 +744,10 @@
 
   .el-tabs__content {
     height: calc(100% - 40px);
+  }
+
+  .el-tabs__header {
+    margin-bottom: 0;
   }
 
   .el-tabs--border-card > .el-tabs__content {

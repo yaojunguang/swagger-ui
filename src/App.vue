@@ -32,10 +32,21 @@
     border-bottom: 1px solid #e6e6e6;
     background-color: white;
     border-right: 1px solid #e6e6e6;
+    font-weight: 900;
+    text-align: left;
+    font-size: 20px;
   }
 
-  .el-submenu__title{
+  .el-submenu__title {
     font-weight: bold;
+  }
+
+  .el-menu-item-group__title {
+    display: none;
+  }
+
+  .el-submenu {
+    border-bottom: 1px solid #f0f0f0;
   }
 </style>
 <style scoped>
