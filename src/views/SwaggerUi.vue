@@ -1,14 +1,24 @@
 <template xmlns:v-clipboard="http://www.w3.org/1999/xhtml">
   <div class="main" v-loading="loading">
-
     <el-container style="height: 100%;overflow: hidden;">
       <el-aside id="menu-aside" v-bind:style="{backgroundColor:'#2c3e50',height:'100%',width:leftSize+'px'}">
         <el-container style="height:100%">
           <el-header>
-            {{form.info.title}}
+            <el-input placeholder="请输入内容" v-model="form.info.title" readonly>
+              <el-select slot="prepend" v-model="groupName" placeholder="请选择" style="width: 80px;"
+                         @change="groupChanged">
+                <el-option
+                  v-for="item in resources"
+                  :key="item.url"
+                  :label="item.name"
+                  :value="item.url">
+                </el-option>
+              </el-select>
+            </el-input>
           </el-header>
-          <el-scrollbar style="height: 100%;">
-            <el-menu class="el-menu-vertical-demo" style="text-align: left;" @select="handleOpenItem">
+          <el-scrollbar style="height: 100%;" v-if="form">
+            <el-menu class="el-menu-vertical-demo" style="text-align: left;"
+                     @select="handleOpenItem">
               <el-submenu v-for="(tag,index) in form.tags" :index="index+''" :key="index">
                 <template slot="title">
                   <div class="title" slot="title">{{tag.name}}</div>
@@ -40,20 +50,18 @@
                   <span class="method">{{item.method}}</span><span class="path" v-clipboard:copy="item.path"
                                                                    v-clipboard:success="onCopy">{{item.path}}</span><span
                   class="summary">{{item.summary}}</span>
-                  <el-button type="success" v-if="item.try" @click="tryIt(INDEXS,false)"
-                             style="position: absolute;right: 168px;top: 8px;" plain>Execute!
+                  <el-button type="success" v-if="item.try" @click="tryIt(item,false)"
+                             style="position: absolute;right: 108px;top: 8px;" plain>Execute!
                   </el-button>
-                  <el-button type="warning" v-if="item.try" @click="tryIt(INDEXS,false)"
-                             style="position: absolute;right: 68px;top: 8px;" plain>Cancel!
+                  <el-button type="warning" v-if="item.try" @click="tryIt(item,false)"
+                             style="position: absolute;right: 8px;top: 8px;" plain>Cancel!
                   </el-button>
-                  <el-button type="primary" v-else @click="tryIt(INDEXS,true)"
-                             style="position: absolute;right: 68px;top: 8px;" plain>Try it out!
+                  <el-button type="primary" v-else @click="tryIt(item,true)"
+                             style="position: absolute;right: 8px;top: 8px;" plain>Try it out!
                   </el-button>
-                  <el-button icon="el-icon-close" @click="deleteItem(index)"
-                             style="position: absolute;right: 8px;top: 8px;" circle/>
                 </div>
                 <div class="description" v-if="item.description && item.description !== ''">{{item.description}}</div>
-                <el-collapse value="private" style="text-align: left">
+                <el-collapse :value="item.open" style="text-align: left">
                   <el-collapse-item title="专有参数" name="private" v-if="item.private">
                     <el-row style="font-weight: bold">
                       <el-col :span="4">
@@ -146,7 +154,8 @@
                             </el-col>
                           </el-row>
                           <el-row v-for="(property,key,index) in entity.properties" :key="index">
-                            <el-col :span="4" class="name">
+                            <el-col :span="4" class="name" v-clipboard:copy="key"
+                                    v-clipboard:success="onCopy">
                               {{key}}
                             </el-col>
                             <el-col :span="4">
@@ -212,67 +221,114 @@
 </template>
 
 <script>
-
-  const docs = require('../assets/api-docs')//动作的信息
   export default {
     name: 'SwaggerUi',
     data () {
       return {
+        groupName: null,
+        resources: [{
+          name: 'v4',
+          url: '/v2/api-docs?group=v4',
+          swaggerVersion: '2.0',
+          location: '/v2/api-docs?group=v4',
+        }],
         leftSize: 400,
         moving: false,
         activeName: '',
         renderIndex: 1,
         loading: false,
         form: null,
-        items: []
+        items: [],
       }
     },
     watch: {
       form: function () {
+        let that = this
         this.$nextTick(function () {
           $('#resizeBar').mousedown(function (event) {
-            this.moving = true
-          }).mousemove(function (event) {
-            if (this.moving) {
-              this.leftSize = event.pageX
-              console.log(this.leftSize)
-              $('#menu-aside').width(this.leftSize)
+            that.moving = true
+            console.log(that.moving + event.pageX)
+          })
+          $(document).mousemove(function (event) {
+            if (that.moving) {
+              that.leftSize = event.pageX
+              console.log(that.leftSize)
+              $('#menu-aside').width(that.leftSize)
             }
           }).mouseup(function (event) {
-            this.moving = false
+            if (that.moving) {
+              that.moving = false
+              localStorage.setItem('menu-aside', event.pageX)
+            }
           })
         })
+      },
+      groupName: function () {
+        localStorage.setItem('groupName', this.groupName)
       }
     },
     mounted () {
-      let that = this
-      for (let path in docs.paths) {
-        let node = docs.paths[path]
-        for (let method in node) {
-          var func = node[method]
-          var tag = func.tags[0]
-          var tagNode = this.findTagNode(tag)
-          if (tagNode != null) {
-            if (tagNode.items === undefined) {
-              tagNode.items = []
-            }
-            func['path'] = path
-            func['method'] = method
-            tagNode.items.push(func)
-          }
+      this.$http.get('/swagger-resources', {emulateJSON: true}).then(function (resp) {
+        this.resources = resp.body
+        if (this.groupName == null) {
+          this.groupName = this.resources[0].name
         }
+        this.groupChanged()
+      }, function (resp) {
+        console.log(resp)
+      })
+      var size = localStorage.getItem('menu-aside')
+      this.groupName = localStorage.getItem('groupName')
+      if (size != null) {
+        this.leftSize = size
       }
-      that.form = docs
 
     },
     methods: {
+      groupChanged () {
+        let that = this
+        console.log('groupChanged' + that.groupName)
+        if (that.resources != null && that.resources.length > 0) {
+          let items = that.resources.filter(resource => resource.url === that.groupName)
+          if (items.length > 0) {
+          } else {
+            that.groupName = that.resources[0].url
+          }
+          console.log(that.groupName)
+          that.$http.get(that.groupName, {emulateJSON: true}).then(function (resp) {
+            var data = resp.data
+            console.log(JSON.stringify(data))
+            for (var path in data.paths) {
+              var node = data.paths[path]
+              for (let method in node) {
+                var func = node[method]
+                var tag = func.tags[0]
+                var tagNode = that.findTagNode(tag, data)
+                if (tagNode != null) {
+                  if (tagNode.items === undefined) {
+                    tagNode.items = []
+                  }
+                  func['path'] = path
+                  func['method'] = method
+                  tagNode.items.push(func)
+                }
+              }
+            }
+            that.form = data
+            this.$forceUpdate()
+          }, function (resp) {
+            console.log(resp)
+          })
+        }
+
+      },
       onCopy () {
         this.$message.success('复制成功')
       },
-      findTagNode: function (tag) {
-        for (var name in docs.tags) {
-          if (docs.tags[name].name === tag) {
-            return docs.tags[name]
+      findTagNode: function (tag, doc) {
+        for (var name in doc.tags) {
+          if (doc.tags[name].name === tag) {
+            return doc.tags[name]
           }
         }
         return null
@@ -365,7 +421,7 @@
           '//\n' +
           '\n' +
           'import UIKit\n' +
-          'import SwiftyJSON \n' +
+          'import ObjectMapper \n' +
           '\n' +
           'class ' + module.title + ' {'
 
@@ -435,8 +491,11 @@
         }
       },
 
-      tryIt (index, op) {
-        this.items[index].try = op
+      tryIt (item, op) {
+        item.try = op
+        if (!item.open.contains('common')) {
+          item.open.push('common')
+        }
         this.renderIndex += 1
         this.$forceUpdate()
       },
@@ -466,7 +525,7 @@
           }
         }
         if (func.parameters != null) {
-          for (var index in func.parameters) {
+          for (var index = 0; index !== func.parameters.length; ++index) {
             let param = func.parameters[index]
             param.value = param.default
             if (param.description.startsWith('【公共参数】')) {
@@ -489,6 +548,7 @@
         var modules = []
         this.parseModule(this.form.definitions[ref], modules)
         func.modules = modules
+        func.open = ['private', 'module']
         this.items.push(this.form.tags[keys[0]].items[keys[1]])
         this.activeName = func.path + func.method
       },
@@ -593,7 +653,7 @@
     background-color: white;
     height: 100%;
     overflow: auto;
-    cursor: w-resize;
+    cursor: ew-resize;
   }
 
   .resize:hover {
@@ -718,7 +778,6 @@
 
 <style>
 
-
   .el-card__header {
     padding: 0 !important;
   }
@@ -739,7 +798,7 @@
   .el-tabs--border-card {
     -webkit-box-shadow: none;
     box-shadow: none;
-    border: none;
+    border: none !important;
   }
 
   .el-tabs__content {

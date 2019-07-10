@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <url>https://github.com/yaojunguang/swagger-ui</url>
-  <description>Pretty swagger ui api documentation</description>
+  <description>JO swagger ui api documentation</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,7 +39,7 @@
   <build>
     <resources>
       <resource>
-        <directory>${project.basedir}/src/main/resources</directory>
+        <directory>${project.basedir}/dist</directory>
         <targetPath>META-INF/resources/</targetPath>
       </resource>
     </resources>
@@ -60,43 +60,83 @@
       <id>release</id>
       <build>
         <plugins>
-          <!-- Source -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+
+              <execution>
+                <id>exec-npm-install</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>npm</executable>
+                  <arguments>
+                    <argument>install</argument>
+                  </arguments>
+                  <workingDirectory>${basedir}</workingDirectory>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>exec-npm-run-build</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>npm</executable>
+                  <arguments>
+                    <argument>run</argument>
+                    <argument>build</argument>
+                  </arguments>
+                  <workingDirectory>${basedir}</workingDirectory>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <!-- GPG -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
-            <executions>
-              <execution>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
+            <version>3.0.0</version>
             <configuration>
-              <source>1.7</source>
-              <target>1.7</target>
+              <attach>true</attach>
             </configuration>
+            <executions>
+              <execution>
+                <phase>compile</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
+
+          <!--          <plugin>-->
+          <!--            <groupId>org.apache.maven.plugins</groupId>-->
+          <!--            <artifactId>maven-gpg-plugin</artifactId>-->
+          <!--            <version>1.5</version>-->
+          <!--            <executions>-->
+          <!--              <execution>-->
+          <!--                <phase>verify</phase>-->
+          <!--                <goals>-->
+          <!--                  <goal>sign</goal>-->
+          <!--                </goals>-->
+          <!--              </execution>-->
+          <!--            </executions>-->
+          <!--          </plugin>-->
         </plugins>
+        <resources>
+          <resource>
+            <directory>/dist</directory>
+            <includes>
+              <include>**/*.*</include>
+            </includes>
+          </resource>
+        </resources>
       </build>
       <distributionManagement>
         <snapshotRepository>

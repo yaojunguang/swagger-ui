@@ -35,6 +35,7 @@
     font-weight: 900;
     text-align: left;
     font-size: 20px;
+    padding: 0 6px;
   }
 
   .el-submenu__title {
