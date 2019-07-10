@@ -560,7 +560,7 @@
 
   .el-menu-item {
     font-weight: bold;
-    line-height: 20px;
+    line-height: 20px !important;
     position: relative;
     padding-top: 5px;
     padding-bottom: 5px;
@@ -728,7 +728,7 @@
   }
 
   .el-collapse-item__wrap {
-    background-color: transparent;
+    background-color: transparent !important;
     padding-left: 24px;
   }
 

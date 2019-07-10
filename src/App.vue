@@ -24,7 +24,7 @@
   }
 
   .el-scrollbar__wrap {
-    overflow-x: hidden;
+    overflow-x: hidden !important;
   }
 
   .el-header {
