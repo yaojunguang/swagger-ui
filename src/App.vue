@@ -27,15 +27,19 @@
     overflow-x: hidden !important;
   }
 
+  .el-popper .el-scrollbar__wrap {
+    overflow-x: scroll !important;
+  }
+
   .el-header {
-    line-height: 60px;
+    line-height: 50px;
     border-bottom: 1px solid #e6e6e6;
     background-color: white;
     border-right: 1px solid #e6e6e6;
     font-weight: 900;
     text-align: left;
     font-size: 20px;
-    padding: 0 6px;
+    padding: 5px;
   }
 
   .el-submenu__title {
