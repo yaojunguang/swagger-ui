@@ -15,7 +15,7 @@
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
+    text-align: left;
     margin: 0;
     padding: 0;
     color: #2c3e50;
@@ -32,14 +32,14 @@
   }
 
   .el-header {
-    line-height: 50px;
+    line-height: 50px !important;
     border-bottom: 1px solid #e6e6e6;
     background-color: white;
     border-right: 1px solid #e6e6e6;
     font-weight: 900;
     text-align: left;
     font-size: 20px;
-    padding: 5px;
+    padding: 5px !important;
   }
 
   .el-submenu__title {

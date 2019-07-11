@@ -242,7 +242,7 @@
                       </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
                         <div v-highlight>
-                            <pre style="margin-top: 0;margin-right: 12px;">
+                            <pre style="margin: 0 12px;">
                               <code v-html="item.result" style="border-radius: 6px;" class="json"></code>
                             </pre>
                         </div>
@@ -1062,14 +1062,14 @@
   }
 
   .el-card__body {
-    padding: 0;
+    padding: 0 !important;
   }
 
   .el-tabs--border-card {
-    -webkit-box-shadow: none;
-    box-shadow: none;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
     border: none !important;
-    background-color: transparent;
+    background-color: transparent !important;
   }
 
   .el-tabs__content {
@@ -1082,5 +1082,10 @@
 
   .el-tabs--border-card > .el-tabs__content {
     padding: 0;
+  }
+
+  code {
+    font-size: 12px;
+    line-height: 16px;
   }
 </style>
