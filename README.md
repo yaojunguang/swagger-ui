@@ -4,7 +4,7 @@
 
 ## 介绍
 
-![Image text](http://change-static.change.so/image/1562839586006.jpg)
+![Image text](snaps/snap-01.jpg)
 
 > 有时间再写
 
