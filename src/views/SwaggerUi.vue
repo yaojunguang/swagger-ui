@@ -20,7 +20,7 @@
         </el-row>
       </el-header>
       <el-container style="height: calc(100% - 50px);overflow: hidden;">
-        <el-aside id="menu-aside" v-bind:style="{backgroundColor:'#2c3e50',height:'100%',width:leftSize+'px'}">
+        <el-aside id="menu-aside" v-bind:style="{backgroundColor:'#f0f0f0',height:'100%',width:leftSize+'px'}">
           <el-scrollbar style="height: 100%;" v-if="form">
             <el-menu class="el-menu-vertical-demo" style="text-align: left;"
                      @select="handleOpenItem">
@@ -265,12 +265,11 @@
 
 <script>
 
-  let docs = require('../assets/api-docs')
   export default {
     name: 'SwaggerUi',
     data () {
       return {
-        local: false,
+        local: true,
         groupName: null,
         resources: [{
           name: 'v4',
@@ -315,7 +314,7 @@
       }
     },
     mounted () {
-      if (this.local) {
+      if (process.env.ENV_CONFIG === 'test') {
         if (this.groupName == null) {
           this.groupName = this.resources[0].name
         }
@@ -410,8 +409,8 @@
       groupChanged () {
         let that = this
         console.log('groupChanged' + that.groupName)
-        if (this.local) {
-          that.parseDocs(docs)
+        if (process.env.ENV_CONFIG === 'test') {
+          that.parseDocs(require('../assets/api-docs'))
         } else {
           if (that.resources != null && that.resources.length > 0) {
             let items = that.resources.filter(resource => resource.url === that.groupName)

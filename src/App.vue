@@ -16,9 +16,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: left;
+    background-color: white;
     margin: 0;
     padding: 0;
-    color: #2c3e50;
+    color: #333333;
     width: 100%;
     height: 100%;
   }
