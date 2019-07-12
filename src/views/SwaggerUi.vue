@@ -827,7 +827,7 @@
         }
         if (options.spaceAfterColon) {
           reg = /\:/g
-          json = json.replace(reg, ': ')
+          json = json.replace(reg, ':')
         }
 
         $.each(json.split('\r\n'), function (index, node) {
