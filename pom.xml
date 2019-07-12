@@ -4,7 +4,7 @@
 
   <groupId>com.smarthito</groupId>
   <artifactId>swagger-ui</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <url>https://github.com/yaojunguang/swagger-ui</url>
@@ -37,18 +37,11 @@
   </developers>
 
   <build>
-    <resources>
-      <resource>
-        <directory>${project.basedir}/dist</directory>
-        <targetPath>META-INF/resources/</targetPath>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
-
           <execution>
             <id>exec-npm-install</id>
             <phase>prepare-package</phase>
