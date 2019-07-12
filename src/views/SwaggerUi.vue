@@ -348,28 +348,28 @@
         let that = this
         var path = item.path
         var params = {}
-        if (item.common != undefined) {
+        if (item.common !== undefined) {
           for (var name in item.common) {
             if (item.common[name].required) {
-              if (item.common[name].value == null || item.common[name].value == undefined) {
+              if (item.common[name].value == null || item.common[name].value === undefined) {
                 return this.checkForm(formName)
               }
             }
-            if(item.common[name].in == 'path'){
+            if(item.common[name].in === 'path'){
               path.replace('{'+item.common[name].name+'}',item.common[name].value)
             }else {
               params[item.common[name].name] = item.common[name].value
             }
           }
         }
-        if (item.private != undefined) {
+        if (item.private !== undefined) {
           for (var name in item.private) {
             if (item.private[name].required) {
-              if (item.private[name].value == null || item.private[name].value == undefined) {
+              if (item.private[name].value == null || item.private[name].value === undefined) {
                 return this.checkForm(formName)
               }
             }
-            if(item.private[name].in == 'path'){
+            if(item.private[name].in === 'path'){
               path.replace('{'+item.private[name].name+'}',item.private[name].value)
             }else{
               params[item.private[name].name] = item.private[name].value
@@ -900,7 +900,7 @@
     font-weight: bold;
     line-height: 20px !important;
     position: relative;
-    padding-top: 5px;
+    padding-top: 5px !important;
     padding-bottom: 5px;
     height: 50px;
     padding-left: 80px !important;
