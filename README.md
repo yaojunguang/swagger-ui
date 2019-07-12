@@ -134,9 +134,16 @@ mvn install
 ```    
 
 ### maven依赖
-> TODO:还没上传到maven库中，稍后更新
+```$xslt
+<dependency>
+    <groupId>com.smarthito</groupId>
+    <artifactId>swagger-ui</artifactId>
+    <version>0.1</version>
+</dependency>
+```
 
 ## 访问
+> 默认页面 /swagger-ui.html
 ```
 http://<host>:<port>/swagger-ui.html
 ```
