@@ -3,9 +3,15 @@
 > 采用Vue+element-ui构建的swagger-ui
 
 ## 介绍
+> 在日常开发中，接口文档维护一直是项目管理中的头疼的问题，还有就是单元测试、接口测试等。swagger是我极具推崇的开发辅助工具，很好的解决了上诉的这些问题  
 
+> 在移动端开发过程中module生成也一直是费力而麻烦的事情(java对android可公共module包解决)，以前也做过一个用java class反射生成 swift module的小工具
+
+> 以前一直在使用springfox-swagger-ui作为swagger的ui展示，但是在实际使用过程中有诸多的不满意的地方，遂结合自己的实际需求，采用Vue+element-ui自行开发了这个项目  
+主要的功能特色如下：
+
+##### 0、概览
 ![Image text](snaps/snap-01.jpg)
-
 ##### 1、采用左右布局，便于充分利用屏幕空间
 ![Image text](snaps/snap-02.jpg)
 ##### 2、左侧方案按tag分组，便于集中管理
@@ -35,7 +41,7 @@
 public RespEntity<List<LovesCellEntity>> findByPage(
         @ApiParam(value = "页码")
         @RequestParam(name = "page") int page,
-        @ApiParam(value = "类型")
+        @ApiParam(value = "类型，0酒单，1文章，2视频")
         @RequestParam(name = "itemType") int itemType,
         BaseReq req) {
     RespEntity<List<LovesCellEntity>> respEntity = RespEntity.One(req);
@@ -134,3 +140,19 @@ mvn install
 ```
 http://<host>:<port>/swagger-ui.html
 ```
+
+
+## TODO:
+> 支持一键生成移动端调用代码
+```
+作为公开库，不同公司的调用模块不尽相同，大家可根据实际需求修改
+```
+
+> 支持枚举对象的导出  
+>> 实际开发中，状态变量的枚举一直是前后端沟通的问题，这个部分的导出需要一些开发约定，在未想好对开发过程无干扰的情况下暂时搁置（java 采用class反射可实现，但对开源项目安全性角度不想采用）。
+```
+ 
+```
+
+## 后语：
+> 该项目对于采用swagger注释完善度要求极高，这样可以使整个工具呈现完美状态，这个部分也有一些其它的自定义小工具，后续会再分享，如：数据库表生成module的groovy schema等
