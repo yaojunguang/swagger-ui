@@ -346,6 +346,7 @@
       },
       execute (formName, item) {
         let that = this
+        var path = item.path
         var params = {}
         if (item.common != undefined) {
           for (var name in item.common) {
@@ -354,7 +355,11 @@
                 return this.checkForm(formName)
               }
             }
-            params[item.common[name].name] = item.common[name].value
+            if(item.common[name].in == 'path'){
+              path.replace('{'+item.common[name].name+'}',item.common[name].value)
+            }else {
+              params[item.common[name].name] = item.common[name].value
+            }
           }
         }
         if (item.private != undefined) {
@@ -364,7 +369,11 @@
                 return this.checkForm(formName)
               }
             }
-            params[item.private[name].name] = item.private[name].value
+            if(item.private[name].in == 'path'){
+              path.replace('{'+item.private[name].name+'}',item.private[name].value)
+            }else{
+              params[item.private[name].name] = item.private[name].value
+            }
           }
         }
         item.executing = true
@@ -373,7 +382,7 @@
           xhrFields: {
             withCredentials: true
           },
-          url: item.path,
+          url: path,
           type: item.method,
           data: params,
           cache: false,
