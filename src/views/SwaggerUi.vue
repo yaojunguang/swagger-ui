@@ -355,9 +355,9 @@
                 return this.checkForm(formName)
               }
             }
-            if(item.common[name].in === 'path'){
-              path.replace('{'+item.common[name].name+'}',item.common[name].value)
-            }else {
+            if (item.common[name].in === 'path') {
+              path = path.replace('{' + item.common[name].name + '}', item.common[name].value)
+            } else {
               params[item.common[name].name] = item.common[name].value
             }
           }
@@ -369,9 +369,9 @@
                 return this.checkForm(formName)
               }
             }
-            if(item.private[name].in === 'path'){
-              path.replace('{'+item.private[name].name+'}',item.private[name].value)
-            }else{
+            if (item.private[name].in === 'path') {
+              path = path.replace('{' + item.private[name].name + '}', item.private[name].value)
+            } else {
               params[item.private[name].name] = item.private[name].value
             }
           }
