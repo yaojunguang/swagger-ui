@@ -240,6 +240,33 @@
                           </el-collapse-item>
                         </el-collapse>
                       </el-tab-pane>
+                      <el-tab-pane label="调用参考" name="execute" style="position: relative">
+                        <el-tabs v-model="item.exe" style="margin: 12px;">
+                          <el-tab-pane name="swift" label="swift" style="position: relative;">
+                            <div v-highlight>
+                            <pre style="margin: 0;">
+                              <code v-html="toHtml(item.swift)" style="border-radius: 6px;"
+                                    class="swift"></code>
+                            </pre>
+                            </div>
+                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.swift"
+                                       type="mini"
+                                       v-clipboard:success="onCopy">copy
+                            </el-button>
+                          </el-tab-pane>
+                          <el-tab-pane name="java" label="java" style="position: relative;">
+                            <div v-highlight>
+                            <pre style="margin: 0">
+                              <code v-html="item.java" style="border-radius: 6px;" class="java"></code>
+                            </pre>
+                            </div>
+                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.java"
+                                       type="mini"
+                                       v-clipboard:success="onCopy">copy
+                            </el-button>
+                          </el-tab-pane>
+                        </el-tabs>
+                      </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
                         <div v-highlight>
                             <pre style="margin: 0 12px;">
@@ -269,6 +296,7 @@
     name: 'SwaggerUi',
     data () {
       return {
+        canFetchFunc: false,//是否支持/swagger/method获取方法名
         local: true,
         groupName: null,
         resources: [{
@@ -307,6 +335,7 @@
               localStorage.setItem('menu-aside', event.pageX)
             }
           })
+          that.supportFetchFunc()
         })
       },
       groupName: function () {
@@ -339,6 +368,28 @@
 
     },
     methods: {
+      toHtml (str) {
+        return str.replaceAll('<', '&lt;')
+      },
+      supportFetchFunc () {
+        let that = this
+        $.ajax({
+          xhrFields: {
+            withCredentials: true
+          },
+          url: '/swagger/method',
+          type: 'get',
+          data: {url: '/', type: 'func'},
+          cache: false,
+          success: function (resp) {
+            that.canFetchFunc = resp.result
+            console.log('是否支持获取方法名:' + that.canFetchFunc)
+          },
+          error: function (error) {
+            console.log(error)
+          }
+        })
+      },
       updateForm (index) {
         this.items[index] = this.items[index]
         this.renderIndex += 1
@@ -696,7 +747,6 @@
           }
           func.parameters = null
         }
-
         func.rules = rules
 
         func.tab = 'params'
@@ -713,8 +763,112 @@
           func.open = [3]
         }
         func.open.push(2)
+
+        //处理调用示例
+        this.parseCallCode(func)
+
         this.items.push(this.form.tags[keys[0]].items[keys[1]])
         this.activeName = func.path + '-' + func.method
+        this.$forceUpdate()
+      },
+      parseCallCode (func) {
+        if (this.canFetchFunc) {
+          let that = this
+          $.ajax({
+            xhrFields: {
+              withCredentials: true
+            },
+            url: '/swagger/method',
+            type: 'get',
+            data: {url: func.path, type: func.method},
+            cache: false,
+            success: function (resp) {
+              if (resp.method) {
+                that.createExecuteCode(func, resp.method)
+              } else {
+                that.createExecuteCode(func, null)
+              }
+            },
+            error: function (error) {
+              that.createExecuteCode(func, null)
+              console.log(error)
+            }
+          })
+        } else {
+          this.createExecuteCode(func, null)
+        }
+      },
+      createExecuteCode (func, funcName) {
+
+        //swift 调用
+        var url = func.path
+        var comment = '    /// ' + func.summary + '\n'
+        if (func.description) {
+          comment += '    /// ' + func.description + '\n'
+        }
+        comment += '    ///\n    /// - Parameters:'
+
+        var funStr = '    class func ' + (funcName ? funcName : 'execute') + '('
+        var req = ''
+        if (func.private !== undefined) {
+          for (var m = 0; m !== func.private.length; ++m) {
+            comment += '\n    ///   - ' + func.private[m].name + ': ' + func.private[m].description
+            funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m].type, false)
+            if (func.private[m].required) {
+              funStr += '!,'
+            } else {
+              funStr += ','
+            }
+
+            if (func.private[m].in === 'path') {
+              url = url.replace('{' + func.private[m].name + '}', '\(' + func.private[m].name + ')')
+            } else {
+              req += '"' + func.private[m].name + '":' + func.private[m].name + ','
+            }
+          }
+        }
+
+        var entity = null
+        var ref = func.responses['200'].schema.originalRef
+        var index = ref.indexOf('«')
+        var arr = false
+        if (ref.startsWith('RespEntity«List«')) {
+          entity = ref.substring('RespEntity«List«'.length, ref.indexOf('»'))
+          arr = true
+        } else if (ref.startsWith('RespEntity«')) {
+          entity = ref.substring('RespEntity«'.length, ref.indexOf('»'))
+        } else if (index > 0) {
+          entity = ref.substring(0, index)
+        } else {
+          entity = ref
+        }
+
+        funStr += '/*imgData: [Data]?,*/_ callback:((' + entity + '?) -> Void)?){\n'
+
+        if (req !== '') {
+          req = req.substring(0, req.length - 1)
+          funStr += '        let req:[String:Any]=[' + req + ']\n'
+          funStr += '        request(url: "' + url + '", method: .' + func.method + ', params: req/*, imgData*/) { (code, message, jsonString) in\n'
+        } else {
+          funStr += '        request(url: "' + url + '", method: .' + func.method + ', params: nil/*, imgData*/) { (code, message, jsonString) in\n'
+        }
+
+        funStr += '            DispatchQueue.main.async(){\n' +
+          '                if code == 0,let json = jsonString {\n'
+        if (arr) {
+          funStr += '                    callback?(Mapper<' + entity + '>().mapArray(JSONString:json))\n'
+        } else {
+          funStr += '                    callback?(Mapper<' + entity + '>().map(JSONString:json))\n'
+        }
+        funStr += '                }else{\n' +
+          '                    callback?(nil)\n' +
+          '                }\n' +
+          '            }\n' +
+          '        }\n' +
+          '    }'
+        func.swift = comment + '\n' + funStr
+
+        func.exe = 'swift'
         this.$forceUpdate()
       },
       parseModule (module, modules) {
