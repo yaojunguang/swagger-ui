@@ -815,9 +815,9 @@
             comment += '\n    ///   - ' + func.private[m].name + ': ' + func.private[m].description
             funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m].type, false)
             if (func.private[m].required) {
-              funStr += '!,'
-            } else {
               funStr += ','
+            } else {
+              funStr += '!,'
             }
 
             if (func.private[m].in === 'path') {
