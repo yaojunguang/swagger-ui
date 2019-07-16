@@ -718,7 +718,7 @@
             let param = func.parameters[index]
             param.value = param.default
 
-            if (param.description.startsWith('【公共参数】')) {
+            if (param.name.indexOf('.') === -1 && param.description && param.description.startsWith('【公共参数】')) {
               if (func.common === undefined) {
                 func.common = []
               }
@@ -727,7 +727,17 @@
               if (func.private === undefined) {
                 func.private = []
               }
-              func.private.push(param)
+              if (param.name.indexOf('.') === -1) {
+                func.private.push(param)
+              } else if (param.name.indexOf('.year') > 0) {
+                param.name = param.name.substring(0, param.name.indexOf('.'))
+                param.type = 'string'
+                param.default = null
+                param.description = '时间字符串，默认格式yyyy-MM-dd hh:mm:ss'
+                param.required = undefined
+                param.value = null
+                func.private.push(param)
+              }
             }
             if (param.type === 'integer' || param.type === 'number') {
               param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
@@ -825,7 +835,7 @@
 
             if (func.private[m].in === 'path') {
               url = url.replace('{' + func.private[m].name + '}', '\\(' + func.private[m].name + ')')
-              javaUrl = url.replace('{' + func.private[m].name + '}', '\"+' + func.private[m].name + '+\"')
+              javaUrl = javaUrl.replace('{' + func.private[m].name + '}', '\"+' + func.private[m].name + '+\"')
             } else {
               javaParam += '    //' + func.private[m].description + '\n'
               javaParam += '    parameters.put("' + func.private[m].name + '", ' + func.private[m].name + ');\n'
