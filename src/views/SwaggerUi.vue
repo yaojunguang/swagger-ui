@@ -257,7 +257,7 @@
                           <el-tab-pane name="java" label="java" style="position: relative;">
                             <div v-highlight>
                             <pre style="margin: 0">
-                              <code v-html="item.java" style="border-radius: 6px;" class="java"></code>
+                              <code v-html="toHtml(item.java)" style="border-radius: 6px;" class="java"></code>
                             </pre>
                             </div>
                             <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.java"
@@ -802,6 +802,7 @@
 
         //swift 调用
         var url = func.path
+        var javaUrl = func.path
         var comment = '    /// ' + func.summary + '\n'
         if (func.description) {
           comment += '    /// ' + func.description + '\n'
@@ -810,7 +811,9 @@
 
         var funStr = '    class func ' + (funcName ? funcName : 'execute') + '('
         var req = ''
+        var javaParam = null
         if (func.private !== undefined) {
+          javaParam = '    Map<String, Object> parameters = new HashMap<>();\n'
           for (var m = 0; m !== func.private.length; ++m) {
             comment += '\n    ///   - ' + func.private[m].name + ': ' + func.private[m].description
             funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m].type, false)
@@ -822,7 +825,10 @@
 
             if (func.private[m].in === 'path') {
               url = url.replace('{' + func.private[m].name + '}', '\\(' + func.private[m].name + ')')
+              javaUrl = url.replace('{' + func.private[m].name + '}', '\"+' + func.private[m].name + '+\"')
             } else {
+              javaParam += '    //' + func.private[m].description + '\n'
+              javaParam += '    parameters.put("' + func.private[m].name + '", ' + func.private[m].name + ');\n'
               req += '"' + func.private[m].name + '":' + func.private[m].name + ','
             }
           }
@@ -843,6 +849,26 @@
           entity = ref
         }
 
+        var javaCode = '//' + func.summary + '\n'
+        if (func.description) {
+          javaCode += '// ' + func.description + '\n'
+        }
+        javaCode += 'if (NetWorkHelper.isNetworkAvailable(getApplicationContext())) {\n' + (javaParam ? javaParam : '')
+        javaCode += '    HttpUtil.getInstance().' + func.method + '(Url.getCollectionUrl(true) + "' + javaUrl + '", ' + (javaParam ? 'parameters' : 'null') + ', new HttpUtil.HttpCallback() {\n' +
+          '        @Override\n' +
+          '        public void onSuccess(String data) {\n' +
+          '            \n' +
+          '        }\n' +
+          '\n' +
+          '        @Override\n' +
+          '        public void onError(String msg) {\n' +
+          '            super.onError(msg);\n' +
+          '            errorResponse(msg);\n' +
+          '        }\n' +
+          '    }, this);\n' +
+          '}'
+
+        func.java = javaCode
         funStr += '/*imgData: [Data]?,*/_ callback:((' + entity + '?) -> Void)?){\n'
 
         if (req !== '') {
