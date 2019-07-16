@@ -821,7 +821,7 @@
             }
 
             if (func.private[m].in === 'path') {
-              url = url.replace('{' + func.private[m].name + '}', '\(' + func.private[m].name + ')')
+              url = url.replace('{' + func.private[m].name + '}', '\\(' + func.private[m].name + ')')
             } else {
               req += '"' + func.private[m].name + '":' + func.private[m].name + ','
             }
