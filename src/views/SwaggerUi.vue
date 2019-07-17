@@ -879,7 +879,11 @@
           '}'
 
         func.java = javaCode
-        funStr += '/*imgData: [Data]?,*/_ callback:((' + entity + '?) -> Void)?){\n'
+        if (arr) {
+          funStr += '/*imgData: [Data]?,*/_ callback:(([' + entity + ']?) -> Void)?){\n'
+        } else {
+          funStr += '/*imgData: [Data]?,*/_ callback:((' + entity + '?) -> Void)?){\n'
+        }
 
         if (req !== '') {
           req = req.substring(0, req.length - 1)

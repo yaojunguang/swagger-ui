@@ -32,18 +32,3 @@ new Vue({
   components: {App},
   template: '<App/>'
 })
-
-String.prototype.replaceAll = function (FindText, RepText) {
-  var regExp = new RegExp(FindText, 'g')
-  return this.replace(regExp, RepText)
-}
-
-Array.prototype.contains = function (obj) {
-  var i = this.length
-  while (i--) {
-    if (this[i] === obj) {
-      return true
-    }
-  }
-  return false
-}
