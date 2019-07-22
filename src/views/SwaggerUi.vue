@@ -919,6 +919,8 @@
         if (modules.filter(item => item.title === module.title).length === 0) {
           module.language = 'normal'
           modules.push(module)
+        } else {
+          return
         }
         for (var prop in module.properties) {
           if (module.properties[prop].$ref !== undefined) {
