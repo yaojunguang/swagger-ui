@@ -48,8 +48,8 @@
                    closable
                    @tab-remove="removeTab">
             <el-tab-pane v-for="(item,mainIndex) in items" :key="mainIndex" :name="item.path+'-'+item.method"
-                         :label="item.path" style="height: 100%">
-              <el-scrollbar style="height: 100%;">
+                         :label="item.path" style="height: 100%;overflow: auto;">
+              <el-scrollbar style="height: 100%">
                 <el-card class="box-card" v-bind:class="item.method">
                   <div slot="header" class="card-header">
                     <span class="method">{{item.method}}</span><span class="path" v-clipboard:copy="item.path"
@@ -533,13 +533,12 @@
       },
       toJava (module) {
         var code =
-          '\n\nimport javax.persistence.*;\n' +
-          'import lombok.Data;\n\n' +
+          '\n\nimport lombok.Data;\n\n' +
           'import java.util.List;\n' +
           '\n' +
           '/**\n' +
           ' * Created by @author yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          ' * Copyright © 2019 CHANGE. All rights reserved.\n' +
+          ' * Copyright © 2019 JO. All rights reserved.\n' +
           ' */\n' +
           '@Data\n' +
           'public class ' + module.title + ' {'
@@ -563,10 +562,10 @@
       toSwiftJson (module) {
         var code = '//\n' +
           '//  ' + module.title + '.swift\n' +
-          '//  Change\n' +
+          '//  JO\n' +
           '//\n' +
           '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2019 CHANGE. All rights reserved.\n' +
+          '//  Copyright © 2019 JO. All rights reserved.\n' +
           '//\n' +
           '\n' +
           'import UIKit\n' +
@@ -601,10 +600,10 @@
       toObjectMapper (module) {
         var code = '//\n' +
           '//  ' + module.title + '.swift\n' +
-          '//  Change\n' +
+          '//  JO\n' +
           '//\n' +
           '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2019 CHANGE. All rights reserved.\n' +
+          '//  Copyright © 2019 JO. All rights reserved.\n' +
           '//\n' +
           '\n' +
           'import UIKit\n' +
@@ -1162,7 +1161,7 @@
   .main-cards {
     padding: 0;
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .main-cards .get {
@@ -1286,6 +1285,10 @@
 
   .el-tabs--border-card > .el-tabs__content {
     padding: 0;
+  }
+
+  .el-tabs {
+    height: 100% !important;
   }
 
   code {
