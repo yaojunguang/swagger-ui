@@ -852,7 +852,7 @@
               funStr += '!,'
             }
 
-            retrofit += '         * @param ' + func.private[m].name + ' ' + func.private[m].description
+            retrofit += '         * @param ' + func.private[m].name + ' ' + func.private[m].description + '\n'
 
             if (func.private[m].in === 'path') {
               retrofitParam += '@Path("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type) + ' ' + func.private[m].name + ','
