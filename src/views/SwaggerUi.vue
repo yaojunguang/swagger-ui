@@ -265,6 +265,17 @@
                                        v-clipboard:success="onCopy">copy
                             </el-button>
                           </el-tab-pane>
+                          <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
+                            <div v-highlight>
+                            <pre style="margin: 0">
+                              <code v-html="toHtml(item.retrofit)" style="border-radius: 6px;" class="java"></code>
+                            </pre>
+                            </div>
+                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.retrofit"
+                                       type="mini"
+                                       v-clipboard:success="onCopy">copy
+                            </el-button>
+                          </el-tab-pane>
                         </el-tabs>
                       </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
@@ -821,6 +832,15 @@
         var funStr = '    class func ' + (funcName ? funcName : 'execute') + '('
         var req = ''
         var javaParam = null
+
+        var retrofitParam = ''
+        var retrofit = '        /**\n' +
+          '         * ' + func.summary + '\n'
+        if (func.description) {
+          retrofit += '         * ' + func.description + '\n'
+        }
+        retrofit += '         *\n'
+
         if (func.private !== undefined) {
           javaParam = '    Map<String, Object> parameters = new HashMap<>();\n'
           for (var m = 0; m !== func.private.length; ++m) {
@@ -832,16 +852,22 @@
               funStr += '!,'
             }
 
+            retrofit += '         * @param ' + func.private[m].name + ' ' + func.private[m].description
+
             if (func.private[m].in === 'path') {
+              retrofitParam += '@Path("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type) + ' ' + func.private[m].name + ','
               url = url.replace('{' + func.private[m].name + '}', '\\(' + func.private[m].name + ')')
               javaUrl = javaUrl.replace('{' + func.private[m].name + '}', '\"+' + func.private[m].name + '+\"')
             } else {
+              retrofitParam += '@Query("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type) + ' ' + func.private[m].name + ','
               javaParam += '    //' + func.private[m].description + '\n'
               javaParam += '    parameters.put("' + func.private[m].name + '", ' + func.private[m].name + ');\n'
               req += '"' + func.private[m].name + '":' + func.private[m].name + ','
             }
           }
         }
+
+        retrofit += '         * @return 结果\n         */\n'
 
         var entity = null
         var ref = func.responses['200'].schema.originalRef
@@ -878,6 +904,13 @@
           '}'
 
         func.java = javaCode
+
+        retrofit += '        @' + func.method.toUpperCase() + '("' + url + '")\n'
+        retrofit += '        Observable<' + (ref.replaceAll('«', '<').replaceAll('»', '>')) + '> ' + (funcName ? funcName : 'execute') + '('
+        if (retrofitParam !== '') {
+          retrofit += retrofitParam.substring(0, retrofitParam.length - 1)
+        }
+        retrofit += ');'
         if (arr) {
           funStr += '/*imgData: [Data]?,*/_ callback:(([' + entity + ']?) -> Void)?){\n'
         } else {
@@ -907,7 +940,9 @@
           '    }'
         func.swift = comment + '\n' + funStr
 
+        func.retrofit = retrofit
         func.exe = 'swift'
+
         this.$forceUpdate()
       },
       parseModule (module, modules) {
