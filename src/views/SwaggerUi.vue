@@ -562,9 +562,9 @@
           if (property.type === 'array' && property.items.originalRef !== undefined) {
             code += '    private List<' + property.items.originalRef + '> ' + name + ';'
           } else if (property.type === 'array') {
-            code += '    private List<' + this.toJavaType(property.type) + '> ' + name + ';'
+            code += '    private List<' + this.toJavaType(property.type, property.format) + '> ' + name + ';'
           } else {
-            code += '    private ' + this.toJavaType(property.type) + ' ' + name + ';'
+            code += '    private ' + this.toJavaType(property.type, property.format) + ' ' + name + ';'
           }
         }
         code += '\n}'
@@ -594,12 +594,12 @@
               '            return ' + property.items.originalRef + '(json: json)\n' +
               '       })'
           } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false) + ']!'
-            init += '\n       ' + name + ' = json["' + name + '"].arrayObject as! [' + this.toSwiftType(property.items.type, false) + ']'
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false, property.format) + ']!'
+            init += '\n       ' + name + ' = json["' + name + '"].arrayObject as! [' + this.toSwiftType(property.items.type, false, property.format) + ']'
             //
           } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true)
-            init += '\n       ' + name + ' = json["' + name + '"]' + this.toSwiftJsonValue(property.type)
+            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true, property.format)
+            init += '\n       ' + name + ' = json["' + name + '"]' + this.toSwiftJsonValue(property.type, property.format)
           }
         }
         init += '\n    }'
@@ -630,10 +630,10 @@
             code += '    var ' + name + ': [' + property.items.originalRef + ']!'
             init += '\n        ' + name + ' <- map["' + name + '"]'
           } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false) + ']!'
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false, property.format) + ']!'
             init += '\n        ' + name + ' <- map["' + name + '"]'
           } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true)
+            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true, property.format)
             init += '\n        ' + name + ' <- map["' + name + '"]'
           }
         }
@@ -645,9 +645,14 @@
 
         return code
       },
-      toSwiftJsonValue (type) {
+      toSwiftJsonValue (type, format) {
         switch (type) {
           case 'integer':
+            if (format !== undefined) {
+              if (format === 'int64') {
+                return '.int64Value'
+              }
+            }
             return '.intValue'
           case 'number':
             return '.doubleValue'
@@ -659,9 +664,14 @@
             return ''
         }
       },
-      toJavaType (type) {
+      toJavaType (type, format) {
         switch (type) {
           case 'integer':
+            if (format !== undefined) {
+              if (format === 'int64') {
+                return 'Long'
+              }
+            }
             return 'Integer'
           case 'number':
             return 'Double'
@@ -673,9 +683,14 @@
             return 'Object'
         }
       },
-      toSwiftType (type, init) {
+      toSwiftType (type, init, format) {
         switch (type) {
           case 'integer':
+            if (format !== undefined) {
+              if (format === 'int64') {
+                return 'Int64' + (init ? ' = 0' : '')
+              }
+            }
             return 'Int' + (init ? ' = 0' : '')
           case 'number':
             return 'Double' + (init ? ' = 0.0' : '')
@@ -845,7 +860,7 @@
           javaParam = '    Map<String, Object> parameters = new HashMap<>();\n'
           for (var m = 0; m !== func.private.length; ++m) {
             comment += '\n    ///   - ' + func.private[m].name + ': ' + func.private[m].description
-            funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m].type, false)
+            funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m].type, false, func.private[m].format)
             if (func.private[m].required) {
               funStr += ','
             } else {
@@ -855,11 +870,11 @@
             retrofit += '         * @param ' + func.private[m].name + ' ' + func.private[m].description + '\n'
 
             if (func.private[m].in === 'path') {
-              retrofitParam += '@Path("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type) + ' ' + func.private[m].name + ','
+              retrofitParam += '@Path("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type, func.private[m].format) + ' ' + func.private[m].name + ','
               url = url.replace('{' + func.private[m].name + '}', '\\(' + func.private[m].name + ')')
               javaUrl = javaUrl.replace('{' + func.private[m].name + '}', '\"+' + func.private[m].name + '+\"')
             } else {
-              retrofitParam += '@Query("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type) + ' ' + func.private[m].name + ','
+              retrofitParam += '@Query("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type, func.private[m].format) + ' ' + func.private[m].name + ','
               javaParam += '    //' + func.private[m].description + '\n'
               javaParam += '    parameters.put("' + func.private[m].name + '", ' + func.private[m].name + ');\n'
               req += '"' + func.private[m].name + '":' + func.private[m].name + ','
