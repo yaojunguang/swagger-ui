@@ -202,7 +202,7 @@
                                         List<{{property.items.originalRef}}>
                                       </template>
                                       <template v-else-if="property.type === 'array'">
-                                        List<{{property.items.type}}>
+                                        {{'List<'+listRecursive(property.items)+'>'}}
                                       </template>
                                       <template v-else>
                                         {{property.type}}
@@ -217,7 +217,7 @@
                                 <div v-else style="position: relative;margin-right: 12px;">
                                   <div v-highlight>
                             <pre style="margin-top: 0">
-                            <code v-html="entity.result" style="border-radius: 6px;"
+                            <code v-html="toHtml(entity.result)" style="border-radius: 6px;"
                                   :class="entity.language === 'java'?'java':'swift'"></code>
                               </pre>
                                   </div>
@@ -523,6 +523,17 @@
       onCopy () {
         this.$message.success('复制成功')
       },
+      listRecursive (ref) {
+        if (ref.type === 'array' && ref.items.originalRef !== undefined) {
+          return 'List<' + this.listRecursive(ref.items.originalRef) + '>'
+        } else if (ref.type === 'array') {
+          return ref.items.type
+        } else if (ref.type !== undefined) {
+          return ref.type
+        } else {
+          return ref
+        }
+      },
       findTagNode: function (tag, doc) {
         for (var name in doc.tags) {
           if (doc.tags[name].name === tag) {
@@ -562,9 +573,9 @@
           if (property.type === 'array' && property.items.originalRef !== undefined) {
             code += '    private List<' + property.items.originalRef + '> ' + name + ';'
           } else if (property.type === 'array') {
-            code += '    private List<' + this.toJavaType(property.type, property.format) + '> ' + name + ';'
+            code += '    private List<' + this.toJavaType(property.items, property.format) + '> ' + name + ';'
           } else {
-            code += '    private ' + this.toJavaType(property.type, property.format) + ' ' + name + ';'
+            code += '    private ' + this.toJavaType(property, property.format) + ' ' + name + ';'
           }
         }
         code += '\n}'
@@ -594,11 +605,11 @@
               '            return ' + property.items.originalRef + '(json: json)\n' +
               '       })'
           } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false, property.format) + ']!'
-            init += '\n       ' + name + ' = json["' + name + '"].arrayObject as! [' + this.toSwiftType(property.items.type, false, property.format) + ']'
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items, false, property.format) + ']!'
+            init += '\n       ' + name + ' = json["' + name + '"].arrayObject as! [' + this.toSwiftType(property.items, false, property.format) + ']'
             //
           } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true, property.format)
+            code += '    var ' + name + ': ' + this.toSwiftType(property, true, property.format)
             init += '\n       ' + name + ' = json["' + name + '"]' + this.toSwiftJsonValue(property.type, property.format)
           }
         }
@@ -630,10 +641,10 @@
             code += '    var ' + name + ': [' + property.items.originalRef + ']!'
             init += '\n        ' + name + ' <- map["' + name + '"]'
           } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items.type, false, property.format) + ']!'
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items, false, property.format) + ']!'
             init += '\n        ' + name + ' <- map["' + name + '"]'
           } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property.type, true, property.format)
+            code += '    var ' + name + ': ' + this.toSwiftType(property, true, property.format)
             init += '\n        ' + name + ' <- map["' + name + '"]'
           }
         }
@@ -664,8 +675,11 @@
             return ''
         }
       },
-      toJavaType (type, format) {
-        switch (type) {
+      toJavaType (property, format) {
+        if (property.type === undefined) {
+          return property
+        }
+        switch (property.type) {
           case 'integer':
             if (format !== undefined) {
               if (format === 'int64') {
@@ -679,12 +693,17 @@
             return 'String'
           case 'boolean':
             return 'Boolean'
+          case 'array':
+            return 'List<' + this.toJavaType(property.items.originalRef, property.items.format) + '>'
           default:
-            return 'Object'
+            return property.type
         }
       },
-      toSwiftType (type, init, format) {
-        switch (type) {
+      toSwiftType (property, init, format) {
+        if (property.type === undefined) {
+          return property
+        }
+        switch (property.type) {
           case 'integer':
             if (format !== undefined) {
               if (format === 'int64') {
@@ -698,8 +717,10 @@
             return 'String' + (init ? ' = ""' : '')
           case 'boolean':
             return 'Bool' + (init ? ' = false' : '')
+          case 'array':
+            return '[' + this.toSwiftType(property.items.originalRef, false, property.items.format) + ']'
           default:
-            return 'JSON!'
+            return property.type + '!'
         }
       },
 
@@ -860,7 +881,7 @@
           javaParam = '    Map<String, Object> parameters = new HashMap<>();\n'
           for (var m = 0; m !== func.private.length; ++m) {
             comment += '\n    ///   - ' + func.private[m].name + ': ' + func.private[m].description
-            funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m].type, false, func.private[m].format)
+            funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m], false, func.private[m].format)
             if (func.private[m].required) {
               funStr += ','
             } else {
@@ -988,6 +1009,11 @@
             }
             if (module.properties[prop].items.originalRef !== undefined) {
               this.parseModule(this.form.definitions[module.properties[prop].items.originalRef], modules)
+            } else if (module.properties[prop].items.type === 'array') {
+              if (module.properties[prop].items.items.$ref !== undefined) {
+                module.properties[prop].items.items.originalRef = module.properties[prop].items.items.$ref.substring('#/definitions/'.length)
+              }
+              this.parseModule(this.form.definitions[module.properties[prop].items.items.originalRef], modules)
             }
           }
         }
