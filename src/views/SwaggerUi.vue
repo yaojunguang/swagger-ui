@@ -218,12 +218,12 @@
                                   <div v-highlight>
                             <pre style="margin-top: 0">
                             <code v-html="toHtml(entity.result)" style="border-radius: 6px;"
-                                  :class="entity.language === 'java'?'java':'swift'"></code>
+                                  :class="entity.language === 'Java'?'Java':'swift'"></code>
                               </pre>
                                   </div>
                                 </div>
                                 <el-button v-if="entity.language !== 'normal'"
-                                           style="position: absolute;right: 330px;top: 23px;"
+                                           style="position: absolute;right: 380px;top: 23px;"
                                            v-clipboard:copy="entity.result"
                                            v-clipboard:success="onCopy" size="mini" icon="el-icon-document-copy">copy
                                 </el-button>
@@ -234,6 +234,7 @@
                                   <el-radio-button label="SwiftJson">SwiftJson</el-radio-button>
                                   <el-radio-button label="ObjectMapper">ObjectMapper</el-radio-button>
                                   <el-radio-button label="Java">Java</el-radio-button>
+                                  <el-radio-button label="Json">Json</el-radio-button>
                                 </el-radio-group>
                               </el-tab-pane>
                             </el-tabs>
@@ -550,8 +551,26 @@
           entity.result = this.toObjectMapper(entity)
         } else if (entity.language === 'Java') {
           entity.result = this.toJava(entity)
+        } else if (entity.language === 'Json') {
+          entity.result = this.toJson(entity)
         }
         this.$forceUpdate()
+      },
+      toJson (module) {
+        var code = '{\n'
+        for (let name in module.properties) {
+          let property = module.properties[name]
+          code += '    //' + property.description + '\n'
+          if (property.type === 'array' && property.items.originalRef !== undefined) {
+            code += '    ' + name + ':[' + this.toJsonType(property.items.originalRef) + '],\n'
+          } else if (property.type === 'array') {
+            code += '    ' + name + ':[' + this.toJsonType(property.items) + '],\n'
+          } else {
+            code += '    ' + name + ':' + this.toJsonType(property) + ',\n'
+          }
+        }
+        code += '\n}'
+        return code
       },
       toJava (module) {
         var code =
@@ -697,6 +716,25 @@
             return 'List<' + this.toJavaType(property.items.originalRef, property.items.format) + '>'
           default:
             return property.type
+        }
+      },
+      toJsonType (property) {
+        if (property.type === undefined) {
+          return property
+        }
+        switch (property.type) {
+          case 'integer':
+            return 0
+          case 'number':
+            return 0
+          case 'string':
+            return '\'\''
+          case 'boolean':
+            return 'false'
+          case 'array':
+            return '[]'
+          default:
+            return null
         }
       },
       toSwiftType (property, init, format) {
