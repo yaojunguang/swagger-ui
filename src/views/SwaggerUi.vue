@@ -280,6 +280,7 @@
                         </el-tabs>
                       </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
+                        <div>调用耗时:{{item.executeTime}}</div>
                         <div v-highlight>
                             <pre style="margin: 0 12px;">
                               <code v-html="item.result" style="border-radius: 6px;" class="json"></code>
@@ -441,6 +442,7 @@
         }
         item.executing = true
         that.$forceUpdate()
+        let startAt = new Date()
         $.ajax({
           xhrFields: {
             withCredentials: true
@@ -450,6 +452,7 @@
           data: params,
           cache: false,
           success: function (resp) {
+            item.executeTime = new Date() - startAt + 'ms'
             item.result = that.formatJson(JSON.stringify(resp))
             item.open.push(3)
             that.$message.success('执行成功')
@@ -979,7 +982,7 @@
 
         func.java = javaCode
 
-        retrofit += '        @' + func.method.toUpperCase() + '("' + url + '")\n'
+        retrofit += '        @' + func.method.toUpperCase() + '("' + func.path + '")\n'
         retrofit += '        Observable<' + (ref.replaceAll('«', '<').replaceAll('»', '>')) + '> ' + (funcName ? funcName : 'execute') + '('
         if (retrofitParam !== '') {
           retrofit += retrofitParam.substring(0, retrofitParam.length - 1)
