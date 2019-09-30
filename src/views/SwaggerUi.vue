@@ -550,7 +550,7 @@
           }
         }
         this.form = data
-        this.newTags = this.form.tags
+        this.keywordChanged()
         this.$forceUpdate()
       },
       onCopy () {
