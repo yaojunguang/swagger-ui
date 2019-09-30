@@ -4,7 +4,7 @@
 
   <groupId>com.smarthito</groupId>
   <artifactId>swagger-ui</artifactId>
-  <version>1.6</version>
+  <version>1.7</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <url>https://github.com/yaojunguang/swagger-ui</url>

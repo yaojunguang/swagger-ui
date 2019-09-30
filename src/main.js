@@ -32,3 +32,9 @@ new Vue({
   components: {App},
   template: '<App/>'
 })
+
+//扩展string方法
+String.prototype.replaceAll = function (FindText, RepText) {
+  let regExp = new RegExp(FindText, 'g')
+  return this.replace(regExp, RepText)
+}

@@ -17,6 +17,9 @@
           <el-col :span="6" v-if="form">
             {{form.info.title}}<span class="version">{{form.info.version}}</span>
           </el-col>
+          <el-col :span="16">
+            <el-input v-model="keyword" @change="keywordChanged" placeholder="输入路径，名称以搜索" clearable></el-input>
+          </el-col>
         </el-row>
       </el-header>
       <el-container style="height: calc(100% - 50px);overflow: hidden;">
@@ -24,7 +27,7 @@
           <el-scrollbar style="height: 100%;" v-if="form">
             <el-menu class="el-menu-vertical-demo" style="text-align: left;"
                      @select="handleOpenItem">
-              <el-submenu v-for="(tag,index) in form.tags" :index="index+''" :key="index">
+              <el-submenu v-for="(tag,index) in newTags" :index="index+''" :key="index">
                 <template slot="title">
                   <div class="title" slot="title">{{tag.name}}</div>
                   <div class="describes">{{tag.description}}</div>
@@ -323,9 +326,10 @@
         activeName: '',
         renderIndex: 1,
         loading: false,
+        keyword: '',
         form: null,
         items: [],
-
+        newTags: [],
       }
     },
     watch: {
@@ -381,6 +385,25 @@
 
     },
     methods: {
+      keywordChanged () {
+        let that = this
+        if (this.keyword !== '' || this.keyword !== null) {
+          var newTags = []
+          for (var index = 0; index !== this.form.tags.length; ++index) {
+            var tag = this.form.tags[index]
+            let items = tag.items.filter(function (func) {
+              return func.summary.includes(that.keyword) || func.path.includes(that.keyword)
+            })
+            if (items.length > 0) {
+              tag.items = items
+              newTags.push(tag)
+            }
+          }
+          that.newTags = newTags
+        } else {
+          this.newTags = this.form.tags
+        }
+      },
       toHtml (str) {
         return str.replaceAll('<', '&lt;')
       },
@@ -522,6 +545,7 @@
           }
         }
         this.form = data
+        this.newTags = this.form.tags
         this.$forceUpdate()
       },
       onCopy () {
