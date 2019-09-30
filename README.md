@@ -122,14 +122,14 @@ mvn install
 ```    
 
 ### jar复制安装
-> 复制生成的swagger-ui-1.7.jar 到你的工程下，添加依赖即可
+> 复制生成的swagger-ui-1.8.jar 到你的工程下，添加依赖即可
 ```
 <dependency>
     <groupId>com.smarthito</groupId>
     <artifactId>swagger-ui</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
     <scope>system</scope>
-    <systemPath>${pom.basedir}/src/main/libs/swagger-ui-1.7.jar</systemPath>
+    <systemPath>${pom.basedir}/src/main/libs/swagger-ui-1.8.jar</systemPath>
 </dependency>
 ```    
 
@@ -138,7 +138,7 @@ mvn install
 <dependency>
     <groupId>com.smarthito</groupId>
     <artifactId>swagger-ui</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
 </dependency>
 ```
 

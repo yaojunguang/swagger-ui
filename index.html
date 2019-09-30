@@ -6,12 +6,14 @@
   <title>swagger-ui</title>
   <script>
     String.prototype.replaceAll = function (FindText, RepText) {
-      var regExp = new RegExp(FindText, 'g')
-      return this.replace(regExp, RepText)
+      if (this != null) {
+        let regExp = new RegExp(FindText, 'g')
+        return this.replace(regExp, RepText)
+      }
+      return null
     }
-
     Array.prototype.contains = function (obj) {
-      var i = this.length
+      let i = this.length
       while (i--) {
         if (this[i] === obj) {
           return true
@@ -23,6 +25,6 @@
 </head>
 <body>
 <div id="app"></div>
-<script type="text/javascript" src="//h5-cdn.change.so/manage/js/jquery-3.3.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 </body>
 </html>
