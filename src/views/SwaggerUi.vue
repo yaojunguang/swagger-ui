@@ -379,6 +379,10 @@
 
       var size = localStorage.getItem('menu-aside')
       this.groupName = localStorage.getItem('groupName')
+      this.keyword = localStorage.getItem('keyword')
+      if (this.keyword === null || this.keyword === undefined) {
+        this.keyword = ''
+      }
       if (size != null) {
         this.leftSize = size
       }
@@ -403,6 +407,7 @@
         } else {
           this.newTags = this.form.tags
         }
+        localStorage.setItem('keyword', this.keyword)
       },
       toHtml (str) {
         return str.replaceAll('<', '&lt;')
