@@ -377,7 +377,7 @@
         })
       }
 
-      var size = localStorage.getItem('menu-aside')
+      let size = localStorage.getItem('menu-aside')
       this.groupName = localStorage.getItem('groupName')
       this.keyword = localStorage.getItem('keyword')
       if (this.keyword === null || this.keyword === undefined) {
@@ -392,9 +392,9 @@
       keywordChanged () {
         let that = this
         if (this.keyword !== '' || this.keyword !== null) {
-          var newTags = []
-          for (var index = 0; index !== this.form.tags.length; ++index) {
-            var tag = this.form.tags[index]
+          let newTags = []
+          for (let index = 0; index !== this.form.tags.length; ++index) {
+            let tag = this.form.tags[index]
             let items = tag.items.filter(function (func) {
               return func.summary.includes(that.keyword) || func.path.includes(that.keyword)
             })
@@ -438,35 +438,37 @@
       },
       execute (formName, item) {
         let that = this
-        var path = item.path
-        var params = {}
+        let path = item.path
+        let params = {}
+        //处理公共参数
         if (item.common !== undefined) {
-          for (var name in item.common) {
-            if (item.common[name].required) {
-              if (item.common[name].value == null || item.common[name].value === undefined) {
+          item.common.forEach(function (entity) {
+            if (entity.required) {
+              if (entity.value == null) {
                 return this.checkForm(formName)
               }
             }
-            if (item.common[name].in === 'path') {
-              path = path.replace('{' + item.common[name].name + '}', item.common[name].value)
+            if (entity.in === 'path') {
+              path = path.replace('{' + entity.name + '}', entity.value)
             } else {
-              params[item.common[name].name] = item.common[name].value
+              params[entity.name] = entity.value
             }
-          }
+          })
         }
+        //处理私有参数
         if (item.private !== undefined) {
-          for (var name in item.private) {
-            if (item.private[name].required) {
-              if (item.private[name].value == null || item.private[name].value === undefined) {
+          item.private.forEach(function (entity) {
+            if (entity.required) {
+              if (entity.value == null) {
                 return this.checkForm(formName)
               }
             }
-            if (item.private[name].in === 'path') {
-              path = path.replace('{' + item.private[name].name + '}', item.private[name].value)
+            if (entity.in === 'path') {
+              path = path.replace('{' + entity.name + '}', entity.value)
             } else {
-              params[item.private[name].name] = item.private[name].value
+              params[entity.name] = entity.value
             }
-          }
+          })
         }
         item.executing = true
         that.$forceUpdate()
@@ -533,12 +535,12 @@
       },
       parseDocs (data) {
         console.log(JSON.stringify(data))
-        for (var path in data.paths) {
-          var node = data.paths[path]
+        for (let path in data.paths) {
+          let node = data.paths[path]
           for (let method in node) {
-            var func = node[method]
-            var tag = func.tags[0]
-            var tagNode = this.findTagNode(tag, data)
+            let func = node[method]
+            let tag = func.tags[0]
+            let tagNode = this.findTagNode(tag, data)
             if (tagNode != null) {
               if (tagNode.items === undefined) {
                 tagNode.items = []
@@ -568,9 +570,10 @@
         }
       },
       findTagNode: function (tag, doc) {
-        for (var name in doc.tags) {
-          if (doc.tags[name].name === tag) {
-            return doc.tags[name]
+        for (let index = 0; index !== doc.tags.length; ++index) {
+          let entity = doc.tags[index]
+          if (entity.name === tag) {
+            return entity
           }
         }
         return null
@@ -633,7 +636,7 @@
         return code
       },
       toSwiftJson (module) {
-        var code = '//\n' +
+        let code = '//\n' +
           '//  ' + module.title + '.swift\n' +
           '//  JO\n' +
           '//\n' +
@@ -646,7 +649,7 @@
           '\n' +
           'class ' + module.title + ' {'
 
-        var init = '\n\n    init(json: JSON) {'
+        let init = '\n\n    init(json: JSON) {'
         for (let name in module.properties) {
           let property = module.properties[name]
           code += '\n    //' + property.description + '\n'
@@ -671,7 +674,7 @@
         return code
       },
       toObjectMapper (module) {
-        var code = '//\n' +
+        let code = '//\n' +
           '//  ' + module.title + '.swift\n' +
           '//  JO\n' +
           '//\n' +
@@ -684,7 +687,7 @@
           '\n' +
           'class ' + module.title + ' {'
 
-        var init = '\n    func mapping(map: Map) {'
+        let init = '\n    func mapping(map: Map) {'
         for (let name in module.properties) {
           let property = module.properties[name]
           code += '\n    //' + property.description + '\n'
@@ -728,7 +731,7 @@
       },
       toJavaType (property, format) {
         if (property.type === undefined) {
-          return property
+          return this.toJavaBaseType(property, format)
         }
         switch (property.type) {
           case 'integer':
@@ -748,6 +751,25 @@
             return 'List<' + this.toJavaType(property.items.originalRef, property.items.format) + '>'
           default:
             return property.type
+        }
+      },
+      toJavaBaseType (property, format) {
+        switch (property) {
+          case 'integer':
+            if (format !== undefined) {
+              if (format === 'int64') {
+                return 'Long'
+              }
+            }
+            return 'Integer'
+          case 'number':
+            return 'Double'
+          case 'string':
+            return 'String'
+          case 'boolean':
+            return 'Boolean'
+          default:
+            return property
         }
       },
       toJsonType (property) {
@@ -927,20 +949,20 @@
       createExecuteCode (func, funcName) {
 
         //swift 调用
-        var url = func.path
-        var javaUrl = func.path
-        var comment = '    /// ' + func.summary + '\n'
+        let url = func.path
+        let javaUrl = func.path
+        let comment = '    /// ' + func.summary + '\n'
         if (func.description) {
           comment += '    /// ' + func.description + '\n'
         }
         comment += '    ///\n    /// - Parameters:'
 
-        var funStr = '    class func ' + (funcName ? funcName : 'execute') + '('
-        var req = ''
-        var javaParam = null
+        let funStr = '    class func ' + (funcName ? funcName : 'execute') + '('
+        let req = ''
+        let javaParam = null
 
-        var retrofitParam = ''
-        var retrofit = '        /**\n' +
+        let retrofitParam = ''
+        let retrofit = '        /**\n' +
           '         * ' + func.summary + '\n'
         if (func.description) {
           retrofit += '         * ' + func.description + '\n'
@@ -949,7 +971,7 @@
 
         if (func.private !== undefined) {
           javaParam = '    Map<String, Object> parameters = new HashMap<>();\n'
-          for (var m = 0; m !== func.private.length; ++m) {
+          for (let m = 0; m !== func.private.length; ++m) {
             comment += '\n    ///   - ' + func.private[m].name + ': ' + func.private[m].description
             funStr += '_ ' + func.private[m].name + ':' + this.toSwiftType(func.private[m], false, func.private[m].format)
             if (func.private[m].required) {
@@ -975,10 +997,10 @@
 
         retrofit += '         * @return 结果\n         */\n'
 
-        var entity = null
-        var ref = func.responses['200'].schema.originalRef
-        var index = ref.indexOf('«')
-        var arr = false
+        let entity = null
+        let ref = func.responses['200'].schema.originalRef
+        let index = ref.indexOf('«')
+        let arr = false
         if (ref.startsWith('RespEntity«List«')) {
           entity = ref.substring('RespEntity«List«'.length, ref.indexOf('»'))
           arr = true
@@ -990,7 +1012,7 @@
           entity = ref
         }
 
-        var javaCode = '//' + func.summary + '\n'
+        let javaCode = '//' + func.summary + '\n'
         if (func.description) {
           javaCode += '// ' + func.description + '\n'
         }
@@ -1062,7 +1084,7 @@
         } else {
           return
         }
-        for (var prop in module.properties) {
+        for (let prop in module.properties) {
           if (module.properties[prop].$ref !== undefined) {
             module.properties[prop].originalRef = module.properties[prop].$ref.substring('#/definitions/'.length)
           }
@@ -1089,7 +1111,7 @@
         }
       },
       formatDate (date) {
-        var fmt = 'yyyy-MM-dd hh:mm:ss'
+        let fmt = 'yyyy-MM-dd hh:mm:ss'
         if (/(y+)/.test(fmt)) {
           fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
         }
