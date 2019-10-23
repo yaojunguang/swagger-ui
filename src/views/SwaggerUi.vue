@@ -722,6 +722,9 @@
           case 'number':
             return '.doubleValue'
           case 'string':
+            if (format === 'date-time') {
+              return '.int64Value'
+            }
             return '.stringValue'
           case 'boolean':
             return '.boolValue'
@@ -744,6 +747,9 @@
           case 'number':
             return 'Double'
           case 'string':
+            if (format === 'date-time') {
+              return 'DateTime'
+            }
             return 'String'
           case 'boolean':
             return 'Boolean'
@@ -765,6 +771,9 @@
           case 'number':
             return 'Double'
           case 'string':
+            if (format === 'date-time') {
+              return 'DateTime'
+            }
             return 'String'
           case 'boolean':
             return 'Boolean'
@@ -782,6 +791,9 @@
           case 'number':
             return 0
           case 'string':
+            if (format === 'date-time') {
+              return '0'
+            }
             return '\'\''
           case 'boolean':
             return 'false'
@@ -806,6 +818,9 @@
           case 'number':
             return 'Double' + (init ? ' = 0.0' : '')
           case 'string':
+            if (format === 'date-time') {
+              return 'Int64' + (init ? ' = 0' : '')
+            }
             return 'String' + (init ? ' = ""' : '')
           case 'boolean':
             return 'Bool' + (init ? ' = false' : '')
