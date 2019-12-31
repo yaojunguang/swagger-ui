@@ -18,7 +18,7 @@
             {{form.info.title}}<span class="version">{{form.info.version}}</span>
           </el-col>
           <el-col :span="16">
-            <el-input v-model="keyword" @change="keywordChanged" placeholder="输入路径，名称以搜索" clearable></el-input>
+            <el-input v-model="keyword" @change="keywordChanged" placeholder="输入路径，名称以搜索" clearable/>
           </el-col>
         </el-row>
       </el-header>
@@ -221,7 +221,7 @@
                                   <div v-highlight>
                             <pre style="margin-top: 0">
                             <code v-html="toHtml(entity.result)" style="border-radius: 6px;"
-                                  :class="entity.language === 'Java'?'Java':'swift'"></code>
+                                  :class="entity.language === 'Java'?'Java':'swift'"/>
                               </pre>
                                   </div>
                                 </div>
@@ -250,7 +250,7 @@
                             <div v-highlight>
                             <pre style="margin: 0;">
                               <code v-html="toHtml(item.swift)" style="border-radius: 6px;"
-                                    class="swift"></code>
+                                    class="swift"/>
                             </pre>
                             </div>
                             <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.swift"
@@ -261,7 +261,7 @@
                           <el-tab-pane name="java" label="java" style="position: relative;">
                             <div v-highlight>
                             <pre style="margin: 0">
-                              <code v-html="toHtml(item.java)" style="border-radius: 6px;" class="java"></code>
+                              <code v-html="toHtml(item.java)" style="border-radius: 6px;" class="java"/>
                             </pre>
                             </div>
                             <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.java"
@@ -272,7 +272,7 @@
                           <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
                             <div v-highlight>
                             <pre style="margin: 0">
-                              <code v-html="toHtml(item.retrofit)" style="border-radius: 6px;" class="java"></code>
+                              <code v-html="toHtml(item.retrofit)" style="border-radius: 6px;" class="java"/>
                             </pre>
                             </div>
                             <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.retrofit"
@@ -286,7 +286,7 @@
                         <div>调用耗时:{{item.executeTime}}</div>
                         <div v-highlight>
                             <pre style="margin: 0 12px;">
-                              <code v-html="item.result" style="border-radius: 6px;" class="json"></code>
+                              <code v-html="item.result" style="border-radius: 6px;" class="json"/>
                             </pre>
                         </div>
                         <el-button style="position: absolute;right: 12px;top: 16px;" v-clipboard:copy="item.result"
@@ -313,7 +313,6 @@
     data () {
       return {
         canFetchFunc: false,//是否支持/swagger/method获取方法名
-        local: true,
         groupName: null,
         resources: [{
           name: 'v4',
@@ -531,7 +530,6 @@
             })
           }
         }
-
       },
       parseDocs (data) {
         console.log(JSON.stringify(data))
@@ -857,7 +855,7 @@
       },
       handleOpenItem (key, keyPath) {
         let keys = key.split('-')
-        var func = this.form.tags[keys[0]].items[keys[1]]
+        var func = this.newTags[keys[0]].items[keys[1]]
 
         for (var name in this.items) {
           if (this.items[name].path === func.path && this.items[name].method === func.method) {
@@ -930,7 +928,7 @@
         //处理调用示例
         this.parseCallCode(func)
 
-        this.items.push(this.form.tags[keys[0]].items[keys[1]])
+        this.items.push(func)
         this.activeName = func.path + '-' + func.method
         this.$forceUpdate()
       },
