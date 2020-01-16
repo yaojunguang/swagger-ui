@@ -321,7 +321,7 @@
           location: '/v2/api-docs?group=v4',
         }],
         leftSize: 400,
-        moving: false,
+        moveTarget: null,
         activeName: '',
         renderIndex: 1,
         loading: false,
@@ -335,19 +335,26 @@
       form: function () {
         let that = this
         this.$nextTick(function () {
-          $('#resizeBar').mousedown(function (event) {
-            that.moving = true
-            console.log(that.moving + event.pageX)
+          $('#resizeBar').mousedown(function (e) {
+            let event = window.event || e
+            let obj = (event.target) ? event.target : event.srcElement
+            if (obj.setCapture) {
+              obj.setCapture()
+            } else if (window.captureEvents) {
+              window.captureEvents(Event.MOUSEMOVE | Event.MOUSEUP)
+            }
+            that.moveTarget = obj
           })
-          $(document).mousemove(function (event) {
-            if (that.moving) {
+          $(document).mousemove(function (e) {
+            if (that.moveTarget != null) {
+              let event = window.event || e
               that.leftSize = event.pageX
-              console.log(that.leftSize)
               $('#menu-aside').width(that.leftSize)
             }
-          }).mouseup(function (event) {
-            if (that.moving) {
-              that.moving = false
+          }).mouseup(function (e) {
+            if (that.moveTarget != null) {
+              let event = window.event || e
+              that.moveTarget = null
               localStorage.setItem('menu-aside', event.pageX)
             }
           })
