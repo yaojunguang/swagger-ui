@@ -498,8 +498,10 @@
           complete: function () {
             item.executing = false
           },
-          error: function (error) {
-            alert(error)
+          error: function (jqXHR, textStatus, errorThrown) {
+            that.$alert(jqXHR.responseText, jqXHR.statusText, {
+              confirmButtonText: '确定'
+            })
             console.log(error)
           }
         })
