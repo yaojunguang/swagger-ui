@@ -310,7 +310,7 @@
 
   export default {
     name: 'SwaggerUi',
-    data () {
+    data() {
       return {
         canFetchFunc: false,//是否支持/swagger/method获取方法名
         groupName: null,
@@ -365,7 +365,7 @@
         localStorage.setItem('groupName', this.groupName)
       }
     },
-    mounted () {
+    mounted() {
       if (process.env.ENV_CONFIG === 'test') {
         if (this.groupName == null) {
           this.groupName = this.resources[0].name
@@ -395,7 +395,7 @@
 
     },
     methods: {
-      keywordChanged () {
+      keywordChanged() {
         let that = this
         if (this.keyword !== '' || this.keyword !== null) {
           let newTags = []
@@ -415,10 +415,10 @@
         }
         localStorage.setItem('keyword', this.keyword)
       },
-      toHtml (str) {
+      toHtml(str) {
         return str.replaceAll('<', '&lt;')
       },
-      supportFetchFunc () {
+      supportFetchFunc() {
         let that = this
         $.ajax({
           xhrFields: {
@@ -437,12 +437,12 @@
           }
         })
       },
-      updateForm (index) {
+      updateForm(index) {
         this.items[index] = this.items[index]
         this.renderIndex += 1
         this.$forceUpdate()
       },
-      execute (formName, item) {
+      execute(formName, item) {
         let that = this
         let path = item.path
         let params = {}
@@ -507,7 +507,7 @@
         })
 
       },
-      checkForm (formName) {
+      checkForm(formName) {
         this.$nextTick(function () {
           this.$refs[formName][0].validate((valid) => {
             if (valid) {
@@ -519,7 +519,7 @@
           })
         })
       },
-      groupChanged () {
+      groupChanged() {
         let that = this
         console.log('groupChanged' + that.groupName)
         if (process.env.ENV_CONFIG === 'test') {
@@ -540,7 +540,7 @@
           }
         }
       },
-      parseDocs (data) {
+      parseDocs(data) {
         console.log(JSON.stringify(data))
         for (let path in data.paths) {
           let node = data.paths[path]
@@ -562,10 +562,10 @@
         this.keywordChanged()
         this.$forceUpdate()
       },
-      onCopy () {
+      onCopy() {
         this.$message.success('复制成功')
       },
-      listRecursive (ref) {
+      listRecursive(ref) {
         if (ref.type === 'array' && ref.items.originalRef !== undefined) {
           return 'List<' + this.listRecursive(ref.items.originalRef) + '>'
         } else if (ref.type === 'array') {
@@ -586,7 +586,7 @@
         return null
       },
 
-      changeLanguage (entity) {
+      changeLanguage(entity) {
         if (entity.language === 'SwiftJson') {
           entity.result = this.toSwiftJson(entity)
         } else if (entity.language === 'ObjectMapper') {
@@ -598,7 +598,7 @@
         }
         this.$forceUpdate()
       },
-      toJson (module) {
+      toJson(module) {
         var code = '{\n'
         for (let name in module.properties) {
           let property = module.properties[name]
@@ -614,7 +614,7 @@
         code += '\n}'
         return code
       },
-      toJava (module) {
+      toJava(module) {
         var code =
           '\n\nimport lombok.Data;\n\n' +
           'import java.util.List;\n' +
@@ -642,7 +642,7 @@
         code += '\n}'
         return code
       },
-      toSwiftJson (module) {
+      toSwiftJson(module) {
         let code = '//\n' +
           '//  ' + module.title + '.swift\n' +
           '//  JO\n' +
@@ -680,7 +680,7 @@
 
         return code
       },
-      toObjectMapper (module) {
+      toObjectMapper(module) {
         let code = '//\n' +
           '//  ' + module.title + '.swift\n' +
           '//  JO\n' +
@@ -717,7 +717,7 @@
 
         return code
       },
-      toSwiftJsonValue (type, format) {
+      toSwiftJsonValue(type, format) {
         switch (type) {
           case 'integer':
             if (format !== undefined) {
@@ -739,7 +739,7 @@
             return ''
         }
       },
-      toJavaType (property, format) {
+      toJavaType(property, format) {
         if (property.type === undefined) {
           return this.toJavaBaseType(property, format)
         }
@@ -766,7 +766,7 @@
             return property.type
         }
       },
-      toJavaBaseType (property, format) {
+      toJavaBaseType(property, format) {
         switch (property) {
           case 'integer':
             if (format !== undefined) {
@@ -788,7 +788,7 @@
             return property
         }
       },
-      toJsonType (property) {
+      toJsonType(property) {
         if (property.type === undefined) {
           return property
         }
@@ -810,7 +810,7 @@
             return null
         }
       },
-      toSwiftType (property, init, format) {
+      toSwiftType(property, init, format) {
         if (property.type === undefined) {
           return property
         }
@@ -838,7 +838,7 @@
         }
       },
 
-      tryIt (item, op) {
+      tryIt(item, op) {
         item.try = op
         if (op && !item.open.contains(1)) {
           item.open.push(1)
@@ -847,10 +847,10 @@
         this.renderIndex += 1
         this.$forceUpdate()
       },
-      deleteItem (index) {
+      deleteItem(index) {
         this.items.splice(index, 1)
       },
-      removeTab (targetName) {
+      removeTab(targetName) {
         for (var index = 0; index !== this.items.length; ++index) {
           if ((this.items[index].path + '-' + this.items[index].method) === targetName) {
             this.items.splice(index, 1)
@@ -862,7 +862,7 @@
         }
         this.$forceUpdate()
       },
-      handleOpenItem (key, keyPath) {
+      handleOpenItem(key, keyPath) {
         let keys = key.split('-')
         var func = this.newTags[keys[0]].items[keys[1]]
 
@@ -941,7 +941,7 @@
         this.activeName = func.path + '-' + func.method
         this.$forceUpdate()
       },
-      parseCallCode (func) {
+      parseCallCode(func) {
         if (this.canFetchFunc) {
           let that = this
           $.ajax({
@@ -968,7 +968,7 @@
           this.createExecuteCode(func, null)
         }
       },
-      createExecuteCode (func, funcName) {
+      createExecuteCode(func, funcName) {
 
         //swift 调用
         let url = func.path
@@ -1095,7 +1095,7 @@
 
         this.$forceUpdate()
       },
-      parseModule (module, modules) {
+      parseModule(module, modules) {
         var index = module.title.indexOf('«')
         if (index > 0) {
           module.title = module.title.substring(0, index)
@@ -1132,7 +1132,7 @@
           }
         }
       },
-      formatDate (date) {
+      formatDate(date) {
         let fmt = 'yyyy-MM-dd hh:mm:ss'
         if (/(y+)/.test(fmt)) {
           fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
@@ -1152,7 +1152,7 @@
         }
         return fmt
       },
-      checkAge (rule, value, callback) {
+      checkAge(rule, value, callback) {
         if (!value) {
           return callback(new Error('年龄不能为空'))
         }
@@ -1168,7 +1168,7 @@
           }
         }, 1000)
       },
-      formatJson (json, options) {
+      formatJson(json, options) {
         var reg = null,
           formatted = '',
           pad = 0,
@@ -1245,7 +1245,7 @@
 
           formatted += padding + node + '\r\n'
           pad += indent
-        })
+        });
 
         return formatted
       }
@@ -1328,6 +1328,10 @@
   }
 
   .post .method {
+    background-color: #67C23A;
+  }
+
+  .put .method {
     background-color: #49cc90;
   }
 
@@ -1336,7 +1340,7 @@
   }
 
   .patch .method {
-    border-color: #50e3c2;
+    background-color: #E6A23C;
   }
 
   .deprecated {
@@ -1360,6 +1364,11 @@
   }
 
   .main-cards .post {
+    border: 1px solid #67C23A;
+    background-color: rgba(103, 194, 58, 0.1);
+  }
+
+  .main-cards .put {
     border: 1px solid #49cc90;
     background-color: rgba(73, 204, 144, 0.1);
   }
@@ -1370,8 +1379,8 @@
   }
 
   .main-cards .patch {
-    border: 1px solid #50e3c2;
-    background-color: rgba(80, 227, 194, 0.1);
+    border: 1px solid #E6A23C;
+    background-color: rgba(230, 162, 60, 0.1);
   }
 
   .el-card {
