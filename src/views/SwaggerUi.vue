@@ -718,7 +718,7 @@
           '\n' +
           '/**\n' +
           ' * Created by @author yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          ' * Copyright © 2019 JO. All rights reserved.\n' +
+          ' * Copyright © 2020 JO. All rights reserved.\n' +
           ' */\n' +
           '@Data\n' +
           'public class ' + module.title + ' {';
@@ -747,7 +747,7 @@
           '//  JO\n' +
           '//\n' +
           '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2019 JO. All rights reserved.\n' +
+          '//  Copyright © 2020 JO. All rights reserved.\n' +
           '//\n' +
           '\n' +
           'import UIKit\n' +
@@ -787,13 +787,13 @@
           '//  JO\n' +
           '//\n' +
           '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2019 JO. All rights reserved.\n' +
+          '//  Copyright © 2020 JO. All rights reserved.\n' +
           '//\n' +
           '\n' +
           'import UIKit\n' +
           'import ObjectMapper \n' +
           '\n' +
-          'class ' + module.title + ' {';
+          'class ' + module.title + ': Mappable {';
 
         let init = '\n    func mapping(map: Map) {';
         for (let name in module.properties) {
