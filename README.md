@@ -11,21 +11,26 @@
 主要的功能特色如下：
 
 ##### 0、概览
-![Image text](snaps/snap-01.jpg)
+![Image text](snaps/1.jpg)
 ##### 1、采用左右布局，便于充分利用屏幕空间
-![Image text](snaps/snap-02.jpg)
 ##### 2、左侧方案按tag分组，便于集中管理
 ##### 3、左侧导航栏支持宽度调整，调整结果保存到cookie
-![Image text](snaps/snap-03.jpg)
 ##### 4、右侧项目部分tab化管理，便于打开多个
+![Image text](snaps/2.jpg)
 ##### 5、参数可分组，默认以描述中以"【公共参数】"开头的放入到公共参数中（具体原因后续有机会在介绍），该函数独有参数放入专有参数并默认展开
-##### 6、返回实体结果全部列举，支持一键转化为swift和java，module代码格式化高亮处理，一键复制
-![Image text](snaps/snap-04.jpg)
-![Image text](snaps/snap-05.jpg)
-##### 7、在线直接调用测试
-![Image text](snaps/snap-06.jpg)
-##### 8、运行结果格式化高亮展示
-![Image text](snaps/snap-07.jpg)
+##### 6、支持添加自定义header，方便在线调试
+![Image text](snaps/3.jpg)
+![Image text](snaps/4.jpg)
+##### 7、返回实体结果实体类生成
+###### 7-1、一键转化为swift和java实体类代码(支持主流ObjectMapper和SwiftJson格式)
+###### 7-2、生成代码注释详细、格式化输出、高亮显示，一键复制,保持和后端命名一致性
+![Image text](snaps/5.jpg)
+##### 8、调用示例代码生成
+支持swift(ios)、retrofit(android)、axios(Vue)、 httpClient(java) 等主流前端调用代码生成，提高开发效率
+![Image text](snaps/6.jpg)
+##### 9、在线直接调用测试
+##### 10、运行结果格式化高亮展示
+![Image text](snaps/7.jpg)
 
 ### 约定
 
@@ -159,6 +164,7 @@ http://<host>:<port>/swagger-ui.html
 >> 实际开发中，状态变量的枚举一直是前后端沟通的问题，这个部分的导出需要一些开发约定，在未想好对开发过程无干扰的情况下暂时搁置（java 采用class反射可实现，但对开源项目安全性角度不想采用）。
 ```
  export GPG_TTY=$(tty)
+ node publish
 ```
 
 ## 后语：

@@ -2,43 +2,269 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0",
-    "title": "hello App Api接口定义文档"
+    "title": "Snap管理后台接口定义文档"
   },
-  "host": "localhost:8082",
+  "host": "localhost:8090",
   "basePath": "/",
   "tags": [
     {
-      "name": "02-0、主页",
-      "description": "App主页部分的处理"
+      "name": "001、店铺(品牌)管理",
+      "description": "Brand Web Controller"
+    },
+    {
+      "name": "100、管理员管理",
+      "description": "Admin Web Controller"
+    },
+    {
+      "name": "101、管理员的角色权限处理",
+      "description": "Role Controller"
+    },
+    {
+      "name": "102、公共方法",
+      "description": "Common Web Controller"
     }
   ],
   "paths": {
-    "/v4/home": {
+    "/web/admin": {
       "get": {
         "tags": [
-          "02-0、主页"
+          "100、管理员管理"
         ],
-        "summary": "【主页】顶部Tab",
-        "description": "如用户登录，则加入accessToken，如果没有则返回系统默认",
-        "operationId": "getHomeCategoryUsingGET",
+        "summary": "查找管理员信息",
+        "operationId": "findAdminUsingGET_1",
         "produces": [
           "*/*"
         ],
         "parameters": [
           {
-            "name": "accessToken",
+            "name": "keyword",
             "in": "query",
-            "description": "【公共参数】用户访问的认证信息",
-            "required": false,
-            "type": "string",
-            "default": "b7c55893b14e45cd9e1f0faec3245945"
+            "description": "keyword",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/RespEntity«HomeUiEntity»"
+              "$ref": "#/definitions/RespEntity«List«AdminCellEntity»»",
+              "originalRef": "RespEntity«List«AdminCellEntity»»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "100、管理员管理"
+        ],
+        "summary": "编辑或新建管理员信息",
+        "operationId": "editAdminInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "accountNonExpired",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "accountNonLocked",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "addAt",
+            "in": "query",
+            "description": "加入时间",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "authorities[0].authority",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "avatar",
+            "in": "query",
+            "description": "头像",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "brandId",
+            "in": "query",
+            "description": "品牌编号",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "credentialsNonExpired",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "enabled",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "用户id",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "mobile",
+            "in": "query",
+            "description": "电话",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "加密后的密码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "realName",
+            "in": "query",
+            "description": "真名",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "roles[0].groupIds",
+            "in": "query",
+            "description": "前端组id集,字符串数组",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "roles[0].id",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "roles[0].menuIds",
+            "in": "query",
+            "description": "前端组件id集,字符串数组",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "roles[0].name",
+            "in": "query",
+            "description": "角色英文名称，遵循SpringSecurity规范：以ROLE_开头",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "roles[0].nameZh",
+            "in": "query",
+            "description": "角色中文名，无规范",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "roles[0].urlIds",
+            "in": "query",
+            "description": "编辑操作路径id集,字符串数组",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "状态",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "updateAt",
+            "in": "query",
+            "description": "更新时间",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "用户登录名",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminEntity»",
+              "originalRef": "RespEntity«AdminEntity»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/admin/isLogin": {
+      "get": {
+        "tags": [
+          "100、管理员管理"
+        ],
+        "summary": "判断用户是否登录",
+        "operationId": "isLoginUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminCellEntity»",
+              "originalRef": "RespEntity«AdminCellEntity»"
             }
           },
           "401": {
@@ -54,29 +280,165 @@
         "deprecated": false
       }
     },
-    "/v4/home/find": {
+    "/web/admin/login": {
       "get": {
         "tags": [
-          "02-0、主页"
+          "100、管理员管理"
         ],
-        "summary": "【发现主页】",
-        "operationId": "findHomePlusUsingGET",
+        "summary": "管理员登录",
+        "operationId": "loginUsingGET",
         "produces": [
           "*/*"
         ],
         "parameters": [
           {
-            "name": "accessToken",
+            "name": "password",
             "in": "query",
-            "description": "【公共参数】用户访问的认证信息",
+            "description": "登录密码",
             "required": false,
             "type": "string",
-            "default": "b7c55893b14e45cd9e1f0faec3245945"
+            "allowEmptyValue": false
           },
           {
-            "name": "counter",
+            "name": "userName",
             "in": "query",
-            "description": "刷新计数器，从0开始，每次++",
+            "description": "用户名",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminCellEntity»",
+              "originalRef": "RespEntity«AdminCellEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/admin/logout": {
+      "post": {
+        "tags": [
+          "100、管理员管理"
+        ],
+        "summary": "注销登录",
+        "operationId": "logoutUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«boolean»",
+              "originalRef": "RespEntity«boolean»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/admin/{id}": {
+      "get": {
+        "tags": [
+          "100、管理员管理"
+        ],
+        "summary": "获取某个管理员的信息",
+        "operationId": "findAdminUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminEntity»",
+              "originalRef": "RespEntity«AdminEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/brand": {
+      "get": {
+        "tags": [
+          "001、店铺(品牌)管理"
+        ],
+        "summary": "分页查找品牌信息",
+        "operationId": "findBrandsByPageUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "查询关键字",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "第几页，从0开始",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页数量",
             "required": true,
             "type": "integer",
             "format": "int32",
@@ -87,8 +449,844 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/RespEntity«List«SectionEntity»»"
+              "$ref": "#/definitions/RespEntity«PageResult«BrandEntity»»",
+              "originalRef": "RespEntity«PageResult«BrandEntity»»"
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/brand/{id}": {
+      "get": {
+        "tags": [
+          "001、店铺(品牌)管理"
+        ],
+        "summary": "按店铺编号获取详情",
+        "operationId": "findByIdUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "编号",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«BrandEntity»",
+              "originalRef": "RespEntity«BrandEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/brand/{id}/admin": {
+      "post": {
+        "tags": [
+          "001、店铺(品牌)管理"
+        ],
+        "summary": "修改店铺关联的管理员",
+        "operationId": "editBrandAdminUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "adminIds",
+            "in": "query",
+            "description": "管理员的id组成的字符串，采用,分割",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "店铺编号",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«object»",
+              "originalRef": "RespEntity«object»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/brand/{id}/state": {
+      "post": {
+        "tags": [
+          "001、店铺(品牌)管理"
+        ],
+        "summary": "编辑品牌信息的状态",
+        "operationId": "editBrandInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "编号",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "状态",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«object»",
+              "originalRef": "RespEntity«object»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/common/editor": {
+      "post": {
+        "tags": [
+          "102、公共方法"
+        ],
+        "summary": "上传图片信息",
+        "operationId": "uploadFromEditorUsingPOST",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "upload",
+            "in": "formData",
+            "description": "upload",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/common/image": {
+      "post": {
+        "tags": [
+          "102、公共方法"
+        ],
+        "summary": "上传图片信息",
+        "operationId": "thumbUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "dir",
+            "in": "query",
+            "description": "子文件夹",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "height",
+            "in": "query",
+            "description": "高度参考",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "info",
+            "in": "query",
+            "description": "是否附加图片宽高",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "allowEmptyValue": false
+          },
+          {
+            "name": "keep",
+            "in": "query",
+            "description": "是否保持原有图片",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "allowEmptyValue": false
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "宽度不得大于",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "min",
+            "in": "query",
+            "description": "宽度不得小于",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "quality",
+            "in": "query",
+            "description": "质量控制",
+            "required": false,
+            "type": "number",
+            "default": 0.9,
+            "format": "float",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "resize",
+            "in": "query",
+            "description": "是否需要重新修改尺寸",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "allowEmptyValue": false
+          },
+          {
+            "name": "width",
+            "in": "query",
+            "description": "宽度参考",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«ImageInfo»",
+              "originalRef": "RespEntity«ImageInfo»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role": {
+      "get": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "获取所有角色",
+        "operationId": "getAllRoleMenuUsingGET_1",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«List«AdminRoleEntity»»",
+              "originalRef": "RespEntity«List«AdminRoleEntity»»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "角色添加或编辑",
+        "operationId": "addRoleUsingPOST_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "角色编号，0为新增",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "角色（英文），ROLE_admin格式",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "nameZh",
+            "in": "query",
+            "description": "角色（中文）",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminRoleEntity»",
+              "originalRef": "RespEntity«AdminRoleEntity»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/adminUrl/sync": {
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "高级-角色管理-同步权限表",
+        "description": "未加入权限表的url进行添加",
+        "operationId": "saveAllWebUrlUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«List«AdminUrlEntity»»",
+              "originalRef": "RespEntity«List«AdminUrlEntity»»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/delete/{roleId}": {
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "角色删除",
+        "operationId": "addRoleUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "roleId",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«object»",
+              "originalRef": "RespEntity«object»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/edit/{adminId}": {
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "更新账号角色",
+        "operationId": "updateAdminUserRoleUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "adminId",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "roleIds",
+            "in": "query",
+            "description": "角色id集，逗号分隔",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«object»",
+              "originalRef": "RespEntity«object»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/menu/user": {
+      "get": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "获取用户menu",
+        "operationId": "getRoleMenuByAdminIdUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminMenuEntity»",
+              "originalRef": "RespEntity«AdminMenuEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/url": {
+      "get": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "获取数据库所有url",
+        "operationId": "getAllUrlUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«List«AdminUrlEntity»»",
+              "originalRef": "RespEntity«List«AdminUrlEntity»»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "新增或编辑url",
+        "operationId": "addUrlUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "url名称",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "url路径,如/user/**",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«List«AdminUrlEntity»»",
+              "originalRef": "RespEntity«List«AdminUrlEntity»»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/{id}": {
+      "get": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "获取角色信息",
+        "operationId": "getAllRoleMenuUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«AdminRoleEntity»",
+              "originalRef": "RespEntity«AdminRoleEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/{roleId}/menu": {
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "给角色分配menu(新增或更新)",
+        "description": "分配group_ids,menu_ids",
+        "operationId": "updateRoleMenuUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "query",
+            "description": "groupId，数组字符串",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "menuId",
+            "in": "query",
+            "description": "menuId，数组字符串",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "roleId",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«object»",
+              "originalRef": "RespEntity«object»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/web/role/{roleId}/url": {
+      "post": {
+        "tags": [
+          "101、管理员的角色权限处理"
+        ],
+        "summary": "给角色分配url(新增或更新)",
+        "description": "分配url_ids",
+        "operationId": "updateRoleUrlUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "roleId",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "urlIds",
+            "in": "query",
+            "description": "urlIds，数组字符串",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RespEntity«object»",
+              "originalRef": "RespEntity«object»"
+            }
+          },
+          "201": {
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -105,206 +1303,725 @@
     }
   },
   "definitions": {
-    "RespEntity«HomeUiEntity»": {
+    "AdminCellEntity": {
       "type": "object",
-      "required": [
-        "code",
-        "message",
-        "obscure"
-      ],
       "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32",
-          "description": "执行结果的状态"
-        },
-        "data": {
-          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
-          "$ref": "#/definitions/HomeUiEntity"
-        },
-        "message": {
-          "type": "string",
-          "description": "附加消息,以code为准，返回信息不一定完整"
-        },
-        "obscure": {
-          "type": "boolean",
-          "description": "数据是否加密压缩"
-        },
-        "taskMessage": {
-          "type": "string",
-          "description": "任务的执行消息，如果不为空就弹出"
-        }
-      },
-      "title": "RespEntity«HomeUiEntity»"
-    },
-    "RespEntity«List«SectionEntity»»": {
-      "type": "object",
-      "required": [
-        "code",
-        "message",
-        "obscure"
-      ],
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32",
-          "description": "执行结果的状态"
-        },
-        "data": {
-          "type": "array",
-          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
-          "items": {
-            "$ref": "#/definitions/SectionEntity"
-          }
-        },
-        "message": {
-          "type": "string",
-          "description": "附加消息,以code为准，返回信息不一定完整"
-        },
-        "obscure": {
-          "type": "boolean",
-          "description": "数据是否加密压缩"
-        },
-        "taskMessage": {
-          "type": "string",
-          "description": "任务的执行消息，如果不为空就弹出"
-        }
-      },
-      "title": "RespEntity«List«SectionEntity»»"
-    },
-    "HomeUiEntity": {
-      "type": "object",
-      "required": [
-        "banners",
-        "internalTime",
-        "selectedTab",
-        "state",
-        "tabs"
-      ],
-      "properties": {
-        "banners": {
-          "type": "array",
-          "description": "滚动显示视图",
-          "items": {
-            "$ref": "#/definitions/BannerUiEntity"
-          }
-        },
-        "hotKey": {
-          "type": "array",
-          "description": "搜索的热门关键字，若无，在搜索时则不显示热门关键字",
-          "items": {
-            "$ref": "#/definitions/HotKeyEntity"
-          }
-        },
-        "internalTime": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Banner的切换时间,单位为毫秒"
-        },
-        "selectedTab": {
-          "type": "integer",
-          "format": "int32",
-          "description": "当前选中的Tab，从0开始"
-        },
-        "state": {
-          "type": "boolean",
-          "description": "是否当前版本是在审核"
-        }
-      },
-      "title": "HomeUiEntity",
-      "description": "主页的头部基本结构信息"
-    },
-    "BannerUiEntity": {
-      "type": "object",
-      "required": [
-        "photo",
-        "url"
-      ],
-      "properties": {
-        "code": {
-          "type": "string",
-          "description": "编号，无意义"
-        },
-        "hint": {
+        "avatar": {
           "type": "string"
         },
         "id": {
           "type": "integer",
-          "format": "int32",
-          "description": "编号，无意义"
+          "format": "int32"
         },
-        "photo": {
-          "type": "string",
-          "description": "图片URL"
+        "menu": {
+          "description": "菜单信息",
+          "$ref": "#/definitions/AdminMenuEntity",
+          "originalRef": "AdminMenuEntity"
         },
-        "url": {
-          "type": "string",
-          "description": "跳转scheme"
+        "realName": {
+          "type": "string"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "username": {
+          "type": "string"
         }
       },
-      "title": "BannerUiEntity"
+      "title": "AdminCellEntity"
     },
-    "HotKeyEntity": {
+    "AdminEntity": {
       "type": "object",
-      "required": [
-        "tags",
-        "type"
-      ],
       "properties": {
-        "name": {
-          "type": "string",
-          "description": "中文名称，前端忽略"
+        "accountNonExpired": {
+          "type": "boolean"
         },
-        "tags": {
+        "accountNonLocked": {
+          "type": "boolean"
+        },
+        "addAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "加入时间"
+        },
+        "authorities": {
           "type": "array",
-          "description": "包含的热门搜索关键字，编号按顺序自增加",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/GrantedAuthority",
+            "originalRef": "GrantedAuthority"
           }
         },
-        "type": {
+        "avatar": {
+          "type": "string",
+          "description": "头像"
+        },
+        "brandId": {
           "type": "integer",
           "format": "int32",
-          "description": "类型，包含如下0全部、1视频、2文章、3商品、4课程",
-          "minimum": -128,
-          "maximum": 127
+          "description": "品牌编号"
+        },
+        "credentialsNonExpired": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "用户id"
+        },
+        "mobile": {
+          "type": "string",
+          "description": "电话"
+        },
+        "password": {
+          "type": "string",
+          "description": "加密后的密码"
+        },
+        "realName": {
+          "type": "string",
+          "description": "真名"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminRoleEntity",
+            "originalRef": "AdminRoleEntity"
+          }
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32",
+          "description": "状态"
+        },
+        "updateAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "更新时间"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户登录名"
         }
       },
-      "title": "HotKeyEntity",
-      "description": "分类热门关键字结构"
+      "title": "AdminEntity",
+      "description": "<a href='/web/swift/AdminEntity' target=_blank>管理员信息</a>"
     },
-    "SectionEntity": {
+    "AdminMenuEntity": {
       "type": "object",
-      "required": [
-        "internalTime"
-      ],
       "properties": {
-        "internalTime": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Banner的切换时间,单位为毫秒"
+        "groupId": {
+          "type": "array",
+          "description": "分组id",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         },
-        "items": {
-          "type": "object",
-          "description": "包含的子项"
-        },
-        "title": {
+        "menuId": {
+          "type": "array",
+          "description": "二级菜单id",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "title": "AdminMenuEntity"
+    },
+    "AdminRoleEntity": {
+      "type": "object",
+      "properties": {
+        "groupIds": {
           "type": "string",
-          "description": "标题"
+          "description": "前端组id集,字符串数组"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "menuIds": {
+          "type": "string",
+          "description": "前端组件id集,字符串数组"
+        },
+        "name": {
+          "type": "string",
+          "description": "角色英文名称，遵循SpringSecurity规范：以ROLE_开头"
+        },
+        "nameZh": {
+          "type": "string",
+          "description": "角色中文名，无规范"
+        },
+        "urlIds": {
+          "type": "string",
+          "description": "编辑操作路径id集,字符串数组"
+        }
+      },
+      "title": "AdminRoleEntity",
+      "description": "<a href='/web/swift/AdminRoleEntity' target=_blank>后台管理员工角色表</a>"
+    },
+    "AdminUrlEntity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string",
+          "description": "接口名称"
         },
         "type": {
           "type": "integer",
           "format": "int32",
-          "description": "类型",
+          "description": "0:POST请求，1：GET请求",
           "minimum": -128,
           "maximum": 127
         },
         "url": {
           "type": "string",
-          "description": "更多跳转url"
+          "description": "请求url"
         }
       },
-      "title": "SectionEntity"
+      "title": "AdminUrlEntity",
+      "description": "<a href='/web/swift/AdminUrlEntity' target=_blank>后台管理系统对数据有变动的url</a>"
+    },
+    "BrandEntity": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "description": "商家访问token"
+        },
+        "addAt": {
+          "description": "创建时间",
+          "$ref": "#/definitions/Timestamp",
+          "originalRef": "Timestamp"
+        },
+        "admins": {
+          "type": "array",
+          "description": "关联的管理员，仅在编辑详情时返回",
+          "items": {
+            "$ref": "#/definitions/AdminEntity",
+            "originalRef": "AdminEntity"
+          }
+        },
+        "brief": {
+          "type": "string",
+          "description": "主营业务"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "品牌编号"
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "logo连接"
+        },
+        "openId": {
+          "type": "string",
+          "description": "商家在京东的open_id"
+        },
+        "refreshToken": {
+          "type": "string",
+          "description": "商家刷新token"
+        },
+        "shopId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "店铺编号"
+        },
+        "shopName": {
+          "type": "string",
+          "description": "店铺名称"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32",
+          "description": "状态,0正常，1停用",
+          "minimum": -128,
+          "maximum": 127
+        },
+        "tokenAddAt": {
+          "description": "token 添加时间",
+          "$ref": "#/definitions/Timestamp",
+          "originalRef": "Timestamp"
+        },
+        "tokenExpiresAt": {
+          "description": "token 有效期",
+          "$ref": "#/definitions/Timestamp",
+          "originalRef": "Timestamp"
+        },
+        "updateAt": {
+          "description": "更新时间",
+          "$ref": "#/definitions/Timestamp",
+          "originalRef": "Timestamp"
+        },
+        "venderId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "vender_id"
+        }
+      },
+      "title": "BrandEntity",
+      "description": "<a href='/web/swift/BrandEntity' target=_blank>品牌信息</a>"
+    },
+    "GrantedAuthority": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "type": "string"
+        }
+      },
+      "title": "GrantedAuthority"
+    },
+    "ImageInfo": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "int32",
+          "description": "高度"
+        },
+        "url": {
+          "type": "string",
+          "description": "显示连接"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32",
+          "description": "宽度"
+        }
+      },
+      "title": "ImageInfo"
+    },
+    "PageResult«BrandEntity»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "description": "列表数据",
+          "items": {
+            "$ref": "#/definitions/BrandEntity",
+            "originalRef": "BrandEntity"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32",
+          "description": "每页数量"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "PageResult«BrandEntity»"
+    },
+    "RespEntity«AdminCellEntity»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/AdminCellEntity",
+          "originalRef": "AdminCellEntity"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«AdminCellEntity»"
+    },
+    "RespEntity«AdminEntity»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/AdminEntity",
+          "originalRef": "AdminEntity"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«AdminEntity»"
+    },
+    "RespEntity«AdminMenuEntity»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/AdminMenuEntity",
+          "originalRef": "AdminMenuEntity"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«AdminMenuEntity»"
+    },
+    "RespEntity«AdminRoleEntity»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/AdminRoleEntity",
+          "originalRef": "AdminRoleEntity"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«AdminRoleEntity»"
+    },
+    "RespEntity«BrandEntity»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/BrandEntity",
+          "originalRef": "BrandEntity"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«BrandEntity»"
+    },
+    "RespEntity«ImageInfo»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/ImageInfo",
+          "originalRef": "ImageInfo"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«ImageInfo»"
+    },
+    "RespEntity«List«AdminCellEntity»»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "type": "array",
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "items": {
+            "$ref": "#/definitions/AdminCellEntity",
+            "originalRef": "AdminCellEntity"
+          }
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«List«AdminCellEntity»»"
+    },
+    "RespEntity«List«AdminRoleEntity»»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "type": "array",
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "items": {
+            "$ref": "#/definitions/AdminRoleEntity",
+            "originalRef": "AdminRoleEntity"
+          }
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«List«AdminRoleEntity»»"
+    },
+    "RespEntity«List«AdminUrlEntity»»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "type": "array",
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "items": {
+            "$ref": "#/definitions/AdminUrlEntity",
+            "originalRef": "AdminUrlEntity"
+          }
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«List«AdminUrlEntity»»"
+    },
+    "RespEntity«PageResult«BrandEntity»»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+          "$ref": "#/definitions/PageResult«BrandEntity»",
+          "originalRef": "PageResult«BrandEntity»"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«PageResult«BrandEntity»»"
+    },
+    "RespEntity«boolean»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "type": "boolean",
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«boolean»"
+    },
+    "RespEntity«object»": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "obscure"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "执行结果的状态"
+        },
+        "data": {
+          "type": "object",
+          "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+        },
+        "message": {
+          "type": "string",
+          "description": "附加消息,以code为准，返回信息不一定完整"
+        },
+        "obscure": {
+          "type": "boolean",
+          "description": "数据是否加密压缩"
+        }
+      },
+      "title": "RespEntity«object»"
+    },
+    "Timestamp": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hours": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "timezoneOffset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "Timestamp"
     }
   }
 }
