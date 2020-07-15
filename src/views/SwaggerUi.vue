@@ -309,17 +309,6 @@
                                        v-clipboard:success="onCopy">copy
                             </el-button>
                           </el-tab-pane>
-                          <el-tab-pane name="java" label="java" style="position: relative;">
-                            <div v-highlight>
-                            <pre style="margin: 0">
-                              <code v-html="toHtml(item.java)" style="border-radius: 6px;" class="java"/>
-                            </pre>
-                            </div>
-                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.java"
-                                       type="mini"
-                                       v-clipboard:success="onCopy">copy
-                            </el-button>
-                          </el-tab-pane>
                           <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
                             <div v-highlight>
                             <pre style="margin: 0">
@@ -327,6 +316,28 @@
                             </pre>
                             </div>
                             <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.retrofit"
+                                       type="mini"
+                                       v-clipboard:success="onCopy">copy
+                            </el-button>
+                          </el-tab-pane>
+                          <el-tab-pane name="axios" label="axios" style="position: relative;">
+                            <div v-highlight>
+                            <pre style="margin: 0">
+                              <code v-html="toHtml(item.axios)" style="border-radius: 6px;" class="java"/>
+                            </pre>
+                            </div>
+                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.axios"
+                                       type="mini"
+                                       v-clipboard:success="onCopy">copy
+                            </el-button>
+                          </el-tab-pane>
+                          <el-tab-pane name="java" label="java" style="position: relative;">
+                            <div v-highlight>
+                            <pre style="margin: 0">
+                              <code v-html="toHtml(item.java)" style="border-radius: 6px;" class="java"/>
+                            </pre>
+                            </div>
+                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.java"
                                        type="mini"
                                        v-clipboard:success="onCopy">copy
                             </el-button>
@@ -1084,6 +1095,7 @@
         let javaParam = null;
 
         let retrofitParam = '';
+        let axiosParam = '';
         let retrofit = '        /**\n' +
           '         * ' + func.summary + '\n';
         if (func.description) {
@@ -1111,6 +1123,7 @@
             } else {
               retrofitParam += '@Query("' + func.private[m].name + '") ' + this.toJavaType(func.private[m].type, func.private[m].format) + ' ' + func.private[m].name + ',';
               javaParam += '    //' + func.private[m].description + '\n';
+              axiosParam += '        ' + func.private[m].name + ': "",//' + (func.private[m].required ? '(*)' : '') + func.private[m].description + '\n';
               javaParam += '    parameters.put("' + func.private[m].name + '", ' + func.private[m].name + ');\n';
               req += '"' + func.private[m].name + '":' + func.private[m].name + ','
             }
@@ -1134,6 +1147,7 @@
           entity = ref;
         }
 
+        //region java 原始方式
         let javaCode = '//' + func.summary + '\n';
         if (func.description) {
           javaCode += '// ' + func.description + '\n'
@@ -1154,7 +1168,32 @@
           '}';
 
         func.java = javaCode;
+        //endregion
 
+        //region axios的调用生成
+        let axios = '//' + func.summary + '\n';
+        if (func.description) {
+          axios += '// ' + func.description + '\n'
+        }
+        axios += 'this.axios({\n';
+        axios += "    method: '" + func.method.toUpperCase() + "',\n"
+        axios += "    url: `" + func.path + "`,\n"
+        if (axiosParam !== '') {
+          axios += "    params: {\n"
+          axios += axiosParam;
+          axios += "    }\n"
+        }
+        axios += "}).then(res => {\n"
+        axios += "    if (res.code === 0) {\n"
+        axios += "      //this.$message.success('保存成功');\n"
+        axios += "    } else {\n"
+        axios += "      //this.$message.error(`保存失败, 错误：${res.message}`);\n"
+        axios += "    }\n"
+        axios += "}).catch(error => {\n       console.log(error);\n});\n";
+        func.axios = axios;
+        //endregion
+
+        //region retrofit的调用生成
         retrofit += '        @' + func.method.toUpperCase() + '("' + func.path + '")\n';
         retrofit += '        Observable<' + (ref.replaceAll('«', '<').replaceAll('»', '>')) + '> ' + (funcName ? funcName : 'execute') + '('
         if (retrofitParam !== '') {
