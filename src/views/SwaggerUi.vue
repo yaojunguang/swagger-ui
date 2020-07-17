@@ -228,6 +228,7 @@
                             </el-row>
                           </el-collapse-item>
                           <el-collapse-item
+                            v-if="item.responses['200'].schema.originalRef"
                             :title="'结果实体'+item.responses['200'].schema.originalRef.replaceAll('«','<').replaceAll('»','>')"
                             :name="3">
                             <el-tabs :value="item.modules[0].title">
@@ -296,7 +297,7 @@
                         </el-collapse>
                       </el-tab-pane>
                       <el-tab-pane label="调用参考" name="execute" style="position: relative">
-                        <el-tabs v-model="item.exe" style="margin: 12px;">
+                        <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
                             <div v-highlight>
                             <pre style="margin: 0;">
@@ -988,44 +989,45 @@
         if (func.parameters != null) {
           for (let index = 0; index !== func.parameters.length; ++index) {
             let param = func.parameters[index];
-            param.value = param.default;
+            if (param.type) {
+              param.value = param.default;
 
-            if (param.name.indexOf('.') === -1 && param.description && param.description.startsWith('【公共参数】')) {
-              if (func.common === undefined) {
-                func.common = []
+              if (param.name.indexOf('.') === -1 && param.description && param.description.startsWith('【公共参数】')) {
+                if (func.common === undefined) {
+                  func.common = []
+                }
+                func.common.push(param)
+              } else {
+                if (func.private === undefined) {
+                  func.private = []
+                }
+                if (param.name.indexOf('.') === -1) {
+                  func.private.push(param)
+                } else if (param.name.indexOf('.year') > 0) {
+                  param.name = param.name.substring(0, param.name.indexOf('.'));
+                  param.type = 'string';
+                  param.default = null;
+                  param.description = '时间字符串，默认格式yyyy-MM-dd hh:mm:ss';
+                  param.required = undefined;
+                  param.value = null;
+                  func.private.push(param);
+                }
               }
-              func.common.push(param)
-            } else {
-              if (func.private === undefined) {
-                func.private = []
-              }
-              if (param.name.indexOf('.') === -1) {
-                func.private.push(param)
-              } else if (param.name.indexOf('.year') > 0) {
-                param.name = param.name.substring(0, param.name.indexOf('.'));
-                param.type = 'string';
-                param.default = null;
-                param.description = '时间字符串，默认格式yyyy-MM-dd hh:mm:ss';
-                param.required = undefined;
-                param.value = null;
-                func.private.push(param);
+              if (param.type === 'integer' || param.type === 'number') {
+                param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
+                  type: 'number',
+                  message: '请输入合法的数字'
+                }];
+                if (param.value === undefined) {
+                  param.value = 0;
+                }
+              } else if (param.type === 'string') {
+                param.rules = [{validator: this.checkAge, required: param.required, message: '必填', trigger: 'blur'}];
+                if (param.value === undefined) {
+                  param.value = '';
+                }
               }
             }
-            if (param.type === 'integer' || param.type === 'number') {
-              param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
-                type: 'number',
-                message: '请输入合法的数字'
-              }];
-              if (param.value === undefined) {
-                param.value = 0;
-              }
-            } else if (param.type === 'string') {
-              param.rules = [{validator: this.checkAge, required: param.required, message: '必填', trigger: 'blur'}];
-              if (param.value === undefined) {
-                param.value = '';
-              }
-            }
-
           }
           func.parameters = null
         }
@@ -1034,10 +1036,13 @@
         func.tab = 'params';
 
         //找出所有的关联对象
-        func.responses['200'].schema.originalRef = func.responses['200'].schema.$ref.substring('#/definitions/'.length);
-        var ref = func.responses['200'].schema.originalRef;
         var modules = [];
-        this.parseModule(this.form.definitions[ref], modules);
+        if (func.responses['200'].schema.$ref) {
+          func.responses['200'].schema.originalRef = func.responses['200'].schema.$ref.substring('#/definitions/'.length);
+          var ref = func.responses['200'].schema.originalRef;
+          this.parseModule(this.form.definitions[ref], modules);
+        }
+
         func.modules = modules;
         if (func.private) {
           func.open = [0, 3];
@@ -1046,8 +1051,12 @@
         }
         func.open.push(2);
 
-        //处理调用示例
-        this.parseCallCode(func);
+        if (func.consumes && func.consumes.indexOf("application/json") >= 0) {
+          //处理调用示例
+          this.parseCallCode(func);
+        } else {
+          func.exe = null;
+        }
 
         this.items.push(func);
         this.activeName = func.path + '-' + func.method;
