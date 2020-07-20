@@ -1051,11 +1051,15 @@
         }
         func.open.push(2);
 
-        if (func.consumes && func.consumes.indexOf("application/json") >= 0) {
+        if (func.method === 'post') {
           //处理调用示例
-          this.parseCallCode(func);
+          if (func.consumes && func.consumes.indexOf("application/json") >= 0) {
+            this.parseCallCode(func);
+          } else {
+            func.exe = null;
+          }
         } else {
-          func.exe = null;
+          this.parseCallCode(func);
         }
 
         this.items.push(func);

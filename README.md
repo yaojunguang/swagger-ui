@@ -127,14 +127,14 @@ mvn install
 ```    
 
 ### jar复制安装
-> 复制生成的swagger-ui-2.6.jar 到你的工程下，添加依赖即可
+> 复制生成的swagger-ui-2.8.jar 到你的工程下，添加依赖即可
 ```
 <dependency>
     <groupId>com.smarthito</groupId>
     <artifactId>swagger-ui</artifactId>
-    <version>2.7</version>
+    <version>2.8</version>
     <scope>system</scope>
-    <systemPath>${pom.basedir}/src/main/libs/swagger-ui-2.7.jar</systemPath>
+    <systemPath>${pom.basedir}/src/main/libs/swagger-ui-2.8.jar</systemPath>
 </dependency>
 ```    
 
@@ -143,7 +143,7 @@ mvn install
 <dependency>
     <groupId>com.smarthito</groupId>
     <artifactId>swagger-ui</artifactId>
-    <version>2.7</version>
+    <version>2.8</version>
 </dependency>
 ```
 
@@ -164,7 +164,6 @@ http://<host>:<port>/swagger-ui.html
 >> 实际开发中，状态变量的枚举一直是前后端沟通的问题，这个部分的导出需要一些开发约定，在未想好对开发过程无干扰的情况下暂时搁置（java 采用class反射可实现，但对开源项目安全性角度不想采用）。
 ```
  export GPG_TTY=$(tty)
- node publish
 ```
 
 ## 后语：
