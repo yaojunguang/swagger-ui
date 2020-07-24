@@ -13,23 +13,24 @@
 ##### 0、概览
 ![Image text](snaps/1.jpg)
 ##### 1、采用左右布局，便于充分利用屏幕空间
-##### 2、左侧方案按tag分组，便于集中管理
-##### 3、左侧导航栏支持宽度调整，调整结果保存到cookie
-##### 4、右侧项目部分tab化管理，便于打开多个
+##### 2、支持根据api路径或者注释模糊搜索
+##### 3、左侧方案按tag分组，便于集中管理
+##### 4、左侧导航栏支持宽度调整，调整结果保存到cookie
+##### 5、右侧项目部分tab化管理，便于打开多个
 ![Image text](snaps/2.jpg)
-##### 5、参数可分组，默认以描述中以"【公共参数】"开头的放入到公共参数中（具体原因后续有机会在介绍），该函数独有参数放入专有参数并默认展开
-##### 6、支持添加自定义header，方便在线调试
+##### 6、参数可分组，默认以描述中以"【公共参数】"开头的放入到公共参数中（具体原因后续有机会在介绍），该函数独有参数放入专有参数并默认展开
+##### 7、支持添加自定义header，方便在线调试
 ![Image text](snaps/3.jpg)
 ![Image text](snaps/4.jpg)
-##### 7、返回实体结果实体类生成
-###### 7-1、一键转化为swift和java实体类代码(支持主流ObjectMapper和SwiftJson格式)
-###### 7-2、生成代码注释详细、格式化输出、高亮显示，一键复制,保持和后端命名一致性
+##### 8、返回实体结果实体类生成
+###### 8-1、一键转化为swift和java实体类代码(支持主流ObjectMapper和SwiftJson格式)
+###### 8-2、生成代码注释详细、格式化输出、高亮显示，一键复制,保持和后端命名一致性
 ![Image text](snaps/5.jpg)
-##### 8、调用示例代码生成
+##### 9、调用示例代码生成
 支持swift(ios)、retrofit(android)、axios(Vue)、 httpClient(java) 等主流前端调用代码生成，提高开发效率
 ![Image text](snaps/6.jpg)
-##### 9、在线直接调用测试
-##### 10、运行结果格式化高亮展示
+##### 10、在线直接调用测试
+##### 11、运行结果格式化高亮展示
 ![Image text](snaps/7.jpg)
 
 ### 约定
@@ -122,7 +123,17 @@ mvn install
 <dependency>
     <groupId>io.springfox</groupId>
     <artifactId>springfox-swagger2</artifactId>
-    <version>${swagger.version}</version>
+    <version>3.0.0</version>
+</dependency>
+<dependency>
+    <groupId>io.swagger</groupId>
+    <artifactId>swagger-annotations</artifactId>
+    <version>1.6.2</version>
+</dependency>
+<dependency>
+    <groupId>io.swagger</groupId>
+    <artifactId>swagger-models</artifactId>
+    <version>1.6.2</version>
 </dependency>
 ```    
 
