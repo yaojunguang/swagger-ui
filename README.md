@@ -1,6 +1,9 @@
 # swagger-ui
 
-> 采用Vue+element-ui构建的swagger-ui
+> 采用Vue+element-ui构建的swagger-ui  
+>支持API分组和排序，支持通过路径或者注释搜索，支持添加自定义请求头  
+>支持实体类多语言代码生成(swift,java)  
+>支持多种调用过程代码生成(swift retrofit,axios,httpClient)等，多标签模式等 
 
 ## 介绍
 > 在日常开发中，接口文档维护一直是项目管理中的头疼的问题，还有就是单元测试、接口测试等。swagger是我极具推崇的开发辅助工具，很好的解决了上诉的这些问题  
@@ -164,18 +167,65 @@ mvn install
 http://<host>:<port>/swagger-ui.html
 ```
 
+## 模拟调用获取接口原始函数方法名
+在模拟调用部分的代码，为了便于前端与后端开发保持沟通一致性，我特意留出了一个接口（可不实现，调用示例采用execute），通过后端获取当前的接口在后端的方法名，后端示例代码如下:
+获取方法名的接口路径固定的，不可修改：/swagger/method
+```
+@RestController
+@RequestMapping(value = "/")
+public class RootController {
+
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+    @ApiOperation(value = "获取java方法名")
+    @RequestMapping(value = "/swagger/method")
+    public HashMap<String, String> findMethodName(
+            @ApiParam(value = "路径", required = true)
+            @RequestParam String url,
+            @ApiParam(value = "调用类型", required = true)
+            @RequestParam String type) {
+        HashMap<String, String> hashMap = new HashMap<>(2);
+        if ("/".equals(url) && "func".equals(type)) {
+            hashMap.put("result", "true");
+            return hashMap;
+        }
+        Map<RequestMappingInfo, HandlerMethod> map = requestMappingHandlerMapping.getHandlerMethods();
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> m : map.entrySet()) {
+            RequestMappingInfo info = m.getKey();
+            HandlerMethod method = m.getValue();
+            PatternsRequestCondition p = info.getPatternsCondition();
+            String mUrl = null;
+            for (String url2 : p.getPatterns()) {
+                mUrl = url2;
+            }
+            RequestMethodsRequestCondition methodsCondition = info.getMethodsCondition();
+            String mType = methodsCondition.toString();
+            if (mType != null && mType.startsWith("[") && mType.endsWith("]")) {
+                mType = mType.substring(1, mType.length() - 1);
+            }
+            if (mUrl != null && mType != null && mUrl.equals(url) && mType.equals(type.toUpperCase())) {
+                hashMap.put("method", method.getMethod().getName());
+                hashMap.put("className", method.getMethod().getDeclaringClass().getName());
+                return hashMap;
+            }
+        }
+        return null;
+    }
+}
+```
 
 ## TODO:
-> 支持一键生成移动端调用代码
-```
-作为公开库，不同公司的调用模块不尽相同，大家可根据实际需求修改
-```
+> 1.支持OC和Kotlin  
+目前自己的项目中还未采用OC Kotlin，加上这两个的语法不是很熟悉，所以目前还不支持先关的代码生成
 
-> 支持枚举对象的导出  
->> 实际开发中，状态变量的枚举一直是前后端沟通的问题，这个部分的导出需要一些开发约定，在未想好对开发过程无干扰的情况下暂时搁置（java 采用class反射可实现，但对开源项目安全性角度不想采用）。
-```
- export GPG_TTY=$(tty)
-```
+
+> 2.支持枚举对象的导出  
+实际开发中，状态变量的枚举一直是前后端沟通的问题，这个部分的导出需要一些开发约定，在未想好对开发过程无干扰的情况下暂时搁置（java 采用class反射可实现，但对开源项目安全性角度不想采用）。
 
 ## 后语：
 > 该项目对于采用swagger注释完善度要求极高，这样可以使整个工具呈现完美状态，这个部分也有一些其它的自定义小工具，后续会再分享，如：数据库表生成module的groovy schema等
+
+```
+ export GPG_TTY=$(tty)
+```
