@@ -55,24 +55,21 @@
               <el-scrollbar style="height: 100%">
                 <el-card class="box-card" v-bind:class="item.method">
                   <div slot="header" class="card-header">
-                    <span class="method">{{ item.method }}</span><span class="path" v-clipboard:copy="item.path"
-                                                                       v-clipboard:success="onCopy">{{
-                      item.path
-                    }}</span><span
-                      class="summary">{{ item.summary }}</span>
+                    <span class="method">{{ item.method }}</span>
+                    <span class="path" v-clipboard:copy="item.path" v-clipboard:success="onCopy">{{ item.path }}</span>
+                    <span class="summary">{{ item.summary }}</span>
                     <el-button type="success" v-if="item.try" @click="execute(item.path+'-'+item.method,item)"
-                               style="position: absolute;right: 108px;top: 8px;" plain>Execute!
+                               style="position: absolute;right: 108px;top: 8px;" plain>执行
                     </el-button>
                     <el-button type="warning" v-if="item.try" @click="tryIt(item,false)"
-                               style="position: absolute;right: 8px;top: 8px;" plain>Cancel!
+                               style="position: absolute;right: 8px;top: 8px;" plain>取消
                     </el-button>
                     <el-button type="primary" v-else @click="tryIt(item,true)"
-                               style="position: absolute;right: 8px;top: 8px;" plain>Try it out!
+                               style="position: absolute;right: 8px;top: 8px;" plain>模拟调用
                     </el-button>
                   </div>
                   <div class="description" v-if="item.description && item.description !== ''">{{ item.description }}
                   </div>
-
                   <el-form :model="item" :ref="item.path+'-'+item.method" v-loading="item.executing">
                     <el-tabs type="border-card" v-model="item.tab" style="height: 100%">
                       <el-tab-pane label="参数" name="params">
@@ -108,7 +105,7 @@
                               <el-col :span="6">
                                 <el-form-item :prop="'private.'+index+'.value'" :rules="param.rules">
                                   <template v-if="item.try">
-                                    <el-input-number v-if="param.type === 'integer'" :step="1"
+                                    <el-input-number v-if="param.type === 'integer' || param.type === 'byte'" :step="1"
                                                      @input="updateForm(mainIndex)"
                                                      v-model="item.private[index].value"/>
                                     <el-input-number v-else-if="param.type === 'number'" @input="updateForm(mainIndex)"
@@ -166,7 +163,7 @@
                               </el-col>
                               <el-col :span="6">
                                 <el-form-item v-if="item.try" :prop="'common.'+index+'.value'" :rules="param.rules">
-                                  <el-input-number v-if="param.type === 'integer'" :step="1"
+                                  <el-input-number v-if="param.type === 'integer' || param.type === 'byte'" :step="1"
                                                    @input="updateForm(mainIndex)"
                                                    v-model="param.value"/>
                                   <el-input-number v-else-if="param.type === 'number'" @input="updateForm(mainIndex)"
@@ -250,8 +247,7 @@
                                     </el-col>
                                   </el-row>
                                   <el-row v-for="(property,key,index) in entity.properties" :key="index">
-                                    <el-col :span="4" class="name" v-clipboard:copy="key"
-                                            v-clipboard:success="onCopy">
+                                    <el-col :span="4" class="name" v-clipboard:copy="key" v-clipboard:success="onCopy">
                                       {{ key }}
                                     </el-col>
                                     <el-col :span="4">
@@ -303,13 +299,11 @@
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
                             <div v-highlight>
                             <pre style="margin: 0;">
-                              <code v-html="toHtml(item.swift)" style="border-radius: 6px;"
-                                    class="swift"/>
+                              <code v-html="toHtml(item.swift)" style="border-radius: 6px;" class="swift"/>
                             </pre>
                             </div>
                             <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.swift"
-                                       type="mini"
-                                       v-clipboard:success="onCopy">copy
+                                       type="mini" v-clipboard:success="onCopy">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
@@ -472,6 +466,8 @@ export default {
 
   },
   methods: {
+
+    //#region 添加自定义头
     headerChanged() {//公共头参数发生变化，存储到本地
       localStorage.setItem("headers", JSON.stringify(this.headers));
     },
@@ -489,6 +485,27 @@ export default {
         value: ''
       });
       localStorage.setItem("headers", JSON.stringify(this.headers));
+    },
+    //#endregion
+
+    groupChanged() {
+      let that = this;
+      console.log('groupChanged' + that.groupName);
+      if (process.env.NODE_ENV === 'testing') {
+        that.parseDocs(require('../assets/api-docs'))
+      } else {
+        if (that.resources != null && that.resources.length > 0) {
+          let items = that.resources.filter(resource => resource.url === that.groupName);
+          if (items.length > 0) {
+          } else {
+            that.groupName = that.resources[0].url
+          }
+          console.log(that.groupName);
+          $.getJSON(that.groupName, function (resp) {
+            that.parseDocs(resp.data);
+          });
+        }
+      }
     },
     keywordChanged() {
       let that = this;
@@ -510,9 +527,12 @@ export default {
       }
       localStorage.setItem('keyword', this.keyword);
     },
-    toHtml(str) {
-      return str.replaceAll('<', '&lt;');
+    updateForm(index) {
+      this.items[index] = this.items[index];
+      this.renderIndex += 1;
+      this.$forceUpdate()
     },
+
     supportFetchFunc() {
       let that = this;
       $.ajax({
@@ -532,11 +552,6 @@ export default {
         }
       });
     },
-    updateForm(index) {
-      this.items[index] = this.items[index];
-      this.renderIndex += 1;
-      this.$forceUpdate()
-    },
     execute(formName, item) {
       let that = this;
       let path = item.path;
@@ -554,7 +569,7 @@ export default {
           } else {
             params[entity.name] = entity.value
           }
-        })
+        });
       }
       //处理私有参数
       if (item.private !== undefined) {
@@ -569,7 +584,7 @@ export default {
           } else {
             params[entity.name] = entity.value
           }
-        })
+        });
       }
       item.executing = true;
       that.$forceUpdate();
@@ -588,6 +603,7 @@ export default {
         data: params,
         cache: false,
         success: function (resp) {
+          item.executing = false;
           item.executeTime = new Date() - startAt + 'ms';
           item.result = JSON.stringify(resp, null, 4);
           item.open.push(3);
@@ -595,17 +611,14 @@ export default {
           item.tab = 'result';
           that.$forceUpdate();
         },
-        complete: function (jqXHR, textStatus) {
-          item.executing = false;
-        },
         error: function (jqXHR, textStatus, errorThrown) {
+          item.executing = false;
           that.$alert(jqXHR.responseText, jqXHR.statusText, {
             confirmButtonText: '确定'
           });
           console.log(error);
         }
-      })
-
+      });
     },
     checkForm(formName) {
       this.$nextTick(function () {
@@ -618,25 +631,6 @@ export default {
           }
         })
       })
-    },
-    groupChanged() {
-      let that = this;
-      console.log('groupChanged' + that.groupName);
-      if (process.env.NODE_ENV === 'testing') {
-        that.parseDocs(require('../assets/api-docs'))
-      } else {
-        if (that.resources != null && that.resources.length > 0) {
-          let items = that.resources.filter(resource => resource.url === that.groupName);
-          if (items.length > 0) {
-          } else {
-            that.groupName = that.resources[0].url
-          }
-          console.log(that.groupName);
-          $.getJSON(that.groupName, function (resp) {
-            that.parseDocs(resp.data);
-          });
-        }
-      }
     },
     parseDocs(data) {
       console.log(JSON.stringify(data));
@@ -665,9 +659,7 @@ export default {
       this.keywordChanged();
       this.$forceUpdate();
     },
-    onCopy() {
-      this.$message.success('复制成功')
-    },
+
     listRecursive(ref) {
       if (ref.type === 'array' && ref.items.originalRef !== undefined) {
         return 'List<' + this.listRecursive(ref.items.originalRef) + '>'
@@ -679,6 +671,7 @@ export default {
         return ref
       }
     },
+
     findTagNode: function (tag, doc) {
       for (let index = 0; index !== doc.tags.length; ++index) {
         let entity = doc.tags[index];
@@ -701,6 +694,8 @@ export default {
       }
       this.$forceUpdate()
     },
+
+    //#region 生成实体类的方法
     toJson(module) {
       let code = '{\n';
       for (let name in module.properties) {
@@ -749,6 +744,45 @@ export default {
       code += '\n}';
       return code
     },
+    toObjectMapper(module) {
+      let code = '//\n' +
+          '//  ' + module.title + '.swift\n' +
+          '//  JO\n' +
+          '//\n' +
+          '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
+          '//  Copyright © 2020 JO. All rights reserved.\n' +
+          '//\n' +
+          '\n' +
+          'import UIKit\n' +
+          'import ObjectMapper \n' +
+          '\n' +
+          'class ' + module.title + ': Mappable {';
+
+      let init = '\n    func mapping(map: Map) {';
+      for (let name in module.properties) {
+        if (module.properties.hasOwnProperty(name)) {
+          let property = module.properties[name];
+          code += '\n    //' + property.description + '\n';
+          if (property.type === 'array' && property.items.originalRef !== undefined) {
+            code += '    var ' + name + ': [' + property.items.originalRef + ']!';
+            init += '\n        ' + name + ' <- map["' + name + '"]'
+          } else if (property.type === 'array') {
+            code += '    var ' + name + ': [' + this.toSwiftType(property.items, false, property.format) + ']!';
+            init += '\n        ' + name + ' <- map["' + name + '"]'
+          } else {
+            code += '    var ' + name + ': ' + this.toSwiftType(property, true, property.format);
+            init += '\n        ' + name + ' <- map["' + name + '"]'
+          }
+        }
+      }
+      init += '\n    }';
+      code += '\n\n    required init?(map: Map){\n' +
+          '    }\n';
+      code += init;
+      code += '\n}';
+
+      return code
+    },
     toSwiftJson(module) {
       let code = '//\n' +
           '//  ' + module.title + '.swift\n' +
@@ -789,45 +823,6 @@ export default {
 
       return code
     },
-    toObjectMapper(module) {
-      let code = '//\n' +
-          '//  ' + module.title + '.swift\n' +
-          '//  JO\n' +
-          '//\n' +
-          '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2020 JO. All rights reserved.\n' +
-          '//\n' +
-          '\n' +
-          'import UIKit\n' +
-          'import ObjectMapper \n' +
-          '\n' +
-          'class ' + module.title + ': Mappable {';
-
-      let init = '\n    func mapping(map: Map) {';
-      for (let name in module.properties) {
-        if (module.properties.hasOwnProperty(name)) {
-          let property = module.properties[name];
-          code += '\n    //' + property.description + '\n';
-          if (property.type === 'array' && property.items.originalRef !== undefined) {
-            code += '    var ' + name + ': [' + property.items.originalRef + ']!';
-            init += '\n        ' + name + ' <- map["' + name + '"]'
-          } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items, false, property.format) + ']!';
-            init += '\n        ' + name + ' <- map["' + name + '"]'
-          } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property, true, property.format);
-            init += '\n        ' + name + ' <- map["' + name + '"]'
-          }
-        }
-      }
-      init += '\n    }';
-      code += '\n\n    required init?(map: Map){\n' +
-          '    }\n';
-      code += init;
-      code += '\n}';
-
-      return code
-    },
     toSwiftJsonValue(type, format) {
       switch (type) {
         case 'integer':
@@ -837,11 +832,15 @@ export default {
             }
           }
           return '.intValue';
+        case 'byte':
+          return ".int8Value";
         case 'number':
           return '.doubleValue';
         case 'string':
           if (format === 'date-time') {
             return '.int64Value';
+          } else if (format === 'byte') {
+            return '.int8Value';
           }
           return '.stringValue';
         case 'boolean':
@@ -850,6 +849,9 @@ export default {
           return ''
       }
     },
+    //#endregion
+
+    //#region 类型转化
     toJavaType(property, format) {
       if (property.type === undefined) {
         return this.toJavaBaseType(property, format)
@@ -862,11 +864,15 @@ export default {
             }
           }
           return 'Integer';
+        case 'byte':
+          return "Byte";
         case 'number':
           return 'Double';
         case 'string':
           if (format === 'date-time') {
             return 'DateTime';
+          } else if (format === 'byte') {
+            return 'Byte';
           }
           return 'String';
         case 'boolean':
@@ -886,11 +892,15 @@ export default {
             }
           }
           return 'Integer';
+        case 'byte':
+          return "Byte";
         case 'number':
           return 'Double';
         case 'string':
           if (format === 'date-time') {
             return 'DateTime';
+          } else if (format === 'byte') {
+            return 'Byte';
           }
           return 'String';
         case 'boolean':
@@ -908,8 +918,12 @@ export default {
           return 0;
         case 'number':
           return 0;
+        case 'byte':
+          return 0;
         case 'string':
-          if (format === 'date-time') {
+          if (property.format === 'date-time') {
+            return '0';
+          } else if (property.format === 'byte') {
             return '0';
           }
           return '\'\'';
@@ -933,11 +947,15 @@ export default {
             }
           }
           return 'Int' + (init ? ' = 0' : '');
+        case 'byte':
+          return 'Int8' + (init ? ' = 0' : '');
         case 'number':
           return 'Double' + (init ? ' = 0.0' : '');
         case 'string':
           if (format === 'date-time') {
             return 'Int64' + (init ? ' = 0' : '');
+          } else if (format === 'byte') {
+            return 'Int8' + (init ? ' = 0' : '');
           }
           return 'String' + (init ? ' = ""' : '');
         case 'boolean':
@@ -948,6 +966,8 @@ export default {
           return property.type + '!';
       }
     },
+    //#endregion
+
     tryIt(item, op) {
       item.try = op;
       if (op && !item.open.contains(1)) {
@@ -1017,8 +1037,17 @@ export default {
               if (param.value === undefined) {
                 param.value = 0;
               }
+            } else if (param.type === 'string' && param.format === 'byte') {
+              param.type = 'byte';
+              param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
+                type: 'number',
+                message: '请输入合法的数字'
+              }];
+              if (param.value === undefined) {
+                param.value = 0;
+              }
             } else if (param.type === 'string') {
-              param.rules = [{validator: this.checkAge, required: param.required, message: '必填', trigger: 'blur'}];
+              param.rules = [{required: param.required, message: '必填', trigger: 'blur'}];
               if (param.value === undefined) {
                 param.value = '';
               }
@@ -1283,6 +1312,14 @@ export default {
         }
       }
     },
+
+    //#region 公共方法
+    onCopy() {
+      this.$message.success('复制成功')
+    },
+    toHtml(str) {
+      return str.replaceAll('<', '&lt;');
+    },
     formatDate(date) {
       let fmt = 'yyyy-MM-dd hh:mm:ss';
       if (/(y+)/.test(fmt)) {
@@ -1302,23 +1339,8 @@ export default {
         }
       }
       return fmt
-    },
-    checkAge(rule, value, callback) {
-      if (!value) {
-        return callback(new Error('年龄不能为空'));
-      }
-      setTimeout(() => {
-        if (!Number.isInteger(value)) {
-          callback(new Error('请输入数字值'));
-        } else {
-          if (value < 18) {
-            callback(new Error('必须年满18岁'));
-          } else {
-            callback()
-          }
-        }
-      }, 1000)
-    },
+    }
+    //#endregion
   }
 }
 </script>

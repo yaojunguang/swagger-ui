@@ -146,9 +146,9 @@ mvn install
 <dependency>
     <groupId>com.smarthito</groupId>
     <artifactId>swagger-ui</artifactId>
-    <version>2.8</version>
+    <version>2.9</version>
     <scope>system</scope>
-    <systemPath>${pom.basedir}/src/main/libs/swagger-ui-2.8.jar</systemPath>
+    <systemPath>${pom.basedir}/src/main/libs/swagger-ui-2.9.jar</systemPath>
 </dependency>
 ```    
 
@@ -157,7 +157,7 @@ mvn install
 <dependency>
     <groupId>com.smarthito</groupId>
     <artifactId>swagger-ui</artifactId>
-    <version>2.8</version>
+    <version>2.9</version>
 </dependency>
 ```
 
