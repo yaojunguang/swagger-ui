@@ -4,6 +4,8 @@ module.exports = {
     publicPath: process.env.BASE_URL,
     // outputDir: "dist/static",
     assetsDir: 'static',
+    //打包后的启动文件
+    indexPath: "swagger-ui.html",
     productionSourceMap: process.env.NODE_ENV !== "production",
     chainWebpack: config => {
         config.optimization.minimizer('terser').tap((args) => {
