@@ -501,8 +501,15 @@ export default {
             that.groupName = that.resources[0].url
           }
           console.log(that.groupName);
-          $.getJSON(that.groupName, function (resp) {
-            that.parseDocs(resp.data);
+          $.ajax({
+            xhrFields: {
+              withCredentials: true
+            },
+            url: that.groupName,
+            type: 'get',
+            success: function (resp) {
+              that.parseDocs(resp);
+            }
           });
         }
       }

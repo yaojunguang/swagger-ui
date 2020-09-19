@@ -2,7 +2,7 @@ const path = require('path');
 const resolve = dir => path.join(__dirname, dir);
 module.exports = {
     publicPath: process.env.BASE_URL,
-    // outputDir: "dist/static",
+    outputDir: "target/classes/META-INF/resources",
     assetsDir: 'static',
     //打包后的启动文件
     indexPath: "swagger-ui.html",
@@ -14,7 +14,7 @@ module.exports = {
             args[0].terserOptions.compress.drop_debugger = true // 默认true
             args[0].terserOptions.compress.pure_funcs = ['console.*']
             return args
-        })
+        });
         // 修复HMR
         config.resolve.symlinks(true);
 
