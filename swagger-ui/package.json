@@ -1,0 +1,25 @@
+{
+  "name": "swagger-ui",
+  "version": "3.0.0",
+  "description": "A Vue.js project",
+  "author": "yaojunguang <yaojunguang@outlook.com>",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "element-ui": "^2.10.1",
+    "highlight.js": "^9.15.8",
+    "jquery": "^3.4.1",
+    "vue": "^2.6.11",
+    "vue-clipboard2": "^0.3.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "jquery": "^3.5.0",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
