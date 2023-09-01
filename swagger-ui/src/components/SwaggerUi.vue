@@ -131,7 +131,8 @@
                           <el-collapse-item :name="1" v-if="item.common">
                             <template slot="title">
                               公共参数
-                              <el-tooltip class="item" effect="dark" content="公共参数是以【公共参数】注解开头的参数归类到该分组"
+                              <el-tooltip class="item" effect="dark"
+                                          content="公共参数是以【公共参数】注解开头的参数归类到该分组"
                                           placement="right">
                                 <i class="header-icon el-icon-info"/>
                               </el-tooltip>
@@ -186,7 +187,8 @@
                           <el-collapse-item :name="-1">
                             <template slot="title">
                               头部参数(headers)
-                              <el-tooltip class="item" effect="dark" content="该部分设置为全局设置，设置后会存储在本地缓存中"
+                              <el-tooltip class="item" effect="dark"
+                                          content="该部分设置为全局设置，设置后会存储在本地缓存中"
                                           placement="right">
                                 <i class="header-icon el-icon-info"/>
                               </el-tooltip>
@@ -253,7 +255,7 @@
                                     </el-col>
                                     <el-col :span="4">
                                       <template v-if="property.type === 'array' && property.items.originalRef">
-                                        List<{{ property.items.originalRef }}>
+                                        List&lt;{{ property.items.originalRef }}>
                                       </template>
                                       <template v-else-if="property.type === 'array'">
                                         {{ 'List<' + listRecursive(property.items) + '>' }}
@@ -391,9 +393,10 @@ export default {
       renderIndex: 1,
       loading: false,
       keyword: '',
-      form: {},
+      form: null,
       items: [],
       newTags: [],
+      mockModel: true,
     }
   },
   watch: {
@@ -431,22 +434,23 @@ export default {
     }
   },
   mounted() {
-    if (process.env.NODE_ENV === 'testing') {
+    if (this.mockModel) {
       if (this.groupName == null) {
         this.groupName = this.resources[0].name;
       }
-      this.groupChanged()
+      this.groupChanged();
     } else {
       let that = this;
-      $.getJSON('/swagger-resources', function (resp) {
-        that.resources = resp;
+      this.axios({
+        url: "/swagger-resources"
+      }).then(res => {
+        that.resources = res;
         if (that.groupName == null) {
           that.groupName = that.resources[0].name;
         }
         that.groupChanged()
       });
     }
-
     this.groupName = localStorage.getItem('groupName');
     this.keyword = localStorage.getItem('keyword');
     if (this.keyword === null || this.keyword === undefined) {
@@ -490,30 +494,27 @@ export default {
     //#endregion
 
     groupChanged() {
-      let that = this;
-      console.log('groupChanged' + that.groupName);
-      if (process.env.NODE_ENV === 'testing') {
-        that.parseDocs(require('../assets/api-docs'))
+      console.log('groupChanged' + this.groupName);
+      let docUrl;
+      if (this.mockModel) {
+        docUrl = "/v2/api-docs.json";
       } else {
-        if (that.resources != null && that.resources.length > 0) {
-          let items = that.resources.filter(resource => resource.url === that.groupName);
+        if (this.resources != null && this.resources.length > 0) {
+          let items = this.resources.filter(resource => resource.url === this.groupName);
           if (items.length > 0) {
           } else {
-            that.groupName = that.resources[0].url
+            this.groupName = this.resources[0].url
           }
-          console.log(that.groupName);
-          $.ajax({
-            xhrFields: {
-              withCredentials: true
-            },
-            url: that.groupName,
-            type: 'get',
-            success: function (resp) {
-              that.parseDocs(resp);
-            }
-          });
+          docUrl = this.groupName;
         }
       }
+      this.axios({
+        url: docUrl,
+        method: "GET"
+      }).then(res => {
+        console.log(res);
+        this.parseDocs(res.data)
+      });
     },
     keywordChanged() {
       if (this.keyword !== '' && this.keyword !== null) {

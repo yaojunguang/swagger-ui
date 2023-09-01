@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <el-config-provider>
     <SwaggerUi/>
-  </div>
+  </el-config-provider>
 </template>
 
 <script>

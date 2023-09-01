@@ -1,45 +1,31 @@
-import Vue from 'vue';
-import App from './App.vue';
-import jquery from 'jquery';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import VueClipboard from 'vue-clipboard2';
-import highlight from 'highlight.js';
-import 'highlight.js/styles/googlecode.css'; //样式文件
+import {createApp} from 'vue'
+import App from './App.vue'
+import store from './store'
+import axios from './plugins/axios';
+import * as Icons from '@element-plus/icons-vue';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import zhCn from 'element-plus/es/locale/lang/zh-cn';
+import HljsVuePlugin from '@highlightjs/vue-plugin'
+import 'highlight.js/styles/atom-one-dark.css'
+import 'highlight.js/lib/common'
+import jquery from 'jquery'
 
-Vue.use(VueClipboard);
-Vue.use(ElementUI);
-Vue.directive('highlight', function (el) {
-    let blocks = el.querySelectorAll('code');
-    setTimeout(() => {
-        blocks.forEach((block) => {
-            highlight.highlightBlock(block);
-        })
-    }, 200);
-});
-
-window.jquery = window.$ = jquery;
-
-Vue.config.productionTip = false;
-
-String.prototype.replaceAll = function (FindText, RepText) {
-    if (this != null) {
-        let regExp = new RegExp(FindText, 'g')
-        return this.replace(regExp, RepText)
+const app = createApp(App)
+// 分环境处理
+if (import.meta.env.DEV) {
+    if ('__VUE_DEVTOOLS_GLOBAL_HOOK__' in window) {
+        window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app
     }
-    return null
-};
-
-Array.prototype.contains = function (obj) {
-    let i = this.length;
-    while (i--) {
-        if (this[i] === obj) {
-            return true
-        }
-    }
-    return false
+    app.config.devtools = true
 }
-
-new Vue({
-    render: h => h(App),
-}).$mount('#app');
+window.jquery = window.$ = jquery;
+//全局配置
+app.config.globalProperties.axios = axios;
+app.use(store)
+    .use(HljsVuePlugin)
+    .use(ElementPlus, {locale: zhCn})
+    .mount('#app');
+Object.keys(Icons).forEach(key => {
+    app.component(key, Icons[key]);
+});
