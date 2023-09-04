@@ -267,16 +267,16 @@
                                     </el-col>
                                   </el-row>
                                 </div>
-                                <div v-else style="position: relative;margin-right: 12px;">
+                                <div v-else-if="entity.result" style="position: relative;margin-right: 12px;">
                                   <highlightjs autodetect :code="toHtml(entity.result)" style="border-radius: 6px;"
                                                :class="entity.language === 'Java'?'Java':'swift'"/>
                                 </div>
                                 <el-button v-if="entity.language !== 'normal'"
-                                           style="position: absolute;right: 380px;top: 23px;"
-                                           @click="copy(entity.result)" size="mini" icon="el-icon-document-copy">copy
+                                           style="position: absolute;right: 360px;top: 8px; text-align: center;"
+                                           @click="copy(entity.result)" size="small" icon="el-icon-document-copy">copy
                                 </el-button>
                                 <el-radio-group class="language-radio"
-                                                @change="changeLanguage(entity)" size="mini"
+                                                @change="changeLanguage(entity)" size="small"
                                                 v-model="entity.language">
                                   <el-radio-button label="normal">常规</el-radio-button>
                                   <el-radio-button label="SwiftJson">SwiftJson</el-radio-button>
@@ -295,28 +295,28 @@
                             <highlightjs autodetect :code="toHtml(item.swift)" style="border-radius: 6px;"
                                          class="swift"/>
                             <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.swift)"
-                                       type="mini">copy
+                                       size="small">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
                             <highlightjs autodetect :code="toHtml(item.retrofit)" style="border-radius: 6px;"
                                          class="java"/>
                             <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.retrofit)"
-                                       type="mini">copy
+                                       size="small">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="axios" label="axios" style="position: relative;">
                             <highlightjs autodetect :code="toHtml(item.axios)" style="border-radius: 6px;"
                                          class="java"/>
                             <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.axios)"
-                                       type="mini">copy
+                                       size="small">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="java" label="java" style="position: relative;">
                             <highlightjs autodetect :code="toHtml(item.java)" style="border-radius: 6px;"
                                          class="java"/>
                             <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.java)"
-                                       type="mini">copy
+                                       size="small">copy
                             </el-button>
                           </el-tab-pane>
                         </el-tabs>
@@ -326,7 +326,7 @@
                         <highlightjs autodetect :code="toHtml(item.result)" style="border-radius: 6px;"
                                      class="json"/>
                         <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.result)"
-                                   type="mini">copy
+                                   size="small">copy
                         </el-button>
                       </el-tab-pane>
                     </el-tabs>
@@ -1049,8 +1049,8 @@ export default {
 
 .language-radio {
   position: absolute;
-  right: 12px;
-  top: 23px;
+  right: 18px;
+  top: 8px;
 }
 
 </style>
