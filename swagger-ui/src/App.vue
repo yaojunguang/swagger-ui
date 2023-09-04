@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import SwaggerUi from "components/SwaggerUi";
+import SwaggerUi from "@/SwaggerUi";
 
 export default {
   name: 'App',

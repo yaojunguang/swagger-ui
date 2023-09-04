@@ -46,7 +46,7 @@
             </el-menu>
           </el-scrollbar>
         </el-aside>
-        <el-aside id="resizeBar" width="6px" class="resize"/>
+        <el-aside id="resizeBar" width="6px" class="resize" @mousedown="handleResize"/>
         <el-main class="main-cards" v-if="renderIndex">
           <el-tabs v-if="items.length > 0" type="border-card" v-model="activeName" style="calc(height: 100% - 50px)"
                    closable
@@ -57,7 +57,7 @@
                 <el-card class="box-card" v-bind:class="item.method">
                   <div slot="header" class="card-header">
                     <span class="method">{{ item.method }}</span>
-                    <span class="path" v-clipboard:copy="item.path" v-clipboard:success="onCopy">{{ item.path }}</span>
+                    <span class="path" @click="copy(item.path)">{{ item.path }}</span>
                     <span class="summary">{{ item["summary"] }}</span>
                     <el-button type="success" v-if="item.try" @click="execute(item.path+'-'+item.method,item)"
                                style="position: absolute;right: 108px;top: 8px;" plain>执行
@@ -93,8 +93,7 @@
                             </el-row>
                             <el-row v-for="(param,index) in item.private" :key="param.name">
                               <el-col :span="4" class="name" v-bind:class="param.required?'required':''"
-                                      v-clipboard:copy="param.name"
-                                      v-clipboard:success="onCopy">
+                                      @click="copy(param.name)">
                                 {{ param.name }}<span>* required</span>
                               </el-col>
                               <el-col :span="2">
@@ -153,9 +152,7 @@
                             </el-row>
                             <el-row v-for="(param,index) in item.common" :key="index">
                               <el-col :span="4" class="name" v-bind:class="param.required?'required':''"
-                                      v-clipboard:copy="param.name"
-                                      v-clipboard:success="onCopy">
-                                {{ param.name }}<span>* required</span>
+                                      @click="copy(param.name)">{{ param.name }}<span>* required</span>
                               </el-col>
                               <el-col :span="2">
                                 {{ param.type }}
@@ -250,7 +247,7 @@
                                     </el-col>
                                   </el-row>
                                   <el-row v-for="(property,key,index) in entity.properties" :key="index">
-                                    <el-col :span="4" class="name" v-clipboard:copy="key" v-clipboard:success="onCopy">
+                                    <el-col :span="4" class="name" @click="copy(key)">
                                       {{ key }}
                                     </el-col>
                                     <el-col :span="4">
@@ -271,17 +268,12 @@
                                   </el-row>
                                 </div>
                                 <div v-else style="position: relative;margin-right: 12px;">
-                                  <div v-highlight>
-                            <pre style="margin-top: 0">
-                            <code v-html="toHtml(entity.result)" style="border-radius: 6px;"
-                                  :class="entity.language === 'Java'?'Java':'swift'"/>
-                              </pre>
-                                  </div>
+                                  <highlightjs autodetect :code="toHtml(entity.result)" style="border-radius: 6px;"
+                                               :class="entity.language === 'Java'?'Java':'swift'"/>
                                 </div>
                                 <el-button v-if="entity.language !== 'normal'"
                                            style="position: absolute;right: 380px;top: 23px;"
-                                           v-clipboard:copy="entity.result"
-                                           v-clipboard:success="onCopy" size="mini" icon="el-icon-document-copy">copy
+                                           @click="copy(entity.result)" size="mini" icon="el-icon-document-copy">copy
                                 </el-button>
                                 <el-radio-group class="language-radio"
                                                 @change="changeLanguage(entity)" size="mini"
@@ -300,60 +292,41 @@
                       <el-tab-pane label="调用参考" name="execute" style="position: relative">
                         <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
-                            <div v-highlight>
-                            <pre style="margin: 0;">
-                              <code v-html="toHtml(item.swift)" style="border-radius: 6px;" class="swift"/>
-                            </pre>
-                            </div>
-                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.swift"
-                                       type="mini" v-clipboard:success="onCopy">copy
+                            <highlightjs autodetect :code="toHtml(item.swift)" style="border-radius: 6px;"
+                                         class="swift"/>
+                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.swift)"
+                                       type="mini">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
-                            <div v-highlight>
-                            <pre style="margin: 0">
-                              <code v-html="toHtml(item.retrofit)" style="border-radius: 6px;" class="java"/>
-                            </pre>
-                            </div>
-                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.retrofit"
-                                       type="mini"
-                                       v-clipboard:success="onCopy">copy
+                            <highlightjs autodetect :code="toHtml(item.retrofit)" style="border-radius: 6px;"
+                                         class="java"/>
+                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.retrofit)"
+                                       type="mini">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="axios" label="axios" style="position: relative;">
-                            <div v-highlight>
-                            <pre style="margin: 0">
-                              <code v-html="toHtml(item.axios)" style="border-radius: 6px;" class="java"/>
-                            </pre>
-                            </div>
-                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.axios"
-                                       type="mini"
-                                       v-clipboard:success="onCopy">copy
+                            <highlightjs autodetect :code="toHtml(item.axios)" style="border-radius: 6px;"
+                                         class="java"/>
+                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.axios)"
+                                       type="mini">copy
                             </el-button>
                           </el-tab-pane>
                           <el-tab-pane name="java" label="java" style="position: relative;">
-                            <div v-highlight>
-                            <pre style="margin: 0">
-                              <code v-html="toHtml(item.java)" style="border-radius: 6px;" class="java"/>
-                            </pre>
-                            </div>
-                            <el-button style="position: absolute;right: 0;top: 16px;" v-clipboard:copy="item.java"
-                                       type="mini"
-                                       v-clipboard:success="onCopy">copy
+                            <highlightjs autodetect :code="toHtml(item.java)" style="border-radius: 6px;"
+                                         class="java"/>
+                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.java)"
+                                       type="mini">copy
                             </el-button>
                           </el-tab-pane>
                         </el-tabs>
                       </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
                         <div>调用耗时:{{ item.executeTime }}</div>
-                        <div v-highlight>
-                            <pre style="margin: 0 12px;">
-                              <code v-html="item.result" style="border-radius: 6px;" class="json"/>
-                            </pre>
-                        </div>
-                        <el-button style="position: absolute;right: 12px;top: 16px;" v-clipboard:copy="item.result"
-                                   type="mini"
-                                   v-clipboard:success="onCopy">copy
+                        <highlightjs autodetect :code="toHtml(item.result)" style="border-radius: 6px;"
+                                     class="json"/>
+                        <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.result)"
+                                   type="mini">copy
                         </el-button>
                       </el-tab-pane>
                     </el-tabs>
@@ -370,6 +343,13 @@
 
 <script>
 
+import {swiftCallExample, toSwiftJson} from "components/Module2Swift";
+import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Java";
+import {jsCallExample, toJson} from "components/Module2Js";
+import {toObjectMapper} from "components/Module2ObjectMapper";
+import useClipboard from 'vue-clipboard3'
+
+let {toClipboard} = useClipboard();
 export default {
   name: 'SwaggerUi',
   data() {
@@ -403,29 +383,6 @@ export default {
     form: function () {
       let that = this;
       this.$nextTick(function () {
-        $('#resizeBar').mousedown(function (e) {
-          let event = window.event || e;
-          let obj = (event.target) ? event.target : event.srcElement;
-          if (obj.setCapture) {
-            obj.setCapture();
-          } else if (window.captureEvents) {
-            window.captureEvents(Event.MOUSEMOVE | Event.MOUSEUP);
-          }
-          that.moveTarget = obj
-        });
-        $(document).mousemove(function (e) {
-          if (that.moveTarget != null) {
-            let event = window.event || e;
-            that.leftSize = event.pageX;
-            $('#menu-aside').width(that.leftSize);
-          }
-        }).mouseup(function (e) {
-          if (that.moveTarget != null) {
-            let event = window.event || e;
-            that.moveTarget = null;
-            localStorage.setItem('menu-aside', event.pageX);
-          }
-        });
         that.supportFetchFunc()
       })
     },
@@ -471,6 +428,24 @@ export default {
 
   },
   methods: {
+    handleResize() {//menu大小的拖动
+      let that = this;
+      document.onmousemove = function (e) {
+        let event = window.event || e;
+        that.leftSize = event.pageX;
+      }
+      document.onmouseup = (e) => {
+        let event = window.event || e;
+        that.leftSize = event.pageX;
+        localStorage.setItem('menu-aside', that.leftSize);
+        document.onmousemove = null;
+        document.onmouseup = null;
+      }
+    },
+    copy(content) {
+      toClipboard(content);
+      this.$message.success('复制成功')
+    },
 
     //#region 添加自定义头
     headerChanged() {//公共头参数发生变化，存储到本地
@@ -689,299 +664,24 @@ export default {
       }
       return null
     },
-
     changeLanguage(entity) {
+      console.log(entity.language)
       if (entity.language === 'SwiftJson') {
-        entity.result = this.toSwiftJson(entity)
+        entity.result = toSwiftJson(entity)
       } else if (entity.language === 'ObjectMapper') {
-        entity.result = this.toObjectMapper(entity)
+        entity.result = toObjectMapper(entity)
       } else if (entity.language === 'Java') {
-        entity.result = this.toJava(entity)
+        entity.result = toJava(entity)
       } else if (entity.language === 'Json') {
-        entity.result = this.toJson(entity)
+        entity.result = toJson(entity)
       }
       this.$forceUpdate()
     },
-
-    //#region 生成实体类的方法
-    toJson(module) {
-      let code = '{\n';
-      for (let name in module.properties) {
-        if (module.properties.hasOwnProperty(name)) {
-          let property = module.properties[name];
-          code += '    //' + property.description + '\n';
-          if (property.type === 'array' && property.items.originalRef !== undefined) {
-            code += '    ' + name + ':[' + this.toJsonType(property.items.originalRef) + '],\n'
-          } else if (property.type === 'array') {
-            code += '    ' + name + ':[' + this.toJsonType(property.items) + '],\n'
-          } else {
-            code += '    ' + name + ':' + this.toJsonType(property) + ',\n'
-          }
-        }
-      }
-      code += '\n}';
-      return code
-    },
-    toJava(module) {
-      let code =
-          '\n\nimport lombok.Data;\n\n' +
-          'import java.util.List;\n' +
-          '\n' +
-          '/**\n' +
-          ' * Created by @author yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          ' * Copyright © 2020 JO. All rights reserved.\n' +
-          ' */\n' +
-          '@Data\n' +
-          'public class ' + module.title + ' {';
-
-      for (let name in module.properties) {
-        if (module.properties.hasOwnProperty(name)) {
-          let property = module.properties[name];
-          code += '\n    /**\n' +
-              '     *' + property.description +
-              '\n     */\n';
-          if (property.type === 'array' && property.items.originalRef !== undefined) {
-            code += '    private List<' + property.items.originalRef + '> ' + name + ';'
-          } else if (property.type === 'array') {
-            code += '    private List<' + this.toJavaType(property.items, property.format) + '> ' + name + ';'
-          } else {
-            code += '    private ' + this.toJavaType(property, property.format) + ' ' + name + ';'
-          }
-        }
-      }
-      code += '\n}';
-      return code
-    },
-    toObjectMapper(module) {
-      let code = '//\n' +
-          '//  ' + module.title + '.swift\n' +
-          '//  JO\n' +
-          '//\n' +
-          '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2020 JO. All rights reserved.\n' +
-          '//\n' +
-          '\n' +
-          'import UIKit\n' +
-          'import ObjectMapper \n' +
-          '\n' +
-          'class ' + module.title + ': Mappable {';
-
-      let init = '\n    func mapping(map: Map) {';
-      for (let name in module.properties) {
-        if (module.properties.hasOwnProperty(name)) {
-          let property = module.properties[name];
-          code += '\n    //' + property.description + '\n';
-          if (property.type === 'array' && property.items.originalRef !== undefined) {
-            code += '    var ' + name + ': [' + property.items.originalRef + ']!';
-            init += '\n        ' + name + ' <- map["' + name + '"]'
-          } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items, false, property.format) + ']!';
-            init += '\n        ' + name + ' <- map["' + name + '"]'
-          } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property, true, property.format);
-            init += '\n        ' + name + ' <- map["' + name + '"]'
-          }
-        }
-      }
-      init += '\n    }';
-      code += '\n\n    required init?(map: Map){\n' +
-          '    }\n';
-      code += init;
-      code += '\n}';
-
-      return code
-    },
-    toSwiftJson(module) {
-      let code = '//\n' +
-          '//  ' + module.title + '.swift\n' +
-          '//  JO\n' +
-          '//\n' +
-          '//  Created by yaojunguang on ' + this.formatDate(new Date()) + '.\n' +
-          '//  Copyright © 2020 JO. All rights reserved.\n' +
-          '//\n' +
-          '\n' +
-          'import UIKit\n' +
-          'import SwiftyJSON \n' +
-          '\n' +
-          'class ' + module.title + ' {';
-
-      let init = '\n\n    init(json: JSON) {';
-      for (let name in module.properties) {
-        if (module.properties.hasOwnProperty(name)) {
-          let property = module.properties[name];
-          code += '\n    //' + property.description + '\n';
-          if (property.type === 'array' && property.items.originalRef !== undefined) {
-            code += '    var ' + name + ': [' + property.items.originalRef + ']!';
-            init += '\n       ' + name + ' = json["' + name + '"].arrayValue.map({ (json) -> ' + property.items.originalRef + ' in\n' +
-                '            return ' + property.items.originalRef + '(json: json)\n' +
-                '       })'
-          } else if (property.type === 'array') {
-            code += '    var ' + name + ': [' + this.toSwiftType(property.items, false, property.format) + ']!';
-            init += '\n       ' + name + ' = json["' + name + '"].arrayObject as! [' + this.toSwiftType(property.items, false, property.format) + ']'
-            //
-          } else {
-            code += '    var ' + name + ': ' + this.toSwiftType(property, true, property.format);
-            init += '\n       ' + name + ' = json["' + name + '"]' + this.toSwiftJsonValue(property.type, property.format)
-          }
-        }
-      }
-      init += '\n    }';
-      code += init;
-      code += '\n}';
-
-      return code
-    },
-    toSwiftJsonValue(type, format) {
-      switch (type) {
-        case 'integer':
-          if (format !== undefined) {
-            if (format === 'int64') {
-              return '.int64Value';
-            }
-          }
-          return '.intValue';
-        case 'byte':
-          return ".int8Value";
-        case 'number':
-          return '.doubleValue';
-        case 'string':
-          if (format === 'date-time') {
-            return '.int64Value';
-          } else if (format === 'byte') {
-            return '.int8Value';
-          }
-          return '.stringValue';
-        case 'boolean':
-          return '.boolValue';
-        default:
-          return ''
-      }
-    },
-    //#endregion
-
-    //#region 类型转化
-    toJavaType(property, format) {
-      if (property.type === undefined) {
-        return this.toJavaBaseType(property, format)
-      }
-      switch (property.type) {
-        case 'integer':
-          if (format !== undefined) {
-            if (format === 'int64') {
-              return 'Long';
-            }
-          }
-          return 'Integer';
-        case 'byte':
-          return "Byte";
-        case 'number':
-          return 'Double';
-        case 'string':
-          if (format === 'date-time') {
-            return 'DateTime';
-          } else if (format === 'byte') {
-            return 'Byte';
-          }
-          return 'String';
-        case 'boolean':
-          return 'Boolean';
-        case 'array':
-          return 'List<' + this.toJavaType(property.items.originalRef, property.items.format) + '>';
-        default:
-          return property.type;
-      }
-    },
-    toJavaBaseType(property, format) {
-      switch (property) {
-        case 'integer':
-          if (format !== undefined) {
-            if (format === 'int64') {
-              return 'Long'
-            }
-          }
-          return 'Integer';
-        case 'byte':
-          return "Byte";
-        case 'number':
-          return 'Double';
-        case 'string':
-          if (format === 'date-time') {
-            return 'DateTime';
-          } else if (format === 'byte') {
-            return 'Byte';
-          }
-          return 'String';
-        case 'boolean':
-          return 'Boolean';
-        default:
-          return property;
-      }
-    },
-    toJsonType(property) {
-      if (property.type === undefined) {
-        return property
-      }
-      switch (property.type) {
-        case 'integer':
-          return 0;
-        case 'number':
-          return 0;
-        case 'byte':
-          return 0;
-        case 'string':
-          if (property.format === 'date-time') {
-            return '0';
-          } else if (property.format === 'byte') {
-            return '0';
-          }
-          return '\'\'';
-        case 'boolean':
-          return 'false';
-        case 'array':
-          return '[]';
-        default:
-          return null;
-      }
-    },
-    toSwiftType(property, init, format) {
-      if (property.type === undefined) {
-        return property
-      }
-      switch (property.type) {
-        case 'integer':
-          if (format !== undefined) {
-            if (format === 'int64') {
-              return 'Int64' + (init ? ' = 0' : '');
-            }
-          }
-          return 'Int' + (init ? ' = 0' : '');
-        case 'byte':
-          return 'Int8' + (init ? ' = 0' : '');
-        case 'number':
-          return 'Double' + (init ? ' = 0.0' : '');
-        case 'string':
-          if (format === 'date-time') {
-            return 'Int64' + (init ? ' = 0' : '');
-          } else if (format === 'byte') {
-            return 'Int8' + (init ? ' = 0' : '');
-          }
-          return 'String' + (init ? ' = ""' : '');
-        case 'boolean':
-          return 'Bool' + (init ? ' = false' : '');
-        case 'array':
-          return '[' + this.toSwiftType(property.items.originalRef, false, property.items.format) + ']';
-        default:
-          return property.type + '!';
-      }
-    },
-    //#endregion
-
     tryIt(item, op) {
       item.try = op;
       if (op && !item.open.contains(1)) {
         item.open.push(1);
       }
-
       this.renderIndex += 1;
       this.$forceUpdate();
     },
@@ -1100,157 +800,11 @@ export default {
       return temp;
     },
     createExecuteCode(method) {
-      //swift 调用
-      let url = method.path;
-      let javaUrl = method.path;
-      let comment = '    /// ' + method["summary"] + '\n';
-      if (method.description) {
-        comment += '    /// ' + method.description + '\n';
-      }
-      comment += '    ///\n    /// - Parameters:';
-
-      let funStr = '    class func ' + method["operationId"] + '(';
-      let req = '';
-      let javaParam = null;
-
-      let retrofitParam = '';
-      let axiosParam = '';
-      let retrofit = '        /**\n' +
-          '         * ' + method["summary"] + '\n';
-      if (method.description) {
-        retrofit += '         * ' + method.description + '\n'
-      }
-      retrofit += '         *\n';
-
-      if (method.private !== undefined) {
-        javaParam = '    Map<String, Object> parameters = new HashMap<>();\n';
-        for (let m = 0; m !== method.private.length; ++m) {
-          comment += '\n    ///   - ' + method.private[m].name + ': ' + method.private[m].description;
-          funStr += '_ ' + method.private[m].name + ':' + this.toSwiftType(method.private[m], false, method.private[m].format);
-          if (method.private[m].required) {
-            funStr += ','
-          } else {
-            funStr += '!,'
-          }
-
-          retrofit += '         * @param ' + method.private[m].name + ' ' + method.private[m].description + '\n';
-
-          if (method.private[m].in === 'path') {
-            retrofitParam += '@Path("' + method.private[m].name + '") ' + this.toJavaType(method.private[m].type, method.private[m].format) + ' ' + method.private[m].name + ',';
-            url = url.replace('{' + method.private[m].name + '}', '\\(' + method.private[m].name + ')');
-            javaUrl = javaUrl.replace('{' + method.private[m].name + '}', '\"+' + method.private[m].name + '+\"')
-          } else {
-            retrofitParam += '@Query("' + method.private[m].name + '") ' + this.toJavaType(method.private[m].type, method.private[m].format) + ' ' + method.private[m].name + ',';
-            javaParam += '    //' + method.private[m].description + '\n';
-            axiosParam += '        ' + method.private[m].name + ': "",//' + (method.private[m].required ? '(*)' : '') + method.private[m].description + '\n';
-            javaParam += '    parameters.put("' + method.private[m].name + '", ' + method.private[m].name + ');\n';
-            req += '"' + method.private[m].name + '":' + method.private[m].name + ','
-          }
-        }
-      }
-
-      retrofit += '         * @return 结果\n         */\n';
-
-      let entity = null;
-      let ref = method["responses"]['200']["content"]["*/*"].schema.originalRef;
-      let index = ref.indexOf('«');
-      let arr = false;
-      if (ref.startsWith('RespEntity«List«')) {
-        entity = ref.substring('RespEntity«List«'.length, ref.indexOf('»'));
-        arr = true
-      } else if (ref.startsWith('RespEntity«')) {
-        entity = ref.substring('RespEntity«'.length, ref.indexOf('»'));
-      } else if (index > 0) {
-        entity = ref.substring(0, index);
-      } else {
-        entity = ref;
-      }
-
-      //region java 原始方式
-      let javaCode = '//' + method["summary"] + '\n';
-      if (method.description) {
-        javaCode += '// ' + method.description + '\n'
-      }
-      javaCode += 'if (NetWorkHelper.isNetworkAvailable(getApplicationContext())) {\n' + (javaParam ? javaParam : '');
-      javaCode += '    HttpUtil.getInstance().' + method.method + '(Url.getCollectionUrl(true) + "' + javaUrl + '", ' + (javaParam ? 'parameters' : 'null') + ', new HttpUtil.HttpCallback() {\n' +
-          '        @Override\n' +
-          '        public void onSuccess(String data) {\n' +
-          '            \n' +
-          '        }\n' +
-          '\n' +
-          '        @Override\n' +
-          '        public void onError(String msg) {\n' +
-          '            super.onError(msg);\n' +
-          '            errorResponse(msg);\n' +
-          '        }\n' +
-          '    }, this);\n' +
-          '}';
-
-      method.java = javaCode;
-      //endregion
-
-      //region axios的调用生成
-      let axios = '//' + method["summary"] + '\n';
-      if (method.description) {
-        axios += '// ' + method.description + '\n'
-      }
-      axios += 'this.axios({\n';
-      axios += "    method: '" + method.method.toUpperCase() + "',\n"
-      axios += "    url: `" + method.path + "`,\n"
-      if (axiosParam !== '') {
-        axios += "    params: {\n"
-        axios += axiosParam;
-        axios += "    }\n"
-      }
-      axios += "}).then(res => {\n"
-      axios += "    if (res.code === 0) {\n"
-      axios += "      //this.$message.success('保存成功');\n"
-      axios += "    } else {\n"
-      axios += "      //this.$message.error(`保存失败, 错误：${res.message}`);\n"
-      axios += "    }\n"
-      axios += "}).catch(error => {\n       console.log(error);\n});\n";
-      method.axios = axios;
-      //endregion
-
-      //region retrofit的调用生成
-      retrofit += '        @' + method.method.toUpperCase() + '("' + method.path + '")\n';
-      retrofit += '        Observable<' + (ref.replaceAll('«', '<').replaceAll('»', '>')) + '> ' + method["operationId"] + '('
-      if (retrofitParam !== '') {
-        retrofit += retrofitParam.substring(0, retrofitParam.length - 1)
-      }
-      retrofit += ');';
-      if (arr) {
-        funStr += '/*imgData: [Data]?,*/_ callback:(([' + entity + ']?) -> Void)?){\n'
-      } else {
-        funStr += '/*imgData: [Data]?,*/_ callback:((' + entity + '?) -> Void)?){\n'
-      }
-
-      if (req !== '') {
-        req = req.substring(0, req.length - 1);
-        funStr += '        let req:[String:Any]=[' + req + ']\n';
-        funStr += '        request(url: "' + url + '", method: .' + method.method + ', params: req/*, imgData*/) { (code, message, jsonString) in\n'
-      } else {
-        funStr += '        request(url: "' + url + '", method: .' + method.method + ', params: nil/*, imgData*/) { (code, message, jsonString) in\n'
-      }
-
-      funStr += '            DispatchQueue.main.async(){\n' +
-          '                if code == 0,let json = jsonString {\n';
-      if (arr) {
-        funStr += '                    callback?(Mapper<' + entity + '>().mapArray(JSONString:json))\n'
-      } else {
-        funStr += '                    callback?(Mapper<' + entity + '>().map(JSONString:json))\n'
-      }
-      funStr += '                }else{\n' +
-          '                    callback?(nil)\n' +
-          '                }\n' +
-          '            }\n' +
-          '        }\n' +
-          '    }';
-      method.swift = comment + '\n' + funStr;
-
-      method.retrofit = retrofit;
+      method.java = javaCallExample(method);
+      method.axios = jsCallExample(method);
+      method.swift = swiftCallExample(method);
+      method.retrofit = retrofitCallExample(method);
       method.exe = 'swift';
-
       this.$forceUpdate()
     },
     parseModule(module, modules) {
@@ -1295,31 +849,11 @@ export default {
     },
 
     //#region 公共方法
-    onCopy() {
-      this.$message.success('复制成功')
-    },
     toHtml(str) {
-      return str.replaceAll('<', '&lt;');
-    },
-    formatDate(date) {
-      let fmt = 'yyyy-MM-dd hh:mm:ss';
-      if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+      if (str) {
+        return str.replaceAll('<', '&lt;');
       }
-      let o = {
-        'M+': date.getMonth() + 1,
-        'd+': date.getDate(),
-        'h+': date.getHours(),
-        'm+': date.getMinutes(),
-        's+': date.getSeconds()
-      };
-      for (let k in o) {
-        if (new RegExp(`(${k})`).test(fmt)) {
-          let str = o[k] + '';
-          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : ('00' + str).substr(str.length))
-        }
-      }
-      return fmt
+      return str;
     }
     //#endregion
   }
