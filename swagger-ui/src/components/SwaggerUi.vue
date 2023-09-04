@@ -27,22 +27,22 @@
           <el-scrollbar style="height: 100%;" v-if="form">
             <el-menu class="el-menu-vertical-demo" style="text-align: left;"
                      @select="handleOpenItem">
-              <el-submenu v-for="tag in newTags" :index="tag.name" :key="tag.name">
-                <template slot="title">
-                  <div class="title" slot="title">{{ tag.name }}</div>
+              <el-sub-menu v-for="tag in newTags" :index="tag.name" :key="tag.name">
+                <template #title>
+                  <div class="title">{{ tag.name }}</div>
                   <div class="describes">{{ tag.description }}</div>
                 </template>
                 <el-menu-item-group>
                   <el-menu-item v-for="method in tag.methods" :key="method['operationId']"
                                 :index="method['operationId']"
                                 v-bind:class="method['deprecated']+ ' '+method.method">
-                    <template>
+                    <template #title>
                       <span class="method">{{ method["method"] }}</span>{{ method["path"] }}<br/>
                       <span class="summary">{{ method["summary"] }}</span>
                     </template>
                   </el-menu-item>
                 </el-menu-item-group>
-              </el-submenu>
+              </el-sub-menu>
             </el-menu>
           </el-scrollbar>
         </el-aside>
