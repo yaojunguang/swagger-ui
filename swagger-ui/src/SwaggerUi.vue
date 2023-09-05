@@ -58,7 +58,7 @@
                   <div slot="header" class="card-header">
                     <span class="method">{{ item.method }}</span>
                     <span class="path" @click="copy(item.path)">{{ item.path }}</span>
-                    <span class="summary">{{ item["summary"] }}</span>
+                    <span class="summary" @click="copy(item.path)">{{ item["summary"] }}</span>
                     <el-button type="success" v-if="item.try" @click="execute(item.path+'-'+item.method,item)"
                                style="position: absolute;right: 108px;top: 8px;" plain>执行
                     </el-button>
@@ -75,6 +75,55 @@
                     <el-tabs type="border-card" v-model="item.tab" style="height: 100%">
                       <el-tab-pane label="参数" name="params">
                         <el-collapse v-model="item.open" style="text-align: left">
+                          <el-collapse-item :name="-1">
+                            <template #title>
+                              头部参数(headers)
+                              <el-tooltip class="item" effect="dark"
+                                          content="该部分设置为全局设置，设置后会存储在本地缓存中"
+                                          placement="right">
+                                <i class="header-icon el-icon-info"/>
+                              </el-tooltip>
+                            </template>
+                            <el-row style="font-weight: bold">
+                              <el-col :span="4">
+                                参数名
+                              </el-col>
+                              <el-col :span="8">
+                                描述
+                              </el-col>
+                              <el-col :span="6">
+                                参数值
+                              </el-col>
+                              <el-col :span="1">
+                                &nbsp;
+                              </el-col>
+                            </el-row>
+                            <el-row v-for="(header,index) in headers" :key="index">
+                              <el-col :span="4" class="name">
+                                <el-input v-model="header.key" @input="headerChanged()"/>
+                              </el-col>
+                              <el-col :span="8">
+                                <el-input v-model="header.describe" @input="headerChanged()"/>
+                              </el-col>
+                              <el-col :span="6">
+                                <el-input v-model="header.value" @input="headerChanged()"/>
+                              </el-col>
+                              <el-col :span="1">
+                                <el-icon style="cursor: pointer;vertical-align: middle;" @click="deleteHeader(index)"
+                                         title="删除该参数">
+                                  <Close/>
+                                </el-icon>
+                              </el-col>
+                            </el-row>
+                            <el-row>
+                              <el-col :span="4">
+                                <el-icon @click="addHeader()"
+                                         title="添加一条参数">
+                                  <CirclePlus/>
+                                </el-icon>
+                              </el-col>
+                            </el-row>
+                          </el-collapse-item>
                           <el-collapse-item title="专有参数" :name="0" v-if="item.private">
 
                             <el-row style="font-weight: bold">
@@ -128,7 +177,7 @@
 
                           </el-collapse-item>
                           <el-collapse-item :name="1" v-if="item.common">
-                            <template slot="title">
+                            <template #title>
                               公共参数
                               <el-tooltip class="item" effect="dark"
                                           content="公共参数是以【公共参数】注解开头的参数归类到该分组"
@@ -181,59 +230,13 @@
                               </el-col>
                             </el-row>
                           </el-collapse-item>
-                          <el-collapse-item :name="-1">
-                            <template slot="title">
-                              头部参数(headers)
-                              <el-tooltip class="item" effect="dark"
-                                          content="该部分设置为全局设置，设置后会存储在本地缓存中"
-                                          placement="right">
-                                <i class="header-icon el-icon-info"/>
-                              </el-tooltip>
-                            </template>
-                            <el-row style="font-weight: bold">
-                              <el-col :span="4">
-                                参数名
-                              </el-col>
-                              <el-col :span="8">
-                                描述
-                              </el-col>
-                              <el-col :span="6">
-                                参数值
-                              </el-col>
-                              <el-col :span="1">
-                                &nbsp;
-                              </el-col>
-                            </el-row>
-                            <el-row v-for="(header,index) in headers" :key="index">
-                              <el-col :span="4" class="name">
-                                <el-input v-model="header.key" @input="headerChanged()"/>
-                              </el-col>
-                              <el-col :span="8">
-                                <el-input v-model="header.describe" @input="headerChanged()"/>
-                              </el-col>
-                              <el-col :span="6">
-                                <el-input v-model="header.value" @input="headerChanged()"/>
-                              </el-col>
-                              <el-col :span="1">
-                                <i class="el-icon-error" style="cursor: pointer" @click="deleteHeader(index)"
-                                   title="删除该参数"></i>
-                              </el-col>
-                            </el-row>
-                            <el-row>
-                              <el-col :span="4">
-                                <i class="el-icon-circle-plus" style="cursor: pointer" @click="addHeader(index)"
-                                   title="添加一条参数"></i>
-                              </el-col>
-                            </el-row>
-                          </el-collapse-item>
                           <el-collapse-item
                               v-if='item.responses["200"]["content"]["*/*"].schema.originalRef'
                               :title="'结果实体'+item.responses['200']['content']['*/*'].schema.originalRef.replaceAll('«','<').replaceAll('»','>')"
                               :name="3">
-                            <el-tabs :value="item.modules[0].title">
+                            <el-tabs :model-value="item.modules[0].title">
                               <el-tab-pane v-for="(entity,mIndex) in item.modules" :label="entity.title"
-                                           :name="entity.title"
-                                           :key="mIndex" style="position: relative;">
+                                           :name="entity.title" :key="mIndex" style="position: relative;">
                                 <div v-if="entity.language === 'normal'">
                                   <el-row>
                                     <el-col :span="4">
@@ -268,13 +271,13 @@
                                   </el-row>
                                 </div>
                                 <div v-else-if="entity.result" style="position: relative;margin-right: 12px;">
-                                  <highlightjs autodetect :code="toHtml(entity.result)" style="border-radius: 6px;"
+                                  <highlightjs autodetect :code="entity.result" style="border-radius: 6px;"
                                                :class="entity.language === 'Java'?'Java':'swift'"/>
                                 </div>
-                                <el-button v-if="entity.language !== 'normal'"
-                                           style="position: absolute;right: 360px;top: 8px; text-align: center;"
-                                           @click="copy(entity.result)" size="small" icon="el-icon-document-copy">copy
-                                </el-button>
+                                <el-icon v-if="entity.language !== 'normal'" @click="copy(entity.result)" color="white"
+                                         style="position: absolute;left: 8px;top: 8px;">
+                                  <CopyDocument/>
+                                </el-icon>
                                 <el-radio-group class="language-radio"
                                                 @change="changeLanguage(entity)" size="small"
                                                 v-model="entity.language">
@@ -292,42 +295,47 @@
                       <el-tab-pane label="调用参考" name="execute" style="position: relative">
                         <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
-                            <highlightjs autodetect :code="toHtml(item.swift)" style="border-radius: 6px;"
+                            <highlightjs autodetect :code="item.swift" style="border-radius: 6px;"
                                          class="swift"/>
-                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.swift)"
-                                       size="small">copy
-                            </el-button>
+                            <el-icon @click="copy(item.swift)" color="white"
+                                     style="position: absolute;right: 8px;top: 8px;">
+                              <CopyDocument/>
+                            </el-icon>
                           </el-tab-pane>
                           <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
-                            <highlightjs autodetect :code="toHtml(item.retrofit)" style="border-radius: 6px;"
+                            <highlightjs autodetect :code="item.retrofit" style="border-radius: 6px;"
                                          class="java"/>
-                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.retrofit)"
-                                       size="small">copy
-                            </el-button>
+                            <el-icon @click="copy(item.retrofit)" color="white"
+                                     style="position: absolute;right: 8px;top: 8px;">
+                              <CopyDocument/>
+                            </el-icon>
                           </el-tab-pane>
                           <el-tab-pane name="axios" label="axios" style="position: relative;">
-                            <highlightjs autodetect :code="toHtml(item.axios)" style="border-radius: 6px;"
+                            <highlightjs autodetect :code="item.axios" style="border-radius: 6px;"
                                          class="java"/>
-                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.axios)"
-                                       size="small">copy
-                            </el-button>
+                            <el-icon @click="copy(item.axios)" color="white"
+                                     style="position: absolute;right: 8px;top: 8px;">
+                              <CopyDocument/>
+                            </el-icon>
                           </el-tab-pane>
                           <el-tab-pane name="java" label="java" style="position: relative;">
-                            <highlightjs autodetect :code="toHtml(item.java)" style="border-radius: 6px;"
+                            <highlightjs autodetect :code="item.java" style="border-radius: 6px;"
                                          class="java"/>
-                            <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.java)"
-                                       size="small">copy
-                            </el-button>
+                            <el-icon @click="copy(item.java)" color="white"
+                                     style="position: absolute;right: 8px;top: 8px;">
+                              <CopyDocument/>
+                            </el-icon>
                           </el-tab-pane>
                         </el-tabs>
                       </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
                         <div>调用耗时:{{ item.executeTime }}</div>
-                        <highlightjs autodetect :code="toHtml(item.result)" style="border-radius: 6px;"
+                        <highlightjs autodetect :code="item.result" style="border-radius: 6px;"
                                      class="json"/>
-                        <el-button style="position: absolute;right: 0;top: 16px;" @click="copy(item.result)"
-                                   size="small">copy
-                        </el-button>
+                        <el-icon @click="copy(item.result)" color="white"
+                                 style="position: absolute;right: 8px;top: 8px;">
+                          <CopyDocument/>
+                        </el-icon>
                       </el-tab-pane>
                     </el-tabs>
                   </el-form>
@@ -348,10 +356,12 @@ import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Ja
 import {jsCallExample, toJson} from "components/Module2Js";
 import {toObjectMapper} from "components/Module2ObjectMapper";
 import useClipboard from 'vue-clipboard3'
+import {CircleCheck, Close} from "@element-plus/icons-vue";
 
 let {toClipboard} = useClipboard();
 export default {
   name: 'SwaggerUi',
+  components: {Close, CircleCheck},
   data() {
     return {
       canFetchFunc: false,//是否支持/swagger/method获取方法名
@@ -686,11 +696,12 @@ export default {
       this.$forceUpdate();
     },
     removeTab(targetName) {
+      console.log("remove tab " + targetName)
       for (let index = 0; index !== this.items.length; ++index) {
-        if ((this.items[index].path + '-' + this.items[index].method) === targetName) {
+        if (this.items[index].operationId === targetName) {
           this.items.splice(index, 1);
           if (targetName === this.activeName && this.items.length > 0) {
-            this.activeName = this.items[0].path + '-' + this.items[0].method
+            this.activeName = this.items[0].operationId
           }
           return
         }
@@ -846,16 +857,7 @@ export default {
           }
         }
       }
-    },
-
-    //#region 公共方法
-    toHtml(str) {
-      if (str) {
-        return str.replaceAll('<', '&lt;');
-      }
-      return str;
     }
-    //#endregion
   }
 }
 </script>
@@ -901,6 +903,7 @@ export default {
 .summary {
   font-size: 12px;
   color: darkgray;
+  margin-left: 12px;
 }
 
 .method {
@@ -944,10 +947,32 @@ export default {
 
 .delete .method {
   background-color: #f93e3e;
+  font-size: 12px;
 }
 
 .patch .method {
   background-color: #E6A23C;
+}
+
+.options .method {
+  background-color: rgba(230, 162, 60, 0.3);
+  border: 1px solid #E6A23C;
+  color: #E6A23C;
+  font-size: 12px;
+}
+
+.head .method {
+  background-color: rgba(97, 175, 254, 0.3);
+  border: 1px solid #61affe;
+  color: #61affe;
+  font-size: 14px;
+}
+
+.trace .method {
+  background-color: rgba(73, 204, 144, 0.3);
+  border: 1px solid #49cc90;
+  color: #49cc90;
+  font-size: 13px;
 }
 
 .deprecated {
@@ -1090,7 +1115,7 @@ export default {
 }
 
 .el-tabs--border-card > .el-tabs__content {
-  padding: 0;
+  padding: 0 !important;
 }
 
 .el-tabs {
