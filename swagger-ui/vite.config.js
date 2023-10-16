@@ -59,8 +59,16 @@ export default defineConfig({
         open: true,
         https: false,
         proxy: {
-            '/ajkspec/main/': {
-                target: "http://edev.58corp.com/",
+            '/swagger-resources': {
+                target: "http://127.0.0.1:8090/",
+                changeOrigin: true,
+            },
+            '/v2/': {
+                target: "http://127.0.0.1:8090/",
+                changeOrigin: true,
+            },
+            '/v3/': {
+                target: "http://127.0.0.1:8090/",
                 changeOrigin: true,
             },
         }

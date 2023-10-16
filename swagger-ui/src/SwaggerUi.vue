@@ -3,22 +3,23 @@
     <el-container style="height: 100%">
       <el-header>
         <el-row type="flex">
-          <el-col :span="4">
-            <el-select v-model="groupName" placeholder="请选择" title="选择分组"
-                       @change="groupChanged">
-              <el-option
-                  v-for="item in resources"
-                  :key="item.url"
-                  :label="item.name"
-                  :value="item.url">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col v-if="form" :span="4">
+          <el-col v-if="form" :span="6">
             {{ form.info.title }}<span class="version">{{ form.info.version }}</span>
           </el-col>
-          <el-col :span="16">
-            <el-input v-model="keyword" @change="keywordChanged" placeholder="输入路径，名称以搜索" clearable/>
+          <el-col :span="18">
+            <el-input v-model="keyword" @change="keywordChanged"
+                      placeholder="输入路径，名称以搜索" clearable>
+              <template #prepend>
+                <el-select v-model="groupName" placeholder="请选择" title="选择分组" @change="groupChanged">
+                  <el-option
+                      v-for="item in resources"
+                      :key="item.name"
+                      :label="item.name"
+                      :value="item.name">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-input>
           </el-col>
         </el-row>
       </el-header>
@@ -60,28 +61,30 @@
                     <span class="path" @click="copy(item.path)">{{ item.path }}</span>
                     <span class="summary" @click="copy(item.path)">{{ item["summary"] }}</span>
                     <el-button type="success" v-if="item.try" @click="execute(item.path+'-'+item.method,item)"
-                               style="position: absolute;right: 108px;top: 8px;" plain>执行
+                               style="position: absolute;right: 108px;top: 8px;" plain>Execute
                     </el-button>
                     <el-button type="warning" v-if="item.try" @click="tryIt(item,false)"
-                               style="position: absolute;right: 8px;top: 8px;" plain>取消
+                               style="position: absolute;right: 8px;top: 8px;" plain>Cancel
                     </el-button>
                     <el-button type="primary" v-else @click="tryIt(item,true)"
-                               style="position: absolute;right: 8px;top: 8px;" plain>模拟调用
+                               style="position: absolute;right: 8px;top: 8px;" plain>Try
                     </el-button>
                   </div>
                   <div class="description" v-if="item.description && item.description !== ''">{{ item.description }}
                   </div>
                   <el-form :model="item" :ref="item.path+'-'+item.method" v-loading="item.executing">
                     <el-tabs type="border-card" v-model="item.tab" style="height: 100%">
-                      <el-tab-pane label="参数" name="params">
+                      <el-tab-pane label="Params" name="params">
                         <el-collapse v-model="item.open" style="text-align: left">
-                          <el-collapse-item :name="-1">
+                          <el-collapse-item :name="1">
                             <template #title>
-                              头部参数(headers)
+                              Header
                               <el-tooltip class="item" effect="dark"
                                           content="该部分设置为全局设置，设置后会存储在本地缓存中"
                                           placement="right">
-                                <i class="header-icon el-icon-info"/>
+                                <el-icon class="header-icon">
+                                  <InfoFilled/>
+                                </el-icon>
                               </el-tooltip>
                             </template>
                             <el-row style="font-weight: bold">
@@ -124,7 +127,7 @@
                               </el-col>
                             </el-row>
                           </el-collapse-item>
-                          <el-collapse-item title="专有参数" :name="0" v-if="item.private">
+                          <el-collapse-item title="Query" :name="2" v-if="item.private">
 
                             <el-row style="font-weight: bold">
                               <el-col :span="4">
@@ -176,9 +179,9 @@
                             </el-row>
 
                           </el-collapse-item>
-                          <el-collapse-item :name="1" v-if="item.common">
+                          <el-collapse-item :name="3" v-if="item.common">
                             <template #title>
-                              公共参数
+                              Query(Commmon)
                               <el-tooltip class="item" effect="dark"
                                           content="公共参数是以【公共参数】注解开头的参数归类到该分组"
                                           placement="right">
@@ -230,10 +233,38 @@
                               </el-col>
                             </el-row>
                           </el-collapse-item>
-                          <el-collapse-item
-                              v-if='item.responses["200"]["content"]["*/*"].schema.originalRef'
-                              :title="'结果实体'+item.responses['200']['content']['*/*'].schema.originalRef.replaceAll('«','<').replaceAll('»','>')"
-                              :name="3">
+                          <el-collapse-item title="Body" :name="4">
+                            <el-row style="font-weight: bold">
+                              <el-col :span="2">
+                                files
+                              </el-col>
+                              <el-col :span="4">
+                                文件名
+                              </el-col>
+                              <el-col :span="14">
+                                <input type="file"/>
+                              </el-col>
+                            </el-row>
+                            <el-row style="font-weight: bold">
+                              <el-col :span="2">
+                                params
+                              </el-col>
+                              <el-col :span="18">
+                                <el-input
+                                    :rows="10"
+                                    type="textarea"
+                                    placeholder="Please input"
+                                />
+                              </el-col>
+                            </el-row>
+
+                          </el-collapse-item>
+                          <el-collapse-item v-if='item.responses["200"]["content"]["*/*"].schema.originalRef' :name="5">
+                            <template #title>
+                              {{
+                                'Responses=>' + item.responses['200']['content']['*/*'].schema.originalRef.replaceAll('«', '<').replaceAll('»', '>')
+                              }}
+                            </template>
                             <el-tabs :model-value="item.modules[0].title">
                               <el-tab-pane v-for="(entity,mIndex) in item.modules" :label="entity.title"
                                            :name="entity.title" :key="mIndex" style="position: relative;">
@@ -292,7 +323,7 @@
                           </el-collapse-item>
                         </el-collapse>
                       </el-tab-pane>
-                      <el-tab-pane label="调用参考" name="execute" style="position: relative">
+                      <el-tab-pane label="Example" name="execute" style="position: relative">
                         <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
                             <highlightjs autodetect :code="item.swift" style="border-radius: 6px;"
@@ -386,7 +417,7 @@ export default {
       form: null,
       items: [],
       newTags: [],
-      mockModel: true,
+      mockModel: false,
     }
   },
   watch: {
@@ -411,8 +442,8 @@ export default {
       this.axios({
         url: "/swagger-resources"
       }).then(res => {
-        that.resources = res;
-        if (that.groupName == null) {
+        that.resources = res.data;
+        if (that.groupName == null && res.data.length > 0) {
           that.groupName = that.resources[0].name;
         }
         that.groupChanged()
@@ -479,18 +510,17 @@ export default {
     //#endregion
 
     groupChanged() {
-      console.log('groupChanged' + this.groupName);
       let docUrl;
       if (this.mockModel) {
         docUrl = "/v2/api-docs.json";
       } else {
         if (this.resources != null && this.resources.length > 0) {
-          let items = this.resources.filter(resource => resource.url === this.groupName);
-          if (items.length > 0) {
+          let items = this.resources.filter(resource => resource.name === this.groupName);
+          if (items.length === 1) {
+            docUrl = items[0].url;
           } else {
-            this.groupName = this.resources[0].url
+            docUrl = this.resources[0].url
           }
-          docUrl = this.groupName;
         }
       }
       this.axios({
@@ -650,6 +680,7 @@ export default {
       }
       delete data.paths;
       this.form = data;
+      console.log(JSON.stringify(data));
       this.keywordChanged();
       this.$forceUpdate();
     },
