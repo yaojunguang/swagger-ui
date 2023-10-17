@@ -25,10 +25,9 @@ public class ApiController {
         return new RespEntity<>();
     }
 
-    @ApiOperation(value = "获取购物车详情", notes = "购物车-详情")
+    @ApiOperation(value = "添加商品", notes = "购物车-详情")
     @PostMapping(value = "")
-    public RespEntity<CartUiEntity> modify(@RequestBody AddCartEntity req, CartReq req2) {
-
+    public RespEntity<CartUiEntity> modify(@RequestBody AddCartEntity req) {
         return new RespEntity<>();
     }
 
@@ -36,8 +35,14 @@ public class ApiController {
     @PostMapping(value = "/file")
     public RespEntity<CartUiEntity> uploadFile(@RequestBody AddCartEntity req,
                                                @RequestHeader("x-tenant-id") String tenantId,
-                                               @RequestPart("file") MultipartFile file,
-                                               CartReq req2) {
+                                               @RequestPart("file") MultipartFile file) {
+        return new RespEntity<>();
+    }
+
+    @ApiOperation(value = "上传文件多个", notes = "购物车-详情")
+    @PostMapping(value = "/files")
+    public RespEntity<CartUiEntity> uploadFiles(@RequestHeader("x-tenant-id") String tenantId,
+                                                @RequestPart("file") MultipartFile[] files) {
         return new RespEntity<>();
     }
 }

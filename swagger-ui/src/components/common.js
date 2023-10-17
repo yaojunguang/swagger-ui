@@ -25,3 +25,18 @@ export function clearCookie(name) {
     let expires = "; expires=" + date.toUTCString();
     document.cookie = name + "=" + expires + "; path=/";
 }
+
+export function hasOwnPath(item, path) {
+    console.log("path=" + path);
+    let paths = path.split(".");
+    for (let index = 0; index !== paths.length; index += 1) {
+        let subPath = paths[index];
+        console.log("subPath=" + subPath + "...." + paths[1] + "----" + item.hasOwnProperty(subPath))
+        if (item.hasOwnProperty(subPath)) {
+            item = item[subPath]
+        } else {
+            return false;
+        }
+    }
+    return true;
+}

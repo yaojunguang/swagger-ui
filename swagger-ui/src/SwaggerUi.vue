@@ -1,53 +1,50 @@
 <template xmlns:v-clipboard="http://www.w3.org/1999/xhtml">
   <div class="main" v-loading="loading">
-    <el-container style="height: 100%">
-      <el-header>
-        <el-row type="flex">
-          <el-col v-if="form" :span="6">
-            {{ form.info.title }}<span class="version">{{ form.info.version }}</span>
-          </el-col>
-          <el-col :span="18">
-            <el-input v-model="keyword" @change="keywordChanged"
-                      placeholder="输入路径，名称以搜索" clearable>
-              <template #prepend>
-                <el-select v-model="groupName" placeholder="请选择" title="选择分组" @change="groupChanged">
-                  <el-option
-                      v-for="item in resources"
-                      :key="item.name"
-                      :label="item.name"
-                      :value="item.name">
-                  </el-option>
-                </el-select>
+    <el-container style="height: 100%" v-if="form">
+      <el-aside style="height: calc(100% - 50px);overflow: hidden;" id="menu-aside"
+                v-bind:style="{backgroundColor:'#f0f0f0',height:'100%',width:leftSize+'px'}">
+        <el-header>
+          {{ form.info.title }}<span class="version">{{ form.info.version }}</span>
+        </el-header>
+        <el-scrollbar style="height: 100%;">
+          <el-menu class="el-menu-vertical-demo" style="text-align: left;"
+                   @select="handleOpenItem">
+            <el-sub-menu v-for="tag in newTags" :index="tag.name" :key="tag.name">
+              <template #title>
+                <div class="title">{{ tag.name }}</div>
+                <div class="describes">{{ tag.description }}</div>
               </template>
-            </el-input>
-          </el-col>
-        </el-row>
-      </el-header>
-      <el-container style="height: calc(100% - 50px);overflow: hidden;">
-        <el-aside id="menu-aside" v-bind:style="{backgroundColor:'#f0f0f0',height:'100%',width:leftSize+'px'}">
-          <el-scrollbar style="height: 100%;" v-if="form">
-            <el-menu class="el-menu-vertical-demo" style="text-align: left;"
-                     @select="handleOpenItem">
-              <el-sub-menu v-for="tag in newTags" :index="tag.name" :key="tag.name">
-                <template #title>
-                  <div class="title">{{ tag.name }}</div>
-                  <div class="describes">{{ tag.description }}</div>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item v-for="method in tag.methods" :key="method['operationId']"
-                                :index="method['operationId']"
-                                v-bind:class="method['deprecated']+ ' '+method.method">
-                    <template #title>
-                      <span class="method">{{ method["method"] }}</span>{{ method["path"] }}<br/>
-                      <span class="summary">{{ method["summary"] }}</span>
-                    </template>
-                  </el-menu-item>
-                </el-menu-item-group>
-              </el-sub-menu>
-            </el-menu>
-          </el-scrollbar>
-        </el-aside>
-        <el-aside id="resizeBar" width="6px" class="resize" @mousedown="handleResize"/>
+              <el-menu-item-group>
+                <el-menu-item v-for="method in tag.methods" :key="method['operationId']"
+                              :index="method['operationId']"
+                              v-bind:class="method['deprecated']+ ' '+method.method">
+                  <template #title>
+                    <span class="method">{{ method["method"] }}</span>{{ method["path"] }}<br/>
+                    <span class="summary">{{ method["summary"] }}</span>
+                  </template>
+                </el-menu-item>
+              </el-menu-item-group>
+            </el-sub-menu>
+          </el-menu>
+        </el-scrollbar>
+      </el-aside>
+      <el-aside id="resizeBar" width="6px" class="resize" @mousedown="handleResize"/>
+      <el-container>
+        <el-header>
+          <el-input v-model="keyword" @change="keywordChanged"
+                    placeholder="输入路径，名称以搜索" clearable>
+            <template #prepend>
+              <el-select v-model="groupName" placeholder="请选择" title="选择分组" @change="groupChanged">
+                <el-option
+                    v-for="item in resources"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name">
+                </el-option>
+              </el-select>
+            </template>
+          </el-input>
+        </el-header>
         <el-main class="main-cards" v-if="renderIndex">
           <el-tabs v-if="items.length > 0" type="border-card" v-model="activeName" style="calc(height: 100% - 50px)"
                    closable
@@ -74,7 +71,8 @@
                   </div>
                   <el-form :model="item" :ref="item.path+'-'+item.method" v-loading="item.executing">
                     <el-tabs type="border-card" v-model="item.tab" style="height: 100%">
-                      <el-tab-pane label="Params" name="params">
+                      <Params label="Params" name="params" :item="item"/>
+                      <!-- el-tab-pane label="Params" name="params">
                         <el-collapse v-model="item.open" style="text-align: left">
                           <el-collapse-item :name="1">
                             <template #title>
@@ -322,7 +320,7 @@
                             </el-tabs>
                           </el-collapse-item>
                         </el-collapse>
-                      </el-tab-pane>
+                      </el-tab-pane -->
                       <el-tab-pane label="Example" name="execute" style="position: relative">
                         <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
@@ -388,11 +386,12 @@ import {jsCallExample, toJson} from "components/Module2Js";
 import {toObjectMapper} from "components/Module2ObjectMapper";
 import useClipboard from 'vue-clipboard3'
 import {CircleCheck, Close} from "@element-plus/icons-vue";
+import Params from "@/Params.vue";
 
 let {toClipboard} = useClipboard();
 export default {
   name: 'SwaggerUi',
-  components: {Close, CircleCheck},
+  components: {Params, Close, CircleCheck},
   data() {
     return {
       canFetchFunc: false,//是否支持/swagger/method获取方法名
@@ -556,7 +555,6 @@ export default {
       this.renderIndex += 1;
       this.$forceUpdate()
     },
-
     supportFetchFunc() {
       let that = this;
       $.ajax({
@@ -798,7 +796,7 @@ export default {
             }
           }
         }
-        method.parameters = null
+        //method.parameters = null
       }
 
       method.tab = 'params';
