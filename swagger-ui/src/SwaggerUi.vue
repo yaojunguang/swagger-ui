@@ -1100,13 +1100,6 @@ export default {
   color: firebrick;
 }
 
-
-.language-radio {
-  position: absolute;
-  right: 18px;
-  top: 8px;
-}
-
 </style>
 
 <style>
