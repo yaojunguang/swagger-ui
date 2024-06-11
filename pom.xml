@@ -9,7 +9,6 @@
     <version>4.0.0</version>
     <description>自定义swagger-ui</description>
     <modules>
-        <module>swagger-ui</module>
         <module>server</module>
     </modules>
     <packaging>pom</packaging>

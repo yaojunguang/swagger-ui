@@ -26,6 +26,6 @@ logs/
 /dist/
 /nbdist/
 /.nb-gradle/
-/swagger-ui/node/
-/swagger-ui/node_modules/
-/swagger-ui/target/
+/ui/node/
+/ui/node_modules/
+/ui/target/
