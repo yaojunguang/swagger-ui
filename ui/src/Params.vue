@@ -245,6 +245,7 @@
               <el-radio-button value="ObjectMapper">ObjectMapper</el-radio-button>
               <el-radio-button value="Java">Java</el-radio-button>
               <el-radio-button value="Json">Json</el-radio-button>
+              <el-radio-button value="ArkTs">ArkTs</el-radio-button>
             </el-radio-group>
           </el-tab-pane>
         </el-tabs>
@@ -261,6 +262,7 @@ import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Ja
 import {jsCallExample, toJson} from "components/Module2Js";
 import useClipboard from "vue-clipboard3";
 import {hasOwnPath} from "components/common";
+import {toArkTs} from "components/Module2Arkts";
 
 let {toClipboard} = useClipboard();
 export default {
@@ -456,6 +458,8 @@ export default {
         entity.result = toJava(entity)
       } else if (entity.language === 'Json') {
         entity.result = toJson(entity)
+      } else if (entity.language === 'ArkTs') {
+        entity.result = toArkTs(entity)
       }
       this.$forceUpdate()
     },
