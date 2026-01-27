@@ -3,7 +3,7 @@
     <el-collapse v-model="open" style="text-align: left">
       <el-collapse-item name="header">
         <template #title>
-          Header
+          <span style="padding-left: 16px"> Header</span>
           <el-tooltip class="item" effect="dark"
                       content="该部分设置为全局设置，设置后会存储在本地缓存中"
                       placement="right">
@@ -57,7 +57,10 @@
           </el-col>
         </el-row>
       </el-collapse-item>
-      <el-collapse-item title="Query" name="query" v-if="query">
+      <el-collapse-item name="query" v-if="query">
+        <template #title>
+          <span style="padding-left: 16px">Query</span>
+        </template>
         <el-row style="font-weight: bold">
           <el-col :span="4">
             参数名
@@ -109,7 +112,7 @@
       </el-collapse-item>
       <el-collapse-item name="common" v-if="common">
         <template #title>
-          Query(Commmon)
+          <span style="padding-left: 16px"> Query(Commmon)</span>
           <el-tooltip class="item" effect="dark"
                       content="公共参数是以【公共参数】注解开头的参数归类到该分组"
                       placement="right">
@@ -161,7 +164,10 @@
           </el-col>
         </el-row>
       </el-collapse-item>
-      <el-collapse-item title="Body" name="body">
+      <el-collapse-item name="body">
+        <template #title>
+          <span style="padding-left: 16px">Body</span>
+        </template>
         <el-row style="font-weight: bold" v-if="files">
           <el-col :span="2">
             files
@@ -189,9 +195,7 @@
       </el-collapse-item>
       <el-collapse-item v-if='responses' name="response">
         <template #title>
-          {{
-            'Responses=>' + responses.entityName
-          }}
+          <span style="padding-left: 16px">{{  'Responses=>' + responses.entityName  }}</span>
         </template>
         <el-tabs :model-value="item.modules[0].title">
           <el-tab-pane v-for="(entity,mIndex) in item.modules" :label="entity.title"
