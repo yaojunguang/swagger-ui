@@ -254,7 +254,7 @@
 </template>
 
 <script>
-import {CircleCheck, Close} from "@element-plus/icons-vue";
+import {CircleCheck, CirclePlus, Close, CopyDocument, InfoFilled} from "@element-plus/icons-vue";
 import {swiftCallExample, toSwiftJson} from "components/Module2Swift";
 import {toObjectMapper} from "components/Module2ObjectMapper";
 import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Java";
@@ -265,7 +265,7 @@ import {hasOwnPath} from "components/common";
 let {toClipboard} = useClipboard();
 export default {
   name: 'Params',
-  components: {Close, CircleCheck},
+  components: {CopyDocument, InfoFilled, CirclePlus, Close, CircleCheck},
   props: ['item', 'tryIt'],
   data() {
     return {
@@ -346,25 +346,6 @@ export default {
     updateForm() {
       this.renderIndex += 1;
       this.$forceUpdate()
-    },
-    supportFetchFunc() {
-      let that = this;
-      $.ajax({
-        xhrFields: {
-          withCredentials: true
-        },
-        url: '/swagger/method',
-        type: 'get',
-        data: {url: '/', type: 'func'},
-        cache: false,
-        success: function (resp) {
-          that.canFetchFunc = resp.result;
-          console.log('是否支持获取方法名:' + that.canFetchFunc)
-        },
-        error: function (error) {
-          console.log(error)
-        }
-      });
     },
     execute(formName, item) {
       let that = this;

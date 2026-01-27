@@ -131,18 +131,17 @@
 
 <script>
 
-import {swiftCallExample, toSwiftJson} from "components/Module2Swift";
-import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Java";
-import {jsCallExample, toJson} from "components/Module2Js";
-import {toObjectMapper} from "components/Module2ObjectMapper";
+import {swiftCallExample} from "components/Module2Swift";
+import {javaCallExample, retrofitCallExample} from "components/Module2Java";
+import {jsCallExample} from "components/Module2Js";
 import useClipboard from 'vue-clipboard3'
-import {CircleCheck, Close} from "@element-plus/icons-vue";
+import {CircleCheck, Close, CopyDocument} from "@element-plus/icons-vue";
 import Params from "@/Params.vue";
 
 let {toClipboard} = useClipboard();
 export default {
   name: 'SwaggerUi',
-  components: {Params, Close, CircleCheck},
+  components: {CopyDocument, Params, Close, CircleCheck},
   data() {
     return {
       groupName: null,
@@ -187,7 +186,6 @@ export default {
       this.axios({
         url: "/v3/api-docs/swagger-config"
       }).then(res => {
-        // springdoc 返回的数据结构: { urls: [{url: "/v3/api-docs", name: "default"}] }
         // 转换为前端需要的格式
         if (res.data.urls && Array.isArray(res.data.urls)) {
           that.resources = res.data.urls.map(item => ({
@@ -244,28 +242,6 @@ export default {
       toClipboard(content);
       this.$message.success('复制成功')
     },
-
-    //#region 添加自定义头
-    headerChanged() {//公共头参数发生变化，存储到本地
-      localStorage.setItem("headers", JSON.stringify(this.headers));
-    },
-    deleteHeader(index) {
-      this.headers.splice(index, 1);
-      localStorage.setItem("headers", JSON.stringify(this.headers));
-    },
-    addHeader() {
-      if (this.headers == null) {
-        this.headers = [];
-      }
-      this.headers.push({
-        key: '',
-        describe: '',
-        value: ''
-      });
-      localStorage.setItem("headers", JSON.stringify(this.headers));
-    },
-    //#endregion
-
     groupChanged() {
       let docUrl;
       if (this.mockModel) {
