@@ -4,7 +4,7 @@ package com.smarthito.swagger.server.entity;
  * @author yaojunguang at 2021/4/29 10:31 下午
  */
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,14 +17,14 @@ import lombok.Data;
 public class RespEntity<T> {
 
 
-    @ApiModelProperty(value = "执行结果的状态", required = true)
+    @Schema(description = "执行结果的状态", requiredMode = Schema.RequiredMode.REQUIRED)
     public int code = 0;
 
-    @ApiModelProperty(value = "附加消息,以code为准，返回信息不一定完整", required = true)
+    @Schema(description = "附加消息,以code为准，返回信息不一定完整", requiredMode = Schema.RequiredMode.REQUIRED)
     public String message = "ok";
 
 
-    @ApiModelProperty(value = "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]", required = false)
+    @Schema(description = "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]")
     public T data;
 
 }

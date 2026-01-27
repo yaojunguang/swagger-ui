@@ -1,6 +1,6 @@
 package com.smarthito.swagger.server.entity;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -11,9 +11,9 @@ import java.sql.Timestamp;
 @Data
 public class CellEntity {
 
-    @ApiModelProperty(value = "时间", required = true)
+    @Schema(description = "时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private Timestamp time;
 
-    @ApiModelProperty(value = "名称", required = true)
+    @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 }

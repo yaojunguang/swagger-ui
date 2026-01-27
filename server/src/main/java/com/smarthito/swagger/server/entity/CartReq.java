@@ -1,6 +1,6 @@
 package com.smarthito.swagger.server.entity;
 
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,9 +10,9 @@ import lombok.Data;
 @Data
 public class CartReq {
 
-    @ApiParam(value = "数量", defaultValue = "0")
+    @Schema(description = "数量", defaultValue = "0")
     private int userId = 0;
 
-    @ApiParam(value = "数量", required = true, defaultValue = "0")
+    @Schema(description = "数量", requiredMode = Schema.RequiredMode.REQUIRED, defaultValue = "0")
     private String userName = "弄好的";
 }

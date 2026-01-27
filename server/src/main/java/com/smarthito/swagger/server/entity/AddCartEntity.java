@@ -1,6 +1,6 @@
 package com.smarthito.swagger.server.entity;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class AddCartEntity {
 
-    @ApiModelProperty(value = "编号", required = true)
+    @Schema(description = "编号", requiredMode = Schema.RequiredMode.REQUIRED)
     private int itemId;
 
-    @ApiModelProperty(value = "结果", required = true)
+    @Schema(description = "结果", requiredMode = Schema.RequiredMode.REQUIRED)
     private String itemName;
 
 }

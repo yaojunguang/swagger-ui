@@ -1,5 +1,10 @@
 package com.smarthito.swagger.server.configuration;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -7,13 +12,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.oas.annotations.EnableOpenApi;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
-import javax.annotation.Resource;
 import java.net.InetAddress;
 
 /**
@@ -23,23 +22,20 @@ import java.net.InetAddress;
  */
 @Slf4j
 @Configuration
-@EnableOpenApi
 public class Swagger3Config implements ApplicationListener<WebServerInitializedEvent> {
 
     @Resource
     private Environment environment;
 
-    @Bean("swaggerDocket")
-    public Docket createRestApi() {
-        return new Docket(DocumentationType.OAS_30).pathMapping("/")
-                .apiInfo(new ApiInfoBuilder()
-                        .title("Swagger3接口文档")
-                        .description("上海XX信息科技有限公司")
-                        .version("1.0.0")
-                        .build())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.smarthito.swagger.server.controller"))
-                .build();
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(new Info().title("JO API")
+                        .contact(new Contact())
+                        .description("JO管理平台提供的 RESTful API")
+                        .version("v8.0.0")
+                        .license(new License().name("Apache 2.0").url("http://springdoc.org")))
+                ;
     }
 
     @SneakyThrows

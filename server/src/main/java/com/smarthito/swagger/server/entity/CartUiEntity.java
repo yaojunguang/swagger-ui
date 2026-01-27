@@ -1,6 +1,6 @@
 package com.smarthito.swagger.server.entity;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.List;
 @Data
 public class CartUiEntity {
 
-    @ApiModelProperty(value = "数量", required = true)
+    @Schema(description = "数量", requiredMode = Schema.RequiredMode.REQUIRED)
     private int num = 1;
 
-    @ApiModelProperty(value = "列表", required = true)
+    @Schema(description = "列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<CellEntity> items;
 }
