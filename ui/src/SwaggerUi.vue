@@ -308,11 +308,6 @@ export default {
       }
       localStorage.setItem('keyword', this.keyword);
     },
-    updateForm(index) {
-      this.items[index] = this.items[index];
-      this.renderIndex += 1;
-      this.$forceUpdate()
-    },
     execute(formName, item) {
       let that = this;
       let path = item.path;
@@ -412,7 +407,7 @@ export default {
         }
       }
       //parse schemas
-      const schemas = data.components.schema;
+      const schemas = data.components.schemas;
       for (let schema in schemas) {
         if (schemas[schema].title === undefined) {
           schemas[schema].title = schemas[schema].description ?? schema;
@@ -423,18 +418,6 @@ export default {
       console.log(JSON.stringify(data));
       this.keywordChanged();
       this.$forceUpdate();
-    },
-
-    listRecursive(ref) {
-      if (ref.type === 'array' && ref.items.originalRef !== undefined) {
-        return 'List<' + this.listRecursive(ref.items.originalRef) + '>'
-      } else if (ref.type === 'array') {
-        return ref.items.type
-      } else if (ref.type !== undefined) {
-        return ref.type
-      } else {
-        return ref
-      }
     },
     findTagNode(tag, doc) {//查找根Tag
       if (doc["tags"] === undefined) {
@@ -449,19 +432,6 @@ export default {
       const newTags = {name: tag};
       doc["tags"].push(newTags)
       return newTags
-    },
-    changeLanguage(entity) {
-      console.log(entity.language)
-      if (entity.language === 'SwiftJson') {
-        entity.result = toSwiftJson(entity)
-      } else if (entity.language === 'ObjectMapper') {
-        entity.result = toObjectMapper(entity)
-      } else if (entity.language === 'Java') {
-        entity.result = toJava(entity)
-      } else if (entity.language === 'Json') {
-        entity.result = toJson(entity)
-      }
-      this.$forceUpdate()
     },
     tryIt(item, op) {
       item.try = op;
@@ -552,7 +522,7 @@ export default {
       let modules = [];
       let schema = method["responses"]['200']["content"]["*/*"].schema;
       if (schema.$ref) {
-        schema.originalRef = schema.$ref.substring('#/components/'.length);
+        schema.originalRef = schema.$ref.substring('#/components/schemas/'.length);
         this.parseModule(this.getNodeByPath(schema.originalRef), modules);
       }
 
@@ -576,10 +546,10 @@ export default {
       this.$forceUpdate()
     },
     getNodeByPath(path) {
-      var temp = this.form.components; // take a copy of object
+      let temp = this.form.components.schemas; // take a copy of object
       if (!path) return temp; // if path is undefined or empty return the copy
       path = path.split("/");
-      for (var p = 0; p !== path.length; ++p) {
+      for (let p = 0; p !== path.length; ++p) {
         if (!path[p]) continue; // means "a/" = "a"
         temp = temp[path[p]]; // new data is subdata of data
         if (!temp) return temp;
@@ -605,7 +575,7 @@ export default {
         if (module.properties.hasOwnProperty(prop)) {
           let property = module.properties[prop];
           if (property.$ref !== undefined) {
-            property.originalRef = property.$ref.substring('#/components/'.length)
+            property.originalRef = property.$ref.substring('#/components/schemas/'.length)
           }
           if (property.originalRef !== undefined) {
             if (property.originalRef === 'Timestamp') {
@@ -616,13 +586,13 @@ export default {
             }
           } else if (property.type === 'array') {
             if (property.items.$ref !== undefined) {
-              property.items.originalRef = property.items.$ref.substring('#/components/'.length);
+              property.items.originalRef = property.items.$ref.substring('#/components/schemas/'.length);
             }
             if (property.items.originalRef !== undefined) {
               this.parseModule(this.getNodeByPath(property.items.originalRef), modules);
             } else if (property.items.type === 'array') {
               if (property.items.items.$ref !== undefined) {
-                property.items.items.originalRef = property.items.items.$ref.substring('#/components/'.length);
+                property.items.items.originalRef = property.items.items.$ref.substring('#/components/schemas/'.length);
               }
               this.parseModule(this.getNodeByPath(property.items.items.originalRef), modules);
             }

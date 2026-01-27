@@ -240,11 +240,11 @@
             <el-radio-group class="language-radio"
                             @change="changeLanguage(entity)" size="small"
                             v-model="entity.language">
-              <el-radio-button label="normal">常规</el-radio-button>
-              <el-radio-button label="SwiftJson">SwiftJson</el-radio-button>
-              <el-radio-button label="ObjectMapper">ObjectMapper</el-radio-button>
-              <el-radio-button label="Java">Java</el-radio-button>
-              <el-radio-button label="Json">Json</el-radio-button>
+              <el-radio-button value="normal">常规</el-radio-button>
+              <el-radio-button value="SwiftJson">SwiftJson</el-radio-button>
+              <el-radio-button value="ObjectMapper">ObjectMapper</el-radio-button>
+              <el-radio-button value="Java">Java</el-radio-button>
+              <el-radio-button value="Json">Json</el-radio-button>
             </el-radio-group>
           </el-tab-pane>
         </el-tabs>
