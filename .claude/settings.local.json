@@ -7,7 +7,12 @@
       "Bash(claude mcp --help:*)",
       "Bash(claude mcp get:*)",
       "Bash(curl -X POST http://mcp.dmz.prod.caijj.net/mcp/sh_clientsuite -H 'Content-Type: application/json' -H 'X-CJJ-MCP-API-KEY: ec216b1f-eede-49ec-84e3-9511ee06f376' -d {\"\"jsonrpc\"\":\"\"2.0\"\",\"\"id\"\":1,\"\"method\"\":\"\"tools/list\"\"})",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(tree:*)",
+      "Bash(xargs:*)",
+      "Bash(find:*)",
+      "Bash(git -C /Users/yaojunguang/Dev/JO/swagger-ui log --oneline -10)",
+      "Bash(lsof:*)"
     ]
   }
 }

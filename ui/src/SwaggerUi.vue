@@ -72,255 +72,6 @@
                   <el-form :model="item" :ref="item.path+'-'+item.method" v-loading="item.executing">
                     <el-tabs type="border-card" v-model="item.tab" style="height: 100%">
                       <Params label="Params" name="params" :item="item"/>
-                      <!-- el-tab-pane label="Params" name="params">
-                        <el-collapse v-model="item.open" style="text-align: left">
-                          <el-collapse-item :name="1">
-                            <template #title>
-                              Header
-                              <el-tooltip class="item" effect="dark"
-                                          content="该部分设置为全局设置，设置后会存储在本地缓存中"
-                                          placement="right">
-                                <el-icon class="header-icon">
-                                  <InfoFilled/>
-                                </el-icon>
-                              </el-tooltip>
-                            </template>
-                            <el-row style="font-weight: bold">
-                              <el-col :span="4">
-                                参数名
-                              </el-col>
-                              <el-col :span="8">
-                                描述
-                              </el-col>
-                              <el-col :span="6">
-                                参数值
-                              </el-col>
-                              <el-col :span="1">
-                                &nbsp;
-                              </el-col>
-                            </el-row>
-                            <el-row v-for="(header,index) in headers" :key="index">
-                              <el-col :span="4" class="name">
-                                <el-input v-model="header.key" @input="headerChanged()"/>
-                              </el-col>
-                              <el-col :span="8">
-                                <el-input v-model="header.describe" @input="headerChanged()"/>
-                              </el-col>
-                              <el-col :span="6">
-                                <el-input v-model="header.value" @input="headerChanged()"/>
-                              </el-col>
-                              <el-col :span="1">
-                                <el-icon style="cursor: pointer;vertical-align: middle;" @click="deleteHeader(index)"
-                                         title="删除该参数">
-                                  <Close/>
-                                </el-icon>
-                              </el-col>
-                            </el-row>
-                            <el-row>
-                              <el-col :span="4">
-                                <el-icon @click="addHeader()"
-                                         title="添加一条参数">
-                                  <CirclePlus/>
-                                </el-icon>
-                              </el-col>
-                            </el-row>
-                          </el-collapse-item>
-                          <el-collapse-item title="Query" :name="2" v-if="item.private">
-
-                            <el-row style="font-weight: bold">
-                              <el-col :span="4">
-                                参数名
-                              </el-col>
-                              <el-col :span="2">
-                                类型
-                              </el-col>
-                              <el-col :span="8">
-                                描述
-                              </el-col>
-                              <el-col :span="6">
-                                默认值
-                              </el-col>
-                            </el-row>
-                            <el-row v-for="(param,index) in item.private" :key="param.name">
-                              <el-col :span="4" class="name" v-bind:class="param.required?'required':''"
-                                      @click="copy(param.name)">
-                                {{ param.name }}<span>* required</span>
-                              </el-col>
-                              <el-col :span="2">
-                                {{ param.type }}
-                              </el-col>
-                              <el-col :span="8">
-                                {{ param.description }}
-                              </el-col>
-                              <el-col :span="6">
-                                <el-form-item :prop="'private.'+index+'.value'" :rules="param.rules">
-                                  <template v-if="item.try">
-                                    <el-input-number v-if="param.type === 'integer' || param.type === 'byte'" :step="1"
-                                                     @input="updateForm(mainIndex)"
-                                                     v-model="item.private[index].value"/>
-                                    <el-input-number v-else-if="param.type === 'number'" @input="updateForm(mainIndex)"
-                                                     v-model="item.private[index].value"/>
-                                    <el-select v-else-if="param.type === 'boolean'" @change="updateForm(mainIndex)"
-                                               v-model="item.private[index].value" placeholder="请选择">
-                                      <el-option value="null" label="--">--</el-option>
-                                      <el-option value="true" label="true">true</el-option>
-                                      <el-option value="false" label="false">false</el-option>
-                                    </el-select>
-                                    <el-input v-else v-model="item.private[index].value"
-                                              @input="updateForm(mainIndex)"/>
-                                  </template>
-                                  <template v-else>
-                                    {{ param.default }}
-                                  </template>
-                                </el-form-item>
-                              </el-col>
-                            </el-row>
-
-                          </el-collapse-item>
-                          <el-collapse-item :name="3" v-if="item.common">
-                            <template #title>
-                              Query(Commmon)
-                              <el-tooltip class="item" effect="dark"
-                                          content="公共参数是以【公共参数】注解开头的参数归类到该分组"
-                                          placement="right">
-                                <i class="header-icon el-icon-info"/>
-                              </el-tooltip>
-                            </template>
-                            <el-row style="font-weight: bold">
-                              <el-col :span="4">
-                                参数名
-                              </el-col>
-                              <el-col :span="2">
-                                类型
-                              </el-col>
-                              <el-col :span="8">
-                                描述
-                              </el-col>
-                              <el-col :span="6">
-                                默认值
-                              </el-col>
-                            </el-row>
-                            <el-row v-for="(param,index) in item.common" :key="index">
-                              <el-col :span="4" class="name" v-bind:class="param.required?'required':''"
-                                      @click="copy(param.name)">{{ param.name }}<span>* required</span>
-                              </el-col>
-                              <el-col :span="2">
-                                {{ param.type }}
-                              </el-col>
-                              <el-col :span="8">
-                                {{ param.description }}
-                              </el-col>
-                              <el-col :span="6">
-                                <el-form-item v-if="item.try" :prop="'common.'+index+'.value'" :rules="param.rules">
-                                  <el-input-number v-if="param.type === 'integer' || param.type === 'byte'" :step="1"
-                                                   @input="updateForm(mainIndex)"
-                                                   v-model="param.value"/>
-                                  <el-input-number v-else-if="param.type === 'number'" @input="updateForm(mainIndex)"
-                                                   v-model="param.value"/>
-                                  <el-select v-else-if="param.type === 'boolean'" @change="updateForm(mainIndex)"
-                                             v-model="param.value" placeholder="请选择">
-                                    <el-option value="null" label="--">--</el-option>
-                                    <el-option value="true" label="true">true</el-option>
-                                    <el-option value="false" label="false">false</el-option>
-                                  </el-select>
-                                  <el-input v-else v-model="param.value" @input="updateForm(mainIndex)"/>
-                                </el-form-item>
-                                <template v-else>
-                                  {{ param.default }}
-                                </template>
-                              </el-col>
-                            </el-row>
-                          </el-collapse-item>
-                          <el-collapse-item title="Body" :name="4">
-                            <el-row style="font-weight: bold">
-                              <el-col :span="2">
-                                files
-                              </el-col>
-                              <el-col :span="4">
-                                文件名
-                              </el-col>
-                              <el-col :span="14">
-                                <input type="file"/>
-                              </el-col>
-                            </el-row>
-                            <el-row style="font-weight: bold">
-                              <el-col :span="2">
-                                params
-                              </el-col>
-                              <el-col :span="18">
-                                <el-input
-                                    :rows="10"
-                                    type="textarea"
-                                    placeholder="Please input"
-                                />
-                              </el-col>
-                            </el-row>
-
-                          </el-collapse-item>
-                          <el-collapse-item v-if='item.responses["200"]["content"]["*/*"].schema.originalRef' :name="5">
-                            <template #title>
-                              {{
-                                'Responses=>' + item.responses['200']['content']['*/*'].schema.originalRef.replaceAll('«', '<').replaceAll('»', '>')
-                              }}
-                            </template>
-                            <el-tabs :model-value="item.modules[0].title">
-                              <el-tab-pane v-for="(entity,mIndex) in item.modules" :label="entity.title"
-                                           :name="entity.title" :key="mIndex" style="position: relative;">
-                                <div v-if="entity.language === 'normal'">
-                                  <el-row>
-                                    <el-col :span="4">
-                                      变量名
-                                    </el-col>
-                                    <el-col :span="4">
-                                      类型
-                                    </el-col>
-                                    <el-col :span="8">
-                                      描述
-                                    </el-col>
-                                  </el-row>
-                                  <el-row v-for="(property,key,index) in entity.properties" :key="index">
-                                    <el-col :span="4" class="name" @click="copy(key)">
-                                      {{ key }}
-                                    </el-col>
-                                    <el-col :span="4">
-                                      <template v-if="property.type === 'array' && property.items.originalRef">
-                                        List&lt;{{ property.items.originalRef }}>
-                                      </template>
-                                      <template v-else-if="property.type === 'array'">
-                                        {{ 'List<' + listRecursive(property.items) + '>' }}
-                                      </template>
-                                      <template v-else>
-                                        {{ property.type }}
-                                      </template>
-
-                                    </el-col>
-                                    <el-col :span="8">
-                                      {{ property.description }}
-                                    </el-col>
-                                  </el-row>
-                                </div>
-                                <div v-else-if="entity.result" style="position: relative;margin-right: 12px;">
-                                  <highlightjs autodetect :code="entity.result" style="border-radius: 6px;"
-                                               :class="entity.language === 'Java'?'Java':'swift'"/>
-                                </div>
-                                <el-icon v-if="entity.language !== 'normal'" @click="copy(entity.result)" color="white"
-                                         style="position: absolute;left: 8px;top: 8px;">
-                                  <CopyDocument/>
-                                </el-icon>
-                                <el-radio-group class="language-radio"
-                                                @change="changeLanguage(entity)" size="small"
-                                                v-model="entity.language">
-                                  <el-radio-button label="normal">常规</el-radio-button>
-                                  <el-radio-button label="SwiftJson">SwiftJson</el-radio-button>
-                                  <el-radio-button label="ObjectMapper">ObjectMapper</el-radio-button>
-                                  <el-radio-button label="Java">Java</el-radio-button>
-                                  <el-radio-button label="Json">Json</el-radio-button>
-                                </el-radio-group>
-                              </el-tab-pane>
-                            </el-tabs>
-                          </el-collapse-item>
-                        </el-collapse>
-                      </el-tab-pane -->
                       <el-tab-pane label="Example" name="execute" style="position: relative">
                         <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
                           <el-tab-pane name="swift" label="swift" style="position: relative;">
@@ -394,13 +145,12 @@ export default {
   components: {Params, Close, CircleCheck},
   data() {
     return {
-      canFetchFunc: false,//是否支持/swagger/method获取方法名
       groupName: null,
       resources: [{
-        name: 'v4',
-        url: '/v2/api-docs?group=v4',
-        swaggerVersion: '2.0',
-        location: '/v2/api-docs?group=v4',
+        name: 'default',
+        url: '/v3/api-docs',
+        swaggerVersion: '3.0',
+        location: '/v3/api-docs',
       }],
       headers: [/*{
           key: '',
@@ -421,10 +171,6 @@ export default {
   },
   watch: {
     form: function () {
-      let that = this;
-      this.$nextTick(function () {
-        that.supportFetchFunc()
-      })
     },
     groupName: function () {
       localStorage.setItem('groupName', this.groupName);
@@ -439,10 +185,22 @@ export default {
     } else {
       let that = this;
       this.axios({
-        url: "/swagger-resources"
+        url: "/v3/api-docs/swagger-config"
       }).then(res => {
-        that.resources = res.data;
-        if (that.groupName == null && res.data.length > 0) {
+        // springdoc 返回的数据结构: { urls: [{url: "/v3/api-docs", name: "default"}] }
+        // 转换为前端需要的格式
+        if (res.data.urls && Array.isArray(res.data.urls)) {
+          that.resources = res.data.urls.map(item => ({
+            name: item.name || 'default',
+            url: item.url,
+            swaggerVersion: '3.0',
+            location: item.url
+          }));
+        } else {
+          // 兼容旧格式（如果后端提供了兼容端点）
+          that.resources = res.data;
+        }
+        if (that.groupName == null && that.resources.length > 0) {
           that.groupName = that.resources[0].name;
         }
         that.groupChanged()
@@ -511,7 +269,7 @@ export default {
     groupChanged() {
       let docUrl;
       if (this.mockModel) {
-        docUrl = "/v2/api-docs.json";
+        docUrl = "/v3/api-docs.json";
       } else {
         if (this.resources != null && this.resources.length > 0) {
           let items = this.resources.filter(resource => resource.name === this.groupName);
@@ -554,25 +312,6 @@ export default {
       this.items[index] = this.items[index];
       this.renderIndex += 1;
       this.$forceUpdate()
-    },
-    supportFetchFunc() {
-      let that = this;
-      $.ajax({
-        xhrFields: {
-          withCredentials: true
-        },
-        url: '/swagger/method',
-        type: 'get',
-        data: {url: '/', type: 'func'},
-        cache: false,
-        success: function (resp) {
-          that.canFetchFunc = resp.result;
-          console.log('是否支持获取方法名:' + that.canFetchFunc)
-        },
-        error: function (error) {
-          console.log(error)
-        }
-      });
     },
     execute(formName, item) {
       let that = this;
@@ -656,24 +395,27 @@ export default {
     },
     parseDocs(data) {
       for (let path in data.paths) {
-        if (data.paths.hasOwnProperty(path)) {
-          let node = data.paths[path];
-          for (let methodType in node) {
-            if (node.hasOwnProperty(methodType)) {
-              let method = node[methodType];
-              method["tags"].forEach(tag => {
-                let tagNode = this.findTagNode(tag, data);
-                if (tagNode != null) {
-                  if (tagNode.methods === undefined) {
-                    tagNode.methods = []
-                  }
-                  method['path'] = path;
-                  method['method'] = methodType;
-                  tagNode.methods.push(method);
-                }
-              })
+        let node = data.paths[path];
+        for (let methodType in node) {
+          let method = node[methodType];
+          method["tags"].forEach(tag => {
+            let tagNode = this.findTagNode(tag, data);
+            if (tagNode != null) {
+              if (tagNode.methods === undefined) {
+                tagNode.methods = []
+              }
+              method['path'] = path;
+              method['method'] = methodType;
+              tagNode.methods.push(method);
             }
-          }
+          })
+        }
+      }
+      //parse schemas
+      const schemas = data.components.schema;
+      for (let schema in schemas) {
+        if (schemas[schema].title === undefined) {
+          schemas[schema].title = schemas[schema].description ?? schema;
         }
       }
       delete data.paths;
@@ -695,13 +437,18 @@ export default {
       }
     },
     findTagNode(tag, doc) {//查找根Tag
+      if (doc["tags"] === undefined) {
+        doc["tags"] = []
+      }
       for (let index = 0; index !== doc["tags"].length; ++index) {
         let entity = doc["tags"][index];
         if (entity.name === tag) {
           return entity
         }
       }
-      return null
+      const newTags = {name: tag};
+      doc["tags"].push(newTags)
+      return newTags
     },
     changeLanguage(entity) {
       console.log(entity.language)
@@ -848,10 +595,6 @@ export default {
       this.$forceUpdate()
     },
     parseModule(module, modules) {
-      let index = module.title.indexOf('«');
-      if (index > 0) {
-        module.title = module.title.substring(0, index);
-      }
       if (modules.filter(item => item.title === module.title).length === 0) {
         module.language = 'normal';
         modules.push(module);

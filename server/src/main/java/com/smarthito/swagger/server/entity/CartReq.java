@@ -8,6 +8,7 @@ import lombok.Data;
  */
 
 @Data
+@Schema(description = "购物车请求体")
 public class CartReq {
 
     @Schema(description = "数量", defaultValue = "0")

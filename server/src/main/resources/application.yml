@@ -2,7 +2,17 @@ server:
   port: 8090
 springdoc:
   api-docs:
+    enabled: true
     path: /v3/api-docs
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+    # 自定义 UI 配置
+    #config-url: /v3/api-docs/swagger-config
+    # 禁用默认的 Swagger UI（使用自定义 UI）
+    #disable-swagger-default-url: true
+  # 分组配置（如果需要多个分组）
+  group-configs:
+    - group: default
+      paths-to-match: /**
+      packages-to-scan: com.smarthito.swagger.server
