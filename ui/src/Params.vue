@@ -353,74 +353,6 @@ export default {
       this.renderIndex += 1;
       this.$forceUpdate()
     },
-    execute(formName, item) {
-      let that = this;
-      let path = item.path;
-      let params = {};
-      //处理公共参数
-      if (item.common !== undefined) {
-        item.common.forEach(function (entity) {
-          if (entity.required) {
-            if (entity.value == null) {
-              return this.checkForm(formName)
-            }
-          }
-          if (entity.in === 'path') {
-            path = path.replace('{' + entity.name + '}', entity.value)
-          } else {
-            params[entity.name] = entity.value
-          }
-        });
-      }
-      //处理私有参数
-      if (item.private !== undefined) {
-        item.private.forEach(function (entity) {
-          if (entity.required) {
-            if (entity.value == null) {
-              return this.checkForm(formName)
-            }
-          }
-          if (entity.in === 'path') {
-            path = path.replace('{' + entity.name + '}', entity.value)
-          } else {
-            params[entity.name] = entity.value
-          }
-        });
-      }
-      item.executing = true;
-      that.$forceUpdate();
-      let startAt = new Date();
-      let headers = {};
-      for (let index = 0; index !== that.headers.length; ++index) {
-        headers[that.headers[index].key] = that.headers[index].value;
-      }
-      $.ajax({
-        xhrFields: {
-          withCredentials: true
-        },
-        headers: headers,
-        url: path,
-        type: item.method,
-        data: params,
-        cache: false,
-        success: function (resp) {
-          item.executing = false;
-          item.executeTime = new Date() - startAt + 'ms';
-          item.result = JSON.stringify(resp, null, 4);
-          item.open.push(3);
-          that.$message.success('执行成功');
-          item.tab = 'result';
-          that.$forceUpdate();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          item.executing = false;
-          that.$alert(jqXHR.responseText, jqXHR.statusText, {
-            confirmButtonText: '确定'
-          });
-          console.log(error);
-        }
-      });
-    },
     checkForm(formName) {
       this.$nextTick(function () {
         this.$refs[formName][0].validate((valid) => {
@@ -443,15 +375,6 @@ export default {
       } else {
         return ref
       }
-    },
-    findTagNode(tag, doc) {//查找根Tag
-      for (let index = 0; index !== doc["tags"].length; ++index) {
-        let entity = doc["tags"][index];
-        if (entity.name === tag) {
-          return entity
-        }
-      }
-      return null
     },
     changeLanguage(entity) {
       if (entity.language === 'SwiftJson') {
@@ -477,54 +400,6 @@ export default {
         if (!temp) return temp;
       }
       return temp;
-    },
-    createExecuteCode(method) {
-      method.java = javaCallExample(method);
-      method.axios = jsCallExample(method);
-      method.swift = swiftCallExample(method);
-      method.retrofit = retrofitCallExample(method);
-      method.exe = 'swift';
-      this.$forceUpdate()
-    },
-    parseModule(module, modules) {
-      let index = module.title.indexOf('«');
-      if (index > 0) {
-        module.title = module.title.substring(0, index);
-      }
-      if (modules.filter(item => item.title === module.title).length === 0) {
-        module.language = 'normal';
-        modules.push(module);
-      } else {
-        return;
-      }
-      for (let prop in module.properties) {
-        if (module.properties.hasOwnProperty(prop)) {
-          let property = module.properties[prop];
-          if (property.$ref !== undefined) {
-            property.originalRef = property.$ref.substring('#/components/'.length)
-          }
-          if (property.originalRef !== undefined) {
-            if (property.originalRef === 'Timestamp') {
-              property.type = 'number'
-            } else {
-              this.parseModule(this.getNodeByPath(property.originalRef), modules);
-              property.type = this.getNodeByPath(property.originalRef).title;
-            }
-          } else if (property.type === 'array') {
-            if (property.items.$ref !== undefined) {
-              property.items.originalRef = property.items.$ref.substring('#/components/'.length);
-            }
-            if (property.items.originalRef !== undefined) {
-              this.parseModule(this.getNodeByPath(property.items.originalRef), modules);
-            } else if (property.items.type === 'array') {
-              if (property.items.items.$ref !== undefined) {
-                property.items.items.originalRef = property.items.items.$ref.substring('#/components/'.length);
-              }
-              this.parseModule(this.getNodeByPath(property.items.items.originalRef), modules);
-            }
-          }
-        }
-      }
     }
   }
 }
