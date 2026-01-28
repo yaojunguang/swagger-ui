@@ -17,7 +17,7 @@
               <el-menu-item-group>
                 <el-menu-item v-for="method in tag.methods" :key="method['operationId']"
                               :index="method['operationId']"
-                              v-bind:class="method['deprecated']+ ' '+method.method">
+                              v-bind:class="(method['deprecated']?'deprecated':'')+ ' '+method.method">
                   <template #title>
                     <span class="method">{{ method["method"] }}</span>
                     <div class="info">{{ method["path"] }}

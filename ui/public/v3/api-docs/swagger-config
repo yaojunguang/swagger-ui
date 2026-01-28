@@ -1,0 +1,23 @@
+{
+    "configUrl": "/v3/api-docs/swagger-config",
+    "oauth2RedirectUrl": "http://127.0.0.1:8080/swagger-ui/oauth2-redirect.html",
+    "urls": [
+        {
+            "url": "/v3/api-docs/app-plus",
+            "name": "app-plus"
+        },
+        {
+            "url": "/v3/api-docs/app-v8",
+            "name": "app-v8"
+        },
+        {
+            "url": "/v3/api-docs/man",
+            "name": "man"
+        },
+        {
+            "url": "/v3/api-docs/web",
+            "name": "web"
+        }
+    ],
+    "validatorUrl": ""
+}

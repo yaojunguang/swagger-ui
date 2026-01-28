@@ -53,12 +53,12 @@ function toArkTsType(property) {
 }
 
 export function toArkTs(module) {
-    let code = `/**\n
- * ${module.description??module.title}\n
- *\n
- * @author yaojunguang\n
- * @date ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').substring(0, 19)}\n
- */\n
+    let code = `/**
+ * ${module.description??module.title}
+ *
+ * @author yaojunguang
+ * @date ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').substring(0, 19)}
+ */
  export class ${module.title} {\n`;
     for (let name in module.properties) {
         if (module.properties.hasOwnProperty(name)) {

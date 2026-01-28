@@ -1,0 +1,2414 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "JO API",
+        "description": "JO管理平台提供的 RESTful API",
+        "contact": {},
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://springdoc.org"
+        },
+        "version": "v8.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8090",
+            "description": "Generated server url"
+        }
+    ],
+    "paths": {
+        "/app/token": {
+            "post": {
+                "tags": [
+                    "token-controller"
+                ],
+                "operationId": "registerDevice",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/DeviceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultInteger"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/orders/ship": {
+            "post": {
+                "tags": [
+                    "orders-controller"
+                ],
+                "operationId": "addOrderShipInfo",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/ShipReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/coupon": {
+            "post": {
+                "tags": [
+                    "coupon-controller"
+                ],
+                "operationId": "addCoupon",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AddCouponReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Result"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat/text": {
+            "post": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "addTextChat",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AddChatReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListChatCellEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat/image": {
+            "post": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "addImageChat",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AddChatReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListChatCellEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/works/{id}/state": {
+            "patch": {
+                "tags": [
+                    "works-controller"
+                ],
+                "operationId": "stateWorks",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/StateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultBoolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/works/{id}/star": {
+            "patch": {
+                "tags": [
+                    "works-controller"
+                ],
+                "operationId": "starWorks",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/StarReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat/{id}": {
+            "patch": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "markAsRead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "score",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultBoolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/works": {
+            "get": {
+                "tags": [
+                    "works-controller"
+                ],
+                "operationId": "findWorks",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/PageReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListWorkCellDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/user/{id}": {
+            "get": {
+                "tags": [
+                    "user-controller"
+                ],
+                "operationId": "getUserInfo",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultUserEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/orders": {
+            "get": {
+                "tags": [
+                    "orders-controller"
+                ],
+                "operationId": "findOrders",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/SearchOrdersReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListOrdersEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/orders/{id}": {
+            "get": {
+                "tags": [
+                    "orders-controller"
+                ],
+                "summary": "获取订单详情",
+                "operationId": "findOrderDetailById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "订单id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultOrderUiEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/orders/{id}/c": {
+            "get": {
+                "tags": [
+                    "orders-controller"
+                ],
+                "operationId": "findOrdersChild",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Result"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/orders/u/{id}": {
+            "get": {
+                "tags": [
+                    "orders-controller"
+                ],
+                "operationId": "findOrdersByUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Result"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/orders/logistic": {
+            "get": {
+                "tags": [
+                    "orders-controller"
+                ],
+                "operationId": "findByCode",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/LogisticRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultLogisticEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/comment": {
+            "get": {
+                "tags": [
+                    "comment-controller"
+                ],
+                "operationId": "findComments",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/PageReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListCommentCellEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/comment/all": {
+            "get": {
+                "tags": [
+                    "comment-controller"
+                ],
+                "summary": "获取全部评论",
+                "operationId": "findCommentsAll",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/ListCommonRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListCommentCellEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat": {
+            "get": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "syncAll",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/SyncReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultSyncResp"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat/search": {
+            "get": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "findLoveItem",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/FindLoveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListLovesItemEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat/s": {
+            "get": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "findChats",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/ChatReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListChatCellEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/chat/c": {
+            "get": {
+                "tags": [
+                    "chat-controller"
+                ],
+                "operationId": "findCons",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/ConReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultListConverCellEntity"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/admin": {
+            "get": {
+                "tags": [
+                    "admin-controller"
+                ],
+                "operationId": "register",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/LoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultAdminSession"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/admin/logoff": {
+            "get": {
+                "tags": [
+                    "admin-controller"
+                ],
+                "operationId": "logoff",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/admin/info": {
+            "get": {
+                "tags": [
+                    "admin-controller"
+                ],
+                "operationId": "getUserInfo_1",
+                "parameters": [
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultAdminSession"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/comment/{id}": {
+            "delete": {
+                "tags": [
+                    "comment-controller"
+                ],
+                "operationId": "deleteComment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "req",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BaseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResultBoolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DeviceReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "deviceToken": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ResultInteger": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "ShipReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "orderItemId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "shipper": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ResultObject": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "AddCouponReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "user": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "discard": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "describes": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Result": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "AddChatReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "user": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ChatCellEntity": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "该条信息的发送者编号"
+                    },
+                    "conId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "会话编号"
+                    },
+                    "nickName": {
+                        "type": "string",
+                        "description": "该条信息的发送者昵称"
+                    },
+                    "thumb": {
+                        "type": "string",
+                        "description": "该条信息的发送者头像"
+                    },
+                    "send": {
+                        "type": "boolean",
+                        "description": "该条信息的发送还是接受"
+                    },
+                    "type": {
+                        "type": "string",
+                        "format": "byte",
+                        "description": "消息类型 0文字，1图片，2自定义"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "详细详情"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "添加时间"
+                    }
+                }
+            },
+            "ResultListChatCellEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+                        "items": {
+                            "$ref": "#/components/schemas/ChatCellEntity"
+                        }
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "StateReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "state": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ResultBoolean": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "boolean",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "StarReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "star": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "BaseReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "PageReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ResultListWorkCellDto": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+                        "items": {
+                            "$ref": "#/components/schemas/WorkCellDto"
+                        }
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "WorkCellDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "主键"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户编号"
+                    },
+                    "userThumb": {
+                        "type": "string",
+                        "description": "用户头像"
+                    },
+                    "userNickName": {
+                        "type": "string",
+                        "description": "用户头像"
+                    },
+                    "userVip": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户会员"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "描述标题"
+                    },
+                    "thumb": {
+                        "type": "string",
+                        "description": "封面图"
+                    },
+                    "multi": {
+                        "type": "boolean",
+                        "description": "是否多图"
+                    },
+                    "goods": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "点赞"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "添加时间"
+                    },
+                    "liked": {
+                        "type": "boolean",
+                        "description": "是否点赞"
+                    }
+                }
+            },
+            "ResultUserEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/UserEntity",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "UserEntity": {
+                "type": "object",
+                "description": "用户信息",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户的id"
+                    },
+                    "userName": {
+                        "type": "string",
+                        "description": "用户登录名，其中的格式为：wx-微信 ，wb-微博，mb-手机号码,app-苹果id"
+                    },
+                    "nickName": {
+                        "type": "string",
+                        "description": "显示名"
+                    },
+                    "thumb": {
+                        "type": "string",
+                        "description": "头像"
+                    },
+                    "background": {
+                        "type": "string",
+                        "description": "用户背景图片"
+                    },
+                    "signature": {
+                        "type": "string",
+                        "description": "用户签名"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": "密码或者登陆的token值"
+                    },
+                    "state": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "状态"
+                    },
+                    "vip": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "是否是vip"
+                    },
+                    "vipTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "vip截止时间"
+                    },
+                    "points": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户积分"
+                    },
+                    "unPayNumber": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "未支付的订单数量"
+                    },
+                    "notify": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "信息中心数量"
+                    },
+                    "couponNumber": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "优惠券数量"
+                    },
+                    "chat": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "聊天值"
+                    },
+                    "inviteCode": {
+                        "type": "string",
+                        "description": "邀请码，5位长度"
+                    },
+                    "inviter": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "邀请人"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "电子邮件"
+                    },
+                    "sex": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "性别"
+                    },
+                    "birthday": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "生日"
+                    },
+                    "mobile": {
+                        "type": "string",
+                        "description": "手机号码"
+                    },
+                    "forbiddenAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "禁言到什么时间"
+                    },
+                    "signOutAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "注销账号时间"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "创建时间"
+                    },
+                    "updateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "最后更新时间"
+                    }
+                }
+            },
+            "SearchOrdersReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "no": {
+                        "type": "string"
+                    },
+                    "begin": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "OrdersEntity": {
+                "type": "object",
+                "description": "用户商品订单",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "编号"
+                    },
+                    "orderNo": {
+                        "type": "string",
+                        "description": "订单编号"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "订单状态"
+                    },
+                    "typeId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "订单类型"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "客户Id"
+                    },
+                    "postage": {
+                        "type": "number",
+                        "description": "邮费"
+                    },
+                    "total": {
+                        "type": "number",
+                        "description": "订单合计"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "description": "优惠额度"
+                    },
+                    "couponId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "优惠券的编号"
+                    },
+                    "points": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "支付积分抵扣"
+                    },
+                    "pointsId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "积分记录锁定的编号"
+                    },
+                    "eventDiscount": {
+                        "type": "number",
+                        "description": "活动优惠"
+                    },
+                    "payTotal": {
+                        "type": "number",
+                        "description": "实际支付金额"
+                    },
+                    "payWay": {
+                        "type": "string",
+                        "description": "支付方式"
+                    },
+                    "detailInfo": {
+                        "type": "string",
+                        "description": "订单详情"
+                    },
+                    "recipient": {
+                        "type": "string",
+                        "description": "收件人"
+                    },
+                    "addressDetail": {
+                        "type": "string",
+                        "description": "详细地址"
+                    },
+                    "mobile": {
+                        "type": "string",
+                        "description": "手机号码"
+                    },
+                    "authorId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "管理者Id"
+                    },
+                    "isVisiable": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "是否可见，0全部可见"
+                    },
+                    "hasChild": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "是否具有子订单"
+                    },
+                    "additionalComments": {
+                        "type": "string",
+                        "description": "附加留言"
+                    },
+                    "version": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "版本"
+                    },
+                    "note": {
+                        "type": "string",
+                        "description": "管理员留言"
+                    },
+                    "baseCost": {
+                        "type": "number",
+                        "description": "基础成本"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "添加时间"
+                    },
+                    "updateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "更新时间"
+                    }
+                }
+            },
+            "ResultListOrdersEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+                        "items": {
+                            "$ref": "#/components/schemas/OrdersEntity"
+                        }
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "OrderChildEntity": {
+                "type": "object",
+                "description": "[已废弃]订单-分组订单 ",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "序号"
+                    },
+                    "partnerId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "服务商的编号"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "状态"
+                    },
+                    "orderNo": {
+                        "type": "string",
+                        "description": "父级订单编号"
+                    },
+                    "orderChildNo": {
+                        "type": "string",
+                        "description": "订单的编号命名方式为父级订单-序号"
+                    },
+                    "storehouse": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "标题描述"
+                    },
+                    "detail": {
+                        "type": "string",
+                        "description": "订单的详细信息"
+                    },
+                    "expressCom": {
+                        "type": "string",
+                        "description": "快递公司"
+                    },
+                    "expressCode": {
+                        "type": "string",
+                        "description": "快递的单号"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updateTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "OrderUiEntity": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "编号"
+                    },
+                    "recipient": {
+                        "type": "string",
+                        "description": "收件人"
+                    },
+                    "mobile": {
+                        "type": "string",
+                        "description": "手机号码"
+                    },
+                    "addressDetail": {
+                        "type": "string",
+                        "description": "详细地址"
+                    },
+                    "orderNo": {
+                        "type": "string",
+                        "description": "订单编号"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "订单状态"
+                    },
+                    "postage": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "邮费"
+                    },
+                    "total": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "订单合计"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "优惠额度"
+                    },
+                    "couponId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "优惠券的编号"
+                    },
+                    "couponCanUse": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "优惠券可用数量"
+                    },
+                    "points": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "支付积分抵扣"
+                    },
+                    "eventDiscount": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "活动优惠"
+                    },
+                    "payTotal": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "实际支付金额"
+                    },
+                    "payWay": {
+                        "type": "string",
+                        "description": "支付方式"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "添加时间"
+                    },
+                    "updateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "更新时间"
+                    },
+                    "additionalComments": {
+                        "type": "string",
+                        "description": "附加留言"
+                    },
+                    "version": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "版本"
+                    },
+                    "sections": {
+                        "type": "array",
+                        "deprecated": true,
+                        "description": "子订单",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderChildEntity"
+                        }
+                    },
+                    "packages": {
+                        "type": "array",
+                        "description": "子订单",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderChildEntity"
+                        }
+                    }
+                }
+            },
+            "ResultOrderUiEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/OrderUiEntity",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "LogisticRequest": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "shipper": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LogisticEntity": {
+                "type": "object",
+                "description": "<a href='/web/swift/LogisticEntity' target=_blank>LogisticEntity</a>",
+                "properties": {
+                    "expressName": {
+                        "type": "string",
+                        "description": "快递公司名称"
+                    },
+                    "expressCode": {
+                        "type": "string",
+                        "description": "快递单号"
+                    },
+                    "expressTel": {
+                        "type": "string",
+                        "description": "快递公司电话"
+                    },
+                    "success": {
+                        "type": "boolean",
+                        "description": "执行是否成功"
+                    },
+                    "updateTime": {
+                        "type": "string",
+                        "description": "最后物流信息更新时间"
+                    },
+                    "state": {
+                        "type": "string",
+                        "format": "byte",
+                        "description": "状态,-1 待查询 0 查询异常 1 暂无记录 2 在途中 3 派送中 4 已签收 5 用户拒签 6 疑难件 7 无效单 8 超时单 9 签收失败 10 退回"
+                    },
+                    "stateDescribe": {
+                        "type": "string",
+                        "description": "状态描述"
+                    },
+                    "traces": {
+                        "type": "array",
+                        "description": "物流详细",
+                        "items": {
+                            "$ref": "#/components/schemas/TraceEntity"
+                        }
+                    }
+                }
+            },
+            "ResultLogisticEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/LogisticEntity",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "TraceEntity": {
+                "type": "object",
+                "description": "<a href='/web/swift/TraceEntity' target=_blank>TraceEntity</a>",
+                "properties": {
+                    "context": {
+                        "type": "string",
+                        "description": "内容"
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "时间"
+                    }
+                }
+            },
+            "CommentCellEntity": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户编号"
+                    },
+                    "userNickName": {
+                        "type": "string",
+                        "description": "用户昵称"
+                    },
+                    "userThumb": {
+                        "type": "string",
+                        "description": "用户头像"
+                    },
+                    "userVip": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户会员"
+                    },
+                    "itemId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "对象编号"
+                    },
+                    "itemType": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "对象类型"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "评论内容"
+                    },
+                    "praise": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户点赞数"
+                    },
+                    "files": {
+                        "type": "string",
+                        "description": "用户附加文件"
+                    },
+                    "liked": {
+                        "type": "boolean",
+                        "description": "用户是否点赞"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "评论发起时间"
+                    }
+                }
+            },
+            "ResultListCommentCellEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+                        "items": {
+                            "$ref": "#/components/schemas/CommentCellEntity"
+                        }
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "ListCommonRequest": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "maxNum": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "SyncReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "con": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "chat": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ResultSyncResp": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/SyncResp",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "SyncResp": {
+                "type": "object",
+                "properties": {
+                    "cons": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "chats": {
+                        "type": "array",
+                        "items": {}
+                    }
+                }
+            },
+            "FindLoveReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "keyword": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LovesItemEntity": {
+                "type": "object",
+                "description": "喜欢项",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "编号"
+                    },
+                    "thumb": {
+                        "type": "string",
+                        "description": "缩略图"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "标题"
+                    },
+                    "info": {
+                        "type": "string",
+                        "description": "详细描述"
+                    },
+                    "mainType": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "主类别"
+                    },
+                    "itemType": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "类别，0：专题，1：酒单，2商品"
+                    },
+                    "itemId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "项目编号"
+                    }
+                }
+            },
+            "ResultListLovesItemEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+                        "items": {
+                            "$ref": "#/components/schemas/LovesItemEntity"
+                        }
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "ChatReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "user": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ConReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "score": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ConverCellEntity": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "nickName": {
+                        "type": "string"
+                    },
+                    "thumb": {
+                        "type": "string"
+                    },
+                    "vip": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "addTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updateTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "score": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ResultListConverCellEntity": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]",
+                        "items": {
+                            "$ref": "#/components/schemas/ConverCellEntity"
+                        }
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "LoginReq": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AdminSession": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "用户编号"
+                    },
+                    "nickName": {
+                        "type": "string",
+                        "description": "用户名称"
+                    },
+                    "userName": {
+                        "type": "string",
+                        "description": "登录名"
+                    },
+                    "thumb": {
+                        "type": "string",
+                        "description": "头像"
+                    },
+                    "state": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "状态"
+                    },
+                    "token": {
+                        "type": "string",
+                        "description": "token"
+                    }
+                }
+            },
+            "ResultAdminSession": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "执行结果的状态"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "附加消息,以code为准，返回信息不一定完整"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/AdminSession",
+                        "description": "正常返回的数据体,若执行失败该部分会为null，若无数据为空[]"
+                    },
+                    "obscure": {
+                        "type": "boolean",
+                        "description": "是否是加密的"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            }
+        }
+    }
+}
