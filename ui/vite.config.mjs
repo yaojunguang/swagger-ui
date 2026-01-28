@@ -1,13 +1,16 @@
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import viteCompression from 'vite-plugin-compression';
+import ElementPlus from 'unplugin-element-plus/vite'
 import path from 'path';
 
 export default defineConfig({
     //服务端渲染
     ssr: false,
     base: './',
-    plugins: [vue(), viteCompression()],
+    plugins: [vue(), viteCompression(),ElementPlus({
+        useSource: true,
+    })],
     resolve: {
         extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
         alias: {

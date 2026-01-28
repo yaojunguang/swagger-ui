@@ -106,6 +106,14 @@
                               <CopyDocument/>
                             </el-icon>
                           </el-tab-pane>
+                          <el-tab-pane name="ArkTs" label="ArkTs" style="position: relative;">
+                            <highlightjs autodetect :code="item.arkTs" style="border-radius: 6px;"
+                                         class="java"/>
+                            <el-icon @click="copy(item.arkTs)" color="white"
+                                     style="position: absolute;right: 8px;top: 8px;">
+                              <CopyDocument/>
+                            </el-icon>
+                          </el-tab-pane>
                         </el-tabs>
                       </el-tab-pane>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
@@ -137,6 +145,7 @@ import {jsCallExample} from "components/Module2Js";
 import useClipboard from 'vue-clipboard3'
 import {CircleCheck, Close, CopyDocument} from "@element-plus/icons-vue";
 import Params from "@/Params.vue";
+import {arkTsCallExample} from "components/Module2ArkTs";
 
 let {toClipboard} = useClipboard();
 export default {
@@ -537,6 +546,7 @@ export default {
       method.axios = jsCallExample(method);
       method.swift = swiftCallExample(method);
       method.retrofit = retrofitCallExample(method);
+      method.arkTs = arkTsCallExample(method);
       method.exe = 'swift';
       this.$forceUpdate()
     },

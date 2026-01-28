@@ -14,18 +14,20 @@
     "element-plus": "^2.11.5",
     "highlight.js": "^11.8.0",
     "jquery": "^3.7.1",
+    "terser": "^5.30.3",
     "mime": "^3.0.0",
     "qs": "^6.5.2",
     "vue": "^3.3.11",
+    "unplugin-element-plus": "^0.8.0",
+    "vite-plugin-compression": "^0.5.1",
     "vue-clipboard3": "^2.0.0",
     "vue-router": "^4.2.5",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.5.2",
+    "@vitejs/plugin-vue": "^5.1.0",
     "@vue/compiler-sfc": "^3.0.0",
-    "script-loader": "^0.7.2",
-    "vite": "^5.0.8",
+    "vite": "^6.3.5",
     "vite-plugin-compression": "^0.5.1"
   },
   "browserslist": [

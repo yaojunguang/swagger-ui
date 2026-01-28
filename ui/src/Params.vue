@@ -266,7 +266,7 @@ import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Ja
 import {jsCallExample, toJson} from "components/Module2Js";
 import useClipboard from "vue-clipboard3";
 import {hasOwnPath} from "components/common";
-import {toArkTs} from "components/Module2Arkts";
+import {toArkTs} from "components/Module2ArkTs";
 
 let {toClipboard} = useClipboard();
 export default {
@@ -389,17 +389,6 @@ export default {
         entity.result = toArkTs(entity)
       }
       this.$forceUpdate()
-    },
-    getNodeByPath(path) {
-      let temp = this.form.components; // take a copy of object
-      if (!path) return temp; // if path is undefined or empty return the copy
-      path = path.split("/");
-      for (let p = 0; p !== path.length; ++p) {
-        if (!path[p]) continue; // means "a/" = "a"
-        temp = temp[path[p]]; // new data is subdata of data
-        if (!temp) return temp;
-      }
-      return temp;
     }
   }
 }
