@@ -59,7 +59,7 @@
                   <div slot="header" class="card-header">
                     <span class="method">{{ item.method }}</span>
                     <span class="path" @click="copy(item.path)">{{ item.path }}</span>
-                    <span class="summary" @click="copy(item.path)">{{ item["summary"] }}</span>
+                    <span class="summary" style="margin-left: 16px;" @click="copy(item.path)">{{ item["summary"] }}</span>
                     <el-button type="success" v-if="item.try" @click="execute(item.path+'-'+item.method,item)"
                                style="position: absolute;right: 108px;top: 8px;" plain>Execute
                     </el-button>

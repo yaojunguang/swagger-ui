@@ -29,3 +29,4 @@ logs/
 /ui/node/
 /ui/node_modules/
 /ui/target/
+/ui/dist/
