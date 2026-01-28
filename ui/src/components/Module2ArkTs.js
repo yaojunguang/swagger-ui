@@ -53,17 +53,23 @@ function toArkTsType(property) {
 }
 
 export function toArkTs(module) {
-    let code = '{\n';
+    let code = `/**\n
+ * ${module.description??module.title}\n
+ *\n
+ * @author yaojunguang\n
+ * @date ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').substring(0, 19)}\n
+ */\n
+ export class ${module.title} {\n`;
     for (let name in module.properties) {
         if (module.properties.hasOwnProperty(name)) {
             let property = module.properties[name];
             code += '    //' + property.description + '\n';
             if (property.type === 'array' && property.items.originalRef !== undefined) {
-                code += '    ' + name + ':[' + toArkTsBaseType(property.items.originalRef) + '] = [],\n'
+                code += '    ' + name + ':[' + toArkTsBaseType(property.items.originalRef) + '] = [];\n'
             } else if (property.type === 'array') {
-                code += '    ' + name + ':[' + toArkTsBaseType(property.items) + '] = [],\n'
+                code += '    ' + name + ':[' + toArkTsBaseType(property.items) + '] = [];\n'
             } else {
-                code += '    ' + name + ':' + toArkTsBaseType(property.type,property.format) + ' = '+toArkTsType(property)+',\n'
+                code += '    ' + name + ':' + toArkTsBaseType(property.type,property.format) + ' = '+toArkTsType(property)+';\n'
             }
         }
     }

@@ -16,6 +16,7 @@
     <description>自定义swagger-ui</description>
     <modules>
         <module>server</module>
+        <module>ui</module>
     </modules>
     <packaging>pom</packaging>
 

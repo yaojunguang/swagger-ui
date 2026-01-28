@@ -22,7 +22,7 @@ export default defineConfig({
         },
     },
     build: {
-        outputDir: "target/classes/META-INF/resources",
+        outDir: 'dist',
         assetsDir: '',
         manifest: true,
         minify: 'terser',

@@ -3,7 +3,7 @@
     <el-container style="height: 100%" v-if="form">
       <el-aside style="height: calc(100% - 50px);overflow: hidden;" id="menu-aside"
                 v-bind:style="{backgroundColor:'#f0f0f0',height:'100%',width:leftSize+'px'}">
-        <el-header>
+        <el-header style="text-indent: 16px;font-size: 25px;line-height: 50px;">
           {{ form.info.title }}<span class="version">{{ form.info.version }}</span>
         </el-header>
         <el-scrollbar style="height: 100%;">
@@ -19,8 +19,10 @@
                               :index="method['operationId']"
                               v-bind:class="method['deprecated']+ ' '+method.method">
                   <template #title>
-                    <span class="method">{{ method["method"] }}</span>{{ method["path"] }}<br/>
-                    <span class="summary">{{ method["summary"] }}</span>
+                    <span class="method">{{ method["method"] }}</span>
+                    <div class="info">{{ method["path"] }}
+                      <div class="summary">{{ method["summary"] }}</div>
+                    </div>
                   </template>
                 </el-menu-item>
               </el-menu-item-group>
@@ -34,7 +36,8 @@
           <el-input v-model="keyword" @change="keywordChanged"
                     placeholder="输入路径，名称以搜索" clearable>
             <template #prepend>
-              <el-select v-model="groupName" placeholder="请选择" title="选择分组" @change="groupChanged">
+              <el-select v-model="groupName" style="width: 150px" placeholder="请选择" title="选择分组"
+                         @change="groupChanged">
                 <el-option
                     v-for="item in resources"
                     :key="item.name"
@@ -606,13 +609,13 @@ export default {
   width: 100%;
 }
 
-.el-submenu__title .title {
+.el-sub-menu__title .title {
   font-size: 16px;
-  font-weight: 800;
   line-height: 30px;
+  font-weight: bold;
 }
 
-.el-submenu__title .describes {
+.el-sub-menu__title .describes {
   line-height: 20px;
   font-size: 12px;
   color: gray;
@@ -628,26 +631,33 @@ export default {
   padding-left: 80px !important;
 }
 
+.info {
+  padding-left: 6px;
+  color: black;
+  font-size: 14px;
+  line-height: 22px;
+}
+
 .summary {
-  font-size: 12px;
+  font-size: 8px;
   color: darkgray;
-  margin-left: 12px;
+  line-height: 8px;
 }
 
 .method {
   text-transform: uppercase;
-  line-height: 36px;
+  line-height: 30px;
   border-radius: 4px;
   display: inline-block;
   width: 60px;
   text-align: center;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 12px;
   color: white;
   margin-right: 8px;
   position: absolute;
   left: 16px;
-  top: 7px;
+  top: 10px;
 }
 
 .resize {

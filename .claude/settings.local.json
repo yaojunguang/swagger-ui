@@ -13,7 +13,10 @@
       "Bash(find:*)",
       "Bash(git -C /Users/yaojunguang/Dev/JO/swagger-ui log --oneline -10)",
       "Bash(lsof:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(mvn clean package:*)",
+      "Bash(ls:*)",
+      "Bash(jar tf:*)"
     ]
   }
 }
