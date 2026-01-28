@@ -16,7 +16,8 @@
       "Bash(wc:*)",
       "Bash(mvn clean package:*)",
       "Bash(ls:*)",
-      "Bash(jar tf:*)"
+      "Bash(jar tf:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
