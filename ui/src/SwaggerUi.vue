@@ -59,7 +59,9 @@
                   <div slot="header" class="card-header">
                     <span class="method">{{ item.method }}</span>
                     <span class="path" @click="copy(item.path)">{{ item.path }}</span>
-                    <span class="summary" style="margin-left: 16px;" @click="copy(item.path)">{{ item["summary"] }}</span>
+                    <span class="summary" style="margin-left: 16px;" @click="copy(item.path)">{{
+                        item["summary"]
+                      }}</span>
                     <el-button type="success" v-if="item.try" @click="execute(item.path+'-'+item.method,item)"
                                style="position: absolute;right: 108px;top: 8px;" plain>Execute
                     </el-button>
@@ -75,50 +77,7 @@
                   <el-form :model="item" :ref="item.path+'-'+item.method" v-loading="item.executing">
                     <el-tabs type="border-card" v-model="item.tab" style="height: 100%">
                       <Params label="Params" name="params" :item="item"/>
-                      <el-tab-pane label="Example" name="execute" style="position: relative">
-                        <el-tabs v-if="item.exe" v-model="item.exe" style="margin: 12px;">
-                          <el-tab-pane name="swift" label="swift" style="position: relative;">
-                            <highlightjs autodetect :code="item.swift" style="border-radius: 6px;"
-                                         class="swift"/>
-                            <el-icon @click="copy(item.swift)" color="white"
-                                     style="position: absolute;right: 8px;top: 8px;">
-                              <CopyDocument/>
-                            </el-icon>
-                          </el-tab-pane>
-                          <el-tab-pane name="retrofit" label="retrofit" style="position: relative;">
-                            <highlightjs autodetect :code="item.retrofit" style="border-radius: 6px;"
-                                         class="java"/>
-                            <el-icon @click="copy(item.retrofit)" color="white"
-                                     style="position: absolute;right: 8px;top: 8px;">
-                              <CopyDocument/>
-                            </el-icon>
-                          </el-tab-pane>
-                          <el-tab-pane name="axios" label="axios" style="position: relative;">
-                            <highlightjs autodetect :code="item.axios" style="border-radius: 6px;"
-                                         class="java"/>
-                            <el-icon @click="copy(item.axios)" color="white"
-                                     style="position: absolute;right: 8px;top: 8px;">
-                              <CopyDocument/>
-                            </el-icon>
-                          </el-tab-pane>
-                          <el-tab-pane name="java" label="java" style="position: relative;">
-                            <highlightjs autodetect :code="item.java" style="border-radius: 6px;"
-                                         class="java"/>
-                            <el-icon @click="copy(item.java)" color="white"
-                                     style="position: absolute;right: 8px;top: 8px;">
-                              <CopyDocument/>
-                            </el-icon>
-                          </el-tab-pane>
-                          <el-tab-pane name="ArkTs" label="ArkTs" style="position: relative;">
-                            <highlightjs autodetect :code="item.arkTs" style="border-radius: 6px;"
-                                         class="java"/>
-                            <el-icon @click="copy(item.arkTs)" color="white"
-                                     style="position: absolute;right: 8px;top: 8px;">
-                              <CopyDocument/>
-                            </el-icon>
-                          </el-tab-pane>
-                        </el-tabs>
-                      </el-tab-pane>
+                      <Example label="Example" name="example" :item="item"/>
                       <el-tab-pane v-if="item.result" label="执行结果" name="result" style="position: relative">
                         <div>调用耗时:{{ item.executeTime }}</div>
                         <highlightjs autodetect :code="item.result" style="border-radius: 6px;"
@@ -142,18 +101,15 @@
 
 <script>
 
-import {swiftCallExample} from "components/Module2Swift";
-import {javaCallExample, retrofitCallExample} from "components/Module2Java";
-import {jsCallExample} from "components/Module2Js";
 import useClipboard from 'vue-clipboard3'
 import {CircleCheck, Close, CopyDocument} from "@element-plus/icons-vue";
 import Params from "@/Params.vue";
-import {arkTsCallExample} from "components/Module2ArkTs";
+import Example from "@/Example.vue";
 
 let {toClipboard} = useClipboard();
 export default {
   name: 'SwaggerUi',
-  components: {CopyDocument, Params, Close, CircleCheck},
+  components: {CopyDocument, Params, Example, Close, CircleCheck},
   data() {
     return {
       groupName: null,
@@ -272,7 +228,6 @@ export default {
         url: docUrl,
         method: "GET"
       }).then(res => {
-        console.log(res);
         this.parseDocs(res.data)
       });
     },
@@ -282,7 +237,7 @@ export default {
         for (let index = 0; index !== this.form["tags"].length; ++index) {
           let tag = this.form["tags"][index];
           let that = this;
-          let items = tag.items.filter(function (method) {
+          let items = tag.methods.filter(function (method) {
             return method["summary"].includes(that.keyword) || method["path"].includes(that.keyword);
           });
           if (items.length > 0) {
@@ -294,6 +249,7 @@ export default {
       } else {
         this.newTags = this.form["tags"];
       }
+      this.newTags.sort((a, b) => a.name.localeCompare(b.name));
       localStorage.setItem('keyword', this.keyword);
     },
     execute(formName, item) {
@@ -398,12 +354,11 @@ export default {
       const schemas = data.components.schemas;
       for (let schema in schemas) {
         if (schemas[schema].title === undefined) {
-          schemas[schema].title = schemas[schema].description ?? schema;
+          schemas[schema].title = schema;
         }
       }
       delete data.paths;
       this.form = data;
-      console.log(JSON.stringify(data));
       this.keywordChanged();
       this.$forceUpdate();
     },
@@ -447,62 +402,6 @@ export default {
       if (this.activeName === method["operationId"]) {
         return;
       }
-      if (method.parameters != null) {
-        for (let index = 0; index !== method.parameters.length; ++index) {
-          let param = method.parameters[index];
-          let type = param.schema.type;
-          if (type) {
-            param.type = type;
-            param.value = param.default;
-
-            if (param.name.indexOf('.') === -1 && param.description && param.description.startsWith('【公共参数】')) {
-              if (method.common === undefined) {
-                method.common = []
-              }
-              method.common.push(param)
-            } else {
-              if (method.private === undefined) {
-                method.private = []
-              }
-              if (param.name.indexOf('.') === -1) {
-                method.private.push(param)
-              } else if (param.name.indexOf('.year') > 0) {
-                param.name = param.name.substring(0, param.name.indexOf('.'));
-                param.type = 'string';
-                param.default = null;
-                param.description = '时间字符串，默认格式yyyy-MM-dd hh:mm:ss';
-                param.required = undefined;
-                param.value = null;
-                method.private.push(param);
-              }
-            }
-            if (type === 'integer' || type === 'number') {
-              param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
-                type: 'number',
-                message: '请输入合法的数字'
-              }];
-              if (param.value === undefined) {
-                param.value = 0;
-              }
-            } else if (param.type === 'string' && param.format === 'byte') {
-              param.type = 'byte';
-              param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
-                type: 'number',
-                message: '请输入合法的数字'
-              }];
-              if (param.value === undefined) {
-                param.value = 0;
-              }
-            } else if (param.type === 'string') {
-              param.rules = [{required: param.required, message: '必填', trigger: 'blur'}];
-              if (param.value === undefined) {
-                param.value = '';
-              }
-            }
-          }
-        }
-        //method.parameters = null
-      }
 
       method.tab = 'params';
 
@@ -513,7 +412,6 @@ export default {
         schema.originalRef = schema.$ref.substring('#/components/schemas/'.length);
         this.parseModule(this.getNodeByPath(schema.originalRef), modules);
       }
-
       method.modules = modules;
       if (method.private) {
         method.open = [0, 3];
@@ -521,13 +419,6 @@ export default {
         method.open = [3];
       }
       method.open.push(2);
-
-      if (method.method === 'post') {
-        //处理调用示例
-        this.createExecuteCode(method);
-      } else {
-        this.createExecuteCode(method);
-      }
 
       this.items.push(method);
       this.activeName = method["operationId"];
@@ -543,15 +434,6 @@ export default {
         if (!temp) return temp;
       }
       return temp;
-    },
-    createExecuteCode(method) {
-      method.java = javaCallExample(method);
-      method.axios = jsCallExample(method);
-      method.swift = swiftCallExample(method);
-      method.retrofit = retrofitCallExample(method);
-      method.arkTs = arkTsCallExample(method);
-      method.exe = 'swift';
-      this.$forceUpdate()
     },
     parseModule(module, modules) {
       if (modules.filter(item => item.title === module.title).length === 0) {

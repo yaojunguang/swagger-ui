@@ -77,7 +77,7 @@
         </el-row>
         <el-row v-for="(it,index) in query" :key="it.name">
           <el-col :span="4" class="name" @click="copy(it.name)">
-            {{ it.name }}<span v-if="it.required">* required</span>
+            {{ it.name }}<span v-if="it.required" class="required">* required</span>
           </el-col>
           <el-col :span="2">
             {{ it.schema.type }}
@@ -195,7 +195,7 @@
       </el-collapse-item>
       <el-collapse-item v-if='responses' name="response">
         <template #title>
-          <span style="padding-left: 16px">{{  'Responses=>' + responses.entityName  }}</span>
+          <span style="padding-left: 16px">{{ 'Responses=>' + responses.entityName }}</span>
         </template>
         <el-tabs :model-value="item.modules[0].title">
           <el-tab-pane v-for="(entity,mIndex) in item.modules" :label="entity.title"
@@ -260,10 +260,10 @@
 
 <script>
 import {CircleCheck, CirclePlus, Close, CopyDocument, InfoFilled} from "@element-plus/icons-vue";
-import {swiftCallExample, toSwiftJson} from "components/Module2Swift";
+import {toSwiftJson} from "components/Module2Swift";
 import {toObjectMapper} from "components/Module2ObjectMapper";
-import {javaCallExample, retrofitCallExample, toJava} from "components/Module2Java";
-import {jsCallExample, toJson} from "components/Module2Js";
+import {toJava} from "components/Module2Java";
+import {toJson} from "components/Module2Js";
 import useClipboard from "vue-clipboard3";
 import {hasOwnPath} from "components/common";
 import {toArkTs} from "components/Module2ArkTs";
@@ -272,7 +272,7 @@ let {toClipboard} = useClipboard();
 export default {
   name: 'Params',
   components: {CopyDocument, InfoFilled, CirclePlus, Close, CircleCheck},
-  props: ['item', 'tryIt'],
+  props: ['item','tryIt'],
   data() {
     return {
       open: "query",
@@ -287,10 +287,10 @@ export default {
   },
   mounted() {
     this.parseHeader();
+    this.parseResponses();
     this.parseQuery();
     this.parseCommon();
     this.parseBody();
-    this.parseResponses();
   },
   methods: {
     //# pre
@@ -302,6 +302,62 @@ export default {
     parseQuery() {
       if (hasOwnPath(this.item, "parameters")) {
         this.query = this.item["parameters"].filter((it) => it.hasOwnProperty("in") && it["in"] === "query");
+        const method = this.item;
+        if (method.parameters != null) {
+          for (let index = 0; index !== method.parameters.length; ++index) {
+            let param = method.parameters[index];
+            let type = param.schema.type;
+            if (type) {
+              param.type = type;
+              param.value = param.default;
+
+              if (param.name.indexOf('.') === -1 && param.description && param.description.startsWith('【公共参数】')) {
+                if (method.common === undefined) {
+                  method.common = []
+                }
+                method.common.push(param)
+              } else {
+                if (method.private === undefined) {
+                  method.private = []
+                }
+                if (param.name.indexOf('.') === -1) {
+                  method.private.push(param)
+                } else if (param.name.indexOf('.year') > 0) {
+                  param.name = param.name.substring(0, param.name.indexOf('.'));
+                  param.type = 'string';
+                  param.default = null;
+                  param.description = '时间字符串，默认格式yyyy-MM-dd hh:mm:ss';
+                  param.required = undefined;
+                  param.value = null;
+                  method.private.push(param);
+                }
+              }
+              if (type === 'integer' || type === 'number') {
+                param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
+                  type: 'number',
+                  message: '请输入合法的数字'
+                }];
+                if (param.value === undefined) {
+                  param.value = 0;
+                }
+              } else if (param.type === 'string' && param.format === 'byte') {
+                param.type = 'byte';
+                param.rules = [{required: param.required, message: '必填', trigger: 'change'}, {
+                  type: 'number',
+                  message: '请输入合法的数字'
+                }];
+                if (param.value === undefined) {
+                  param.value = 0;
+                }
+              } else if (param.type === 'string') {
+                param.rules = [{required: param.required, message: '必填', trigger: 'blur'}];
+                if (param.value === undefined) {
+                  param.value = '';
+                }
+              }
+            }
+          }
+        }
       }
     },
     parseCommon() {
@@ -324,6 +380,7 @@ export default {
           entityPath: path
         }
       }
+
     },
     copy(content) {
       toClipboard(content);
@@ -396,6 +453,9 @@ export default {
 
 
 <style scoped>
+.required {
+  color: orangered;
+}
 
 .language-radio {
   position: absolute;
